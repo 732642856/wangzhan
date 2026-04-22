@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星轨 - 紫微斗数与封神榜的沉浸式体验</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">✦</span>
+                <span class="logo-text">星轨</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home">首页</a>
+                <a href="#explore">探索星宿</a>
+                <a href="#characters">人物图鉴</a>
+                <a href="#about">关于星轨</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页 Hero 区域 -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <div class="stars"></div>
+            <div class="constellation"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-main">星轨</span>
+                <span class="title-sub">紫微斗数 × 封神榜</span>
+            </h1>
+            <p class="hero-description">
+                探索紫微斗数14主星与封神榜神话人物的深度关联<br>
+                在星空漫游中，见证角色从"直觉"到"星盘"到"小传"的诞生过程
+            </p>
+            <div class="hero-cta">
+                <a href="#explore" class="btn btn-primary">开始探索</a>
+                <a href="#characters" class="btn btn-secondary">人物图鉴</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>向下滚动</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- 探索星宿区域 -->
+    <section id="explore" class="explore-section">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">✦</span>
+                探索星宿
+            </h2>
+            <p class="section-description">
+                点击星宿，探索对应的封神榜人物
+            </p>
+            
+            <!-- 星宿图 -->
+            <div class="star-map">
+                <div class="star-map-center">
+                    <div class="center-star" data-star="紫微星">
+                        <span class="star-name">紫微星</span>
+                        <span class="star-character">伯邑考</span>
+                    </div>
+                </div>
+                <div class="star-map-ring ring-1">
+                    <div class="star" data-star="天机星" style="--angle: 0deg;">
+                        <span class="star-name">天机星</span>
+                    </div>
+                    <div class="star" data-star="太阳星" style="--angle: 45deg;">
+                        <span class="star-name">太阳星</span>
+                    </div>
+                    <div class="star" data-star="武曲星" style="--angle: 90deg;">
+                        <span class="star-name">武曲星</span>
+                    </div>
+                    <div class="star" data-star="天同星" style="--angle: 135deg;">
+                        <span class="star-name">天同星</span>
+                    </div>
+                    <div class="star" data-star="廉贞星" style="--angle: 180deg;">
+                        <span class="star-name">廉贞星</span>
+                    </div>
+                    <div class="star" data-star="天府星" style="--angle: 225deg;">
+                        <span class="star-name">天府星</span>
+                    </div>
+                    <div class="star" data-star="太阴星" style="--angle: 270deg;">
+                        <span class="star-name">太阴星</span>
+                    </div>
+                    <div class="star" data-star="贪狼星" style="--angle: 315deg;">
+                        <span class="star-name">贪狼星</span>
+                    </div>
+                </div>
+                <div class="star-map-ring ring-2">
+                    <div class="star" data-star="巨门星" style="--angle: 22.5deg;">
+                        <span class="star-name">巨门星</span>
+                    </div>
+                    <div class="star" data-star="天相星" style="--angle: 67.5deg;">
+                        <span class="star-name">天相星</span>
+                    </div>
+                    <div class="star" data-star="天梁星" style="--angle: 112.5deg;">
+                        <span class="star-name">天梁星</span>
+                    </div>
+                    <div class="star" data-star="七杀星" style="--angle: 157.5deg;">
+                        <span class="star-name">七杀星</span>
+                    </div>
+                    <div class="star" data-star="破军星" style="--angle: 202.5deg;">
+                        <span class="star-name">破军星</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 人物图鉴区域 -->
+    <section id="characters" class="characters-section">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">✦</span>
+                人物图鉴
+            </h2>
+            <p class="section-description">
+                14主星与封神榜人物的深度关联
+            </p>
+            
+            <!-- 人物卡片网格 -->
+            <div class="character-grid">
+                <!-- 伯邑考 - 紫微星 -->
+                <div class="character-card" data-character="伯邑考">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">紫微星</div>
+                        <h3 class="card-name">伯邑考</h3>
+                        <p class="card-title">周文王长子</p>
+                        <div class="card-traits">
+                            <span class="trait">尊贵</span>
+                            <span class="trait">领导</span>
+                            <span class="trait">稳重</span>
+                        </div>
+                        <p class="card-description">
+                            周文王姬昌之长子，生性孝顺、正直，为救父亲带宝物去朝歌进贡，却因拒绝妲己的勾引而被陷害，最终被剁成肉酱做成肉饼逼姬昌吃下。死后被封为紫微星，象征尊贵与帝王。
+                        </p>
+                        <a href="character.html?id=1" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 姜子牙 - 天机星 -->
+                <div class="character-card" data-character="姜子牙">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">天机星</div>
+                        <h3 class="card-name">姜子牙</h3>
+                        <p class="card-title">周朝开国军师</p>
+                        <div class="card-traits">
+                            <span class="trait">智慧</span>
+                            <span class="trait">谋略</span>
+                            <span class="trait">善良</span>
+                        </div>
+                        <p class="card-description">
+                            周朝的开国军师，足智多谋，善于运筹帷幄，辅佐周武王伐纣。在封神榜中是智慧的化身，执掌封神大业。
+                        </p>
+                        <a href="character.html?id=2" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 比干 - 太阳星 -->
+                <div class="character-card" data-character="比干">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">太阳星</div>
+                        <h3 class="card-name">比干</h3>
+                        <p class="card-title">商纣王之叔</p>
+                        <div class="card-traits">
+                            <span class="trait">博爱</span>
+                            <span class="trait">无私</span>
+                            <span class="trait">直爽</span>
+                        </div>
+                        <p class="card-description">
+                            著名的忠臣，因直谏纣王而被妲己陷害挖心。他光明磊落，忠心耿耿，死后被封为太阳星，象征光明与燃烧自己照亮他人。
+                        </p>
+                        <a href="character.html?id=3" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 周武王 - 武曲星 -->
+                <div class="character-card" data-character="周武王">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">武曲星</div>
+                        <h3 class="card-name">周武王</h3>
+                        <p class="card-title">开国君主</p>
+                        <div class="card-traits">
+                            <span class="trait">刚毅</span>
+                            <span class="trait">行动力</span>
+                            <span class="trait">重义气</span>
+                        </div>
+                        <p class="card-description">
+                            继承父志，率领诸侯推翻商纣暴政，建立周朝。他英勇果决，是一位实干的开国君主。
+                        </p>
+                        <a href="character.html?id=4" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 周文王 - 天同星 -->
+                <div class="character-card" data-character="周文王">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">天同星</div>
+                        <h3 class="card-name">周文王</h3>
+                        <p class="card-title">周朝奠基者</p>
+                        <div class="card-traits">
+                            <span class="trait">温和</span>
+                            <span class="trait">知足</span>
+                            <span class="trait">有爱心</span>
+                        </div>
+                        <p class="card-description">
+                            被囚禁羑里期间，忍辱负重，推演周易，以此排解忧愁，最终得以脱身并奠定周朝基业。他被视为福气与长寿的代表。
+                        </p>
+                        <a href="character.html?id=5" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 费仲 - 廉贞星 -->
+                <div class="character-card" data-character="费仲">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">廉贞星</div>
+                        <h3 class="card-name">费仲</h3>
+                        <p class="card-title">商纣奸臣</p>
+                        <div class="card-traits">
+                            <span class="trait">精明</span>
+                            <span class="trait">争斗</span>
+                            <span class="trait">交际手腕</span>
+                        </div>
+                        <p class="card-description">
+                            商纣王身边的奸臣，善于阿谀奉承、挑拨离间，心胸狭窄且手段毒辣。
+                        </p>
+                        <a href="character.html?id=6" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 姜皇后 - 天府星 -->
+                <div class="character-card" data-character="姜皇后">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">天府星</div>
+                        <h3 class="card-name">姜皇后</h3>
+                        <p class="card-title">商纣正宫</p>
+                        <div class="card-traits">
+                            <span class="trait">稳重</span>
+                            <span class="trait">包容</span>
+                            <span class="trait">守成</span>
+                        </div>
+                        <p class="card-description">
+                            商纣王的正宫皇后，贤良淑德，因遭妲己嫉妒而被陷害致死。她死后被封为天府星，象征财库与守成。
+                        </p>
+                        <a href="character.html?id=7" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 贾夫人 - 太阴星 -->
+                <div class="character-card" data-character="贾夫人">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">太阴星</div>
+                        <h3 class="card-name">贾夫人</h3>
+                        <p class="card-title">黄飞虎之妻</p>
+                        <div class="card-traits">
+                            <span class="trait">内敛</span>
+                            <span class="trait">感性</span>
+                            <span class="trait">浪漫</span>
+                        </div>
+                        <p class="card-description">
+                            黄飞虎的妻子，因被纣王调戏，为了保全名节而跳摘星楼自尽。她象征贞洁与阴柔之美。
+                        </p>
+                        <a href="character.html?id=8" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 妲己 - 贪狼星 -->
+                <div class="character-card" data-character="妲己">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">贪狼星</div>
+                        <h3 class="card-name">妲己</h3>
+                        <p class="card-title">冀州侯之女</p>
+                        <div class="card-traits">
+                            <span class="trait">欲望</span>
+                            <span class="trait">才艺</span>
+                            <span class="trait">交际</span>
+                        </div>
+                        <p class="card-description">
+                            冀州侯苏护之女（被狐狸精附身），以美色诱惑纣王，导致商朝灭亡。她代表了欲望、才艺与多变性。
+                        </p>
+                        <a href="character.html?id=9" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 马千金 - 巨门星 -->
+                <div class="character-card" data-character="马千金">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">巨门星</div>
+                        <h3 class="card-name">马千金</h3>
+                        <p class="card-title">姜子牙之妻</p>
+                        <div class="card-traits">
+                            <span class="trait">口才</span>
+                            <span class="trait">怀疑</span>
+                            <span class="trait">分析</span>
+                        </div>
+                        <p class="card-description">
+                            姜子牙的妻子。在民间传说中，她常因姜子牙一事无成而喋喋不休，甚至逼迫姜子牙休妻。她代表了口舌与是非。
+                        </p>
+                        <a href="character.html?id=10" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 闻太师 - 天相星 -->
+                <div class="character-card" data-character="闻太师">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">天相星</div>
+                        <h3 class="card-name">闻太师</h3>
+                        <p class="card-title">商朝托孤重臣</p>
+                        <div class="card-traits">
+                            <span class="trait">辅助</span>
+                            <span class="trait">公正</span>
+                            <span class="trait">稳重</span>
+                        </div>
+                        <p class="card-description">
+                            商朝的托孤重臣，对商朝忠心耿耿，法力高强，虽知纣王无道，仍尽力维持大局，最终战死沙场。
+                        </p>
+                        <a href="character.html?id=11" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 李靖 - 天梁星 -->
+                <div class="character-card" data-character="李靖">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">天梁星</div>
+                        <h3 class="card-name">李靖</h3>
+                        <p class="card-title">托塔天王</p>
+                        <div class="card-traits">
+                            <span class="trait">清高</span>
+                            <span class="trait">长辈</span>
+                            <span class="trait">威严</span>
+                        </div>
+                        <p class="card-description">
+                            托塔天王，哪吒的父亲。性格严厉、正直，虽与哪吒有冲突，但最终归于正道，是威严的长辈形象。
+                        </p>
+                        <a href="character.html?id=12" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 黄飞虎 - 七杀星 -->
+                <div class="character-card" data-character="黄飞虎">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">七杀星</div>
+                        <h3 class="card-name">黄飞虎</h3>
+                        <p class="card-title">镇国武成王</p>
+                        <div class="card-traits">
+                            <span class="trait">刚毅</span>
+                            <span class="trait">独立</span>
+                            <span class="trait">冒险</span>
+                        </div>
+                        <p class="card-description">
+                            原为商朝镇国武成王，因妻子受辱反出朝歌，投奔周武王，在战场上冲锋陷阵，勇冠三军，最终战死。
+                        </p>
+                        <a href="character.html?id=13" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+
+                <!-- 纣王 - 破军星 -->
+                <div class="character-card" data-character="纣王">
+                    <div class="card-bg"></div>
+                    <div class="card-content">
+                        <div class="card-star">破军星</div>
+                        <h3 class="card-name">纣王</h3>
+                        <p class="card-title">商朝末代君主</p>
+                        <div class="card-traits">
+                            <span class="trait">破坏</span>
+                            <span class="trait">变革</span>
+                            <span class="trait">任性</span>
+                        </div>
+                        <p class="card-description">
+                            商朝末代君主，力大无穷但刚愎自用，荒淫无道，最终导致国家灭亡。他代表了破坏与消耗。
+                        </p>
+                        <a href="character.html?id=14" class="card-link">查看完整星盘 →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于星轨区域 -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">✦</span>
+                关于星轨
+            </h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>紫微斗数 × 封神榜</h3>
+                    <p>
+                        紫微斗数是中国传统命理学的重要分支，其14主星体系与封神榜神话有着深厚的文化渊源。每一颗主星都对应着封神榜中的一位人物，他们的性格、命运、选择，都映射着主星的特质。
+                    </p>
+                    <p>
+                        星轨网站通过沉浸式的3D空间漫游，让用户在探索星宿的过程中，深入了解紫微斗数的核心体系，感受中国传统文化的深厚底蕴。
+                    </p>
+                </div>
+                <div class="about-features">
+                    <div class="feature">
+                        <div class="feature-icon">✦</div>
+                        <h4>沉浸式体验</h4>
+                        <p>在3D星空空间中自由漫游，探索不同星宿</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✦</div>
+                        <h4>深度内容</h4>
+                        <p>14个封神榜人物的完整故事、星盘、小传</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✦</div>
+                        <h4>文化传承</h4>
+                        <p>紫微斗数与封神榜的文化结合</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">✦</span>
+                    <span class="logo-text">星轨</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">首页</a>
+                    <a href="#explore">探索星宿</a>
+                    <a href="#characters">人物图鉴</a>
+                    <a href="#about">关于星轨</a>
+                </div>
+                <div class="footer-app">
+                    <p>你也可以在 App 中铸造自己的角色</p>
+                    <a href="#" class="btn btn-primary">下载星轨人生 App</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2026 星轨. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
