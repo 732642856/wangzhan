@@ -1,13 +1,430 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minttale</title>
-    <script type="module" crossorigin src="./assets/index-6BRx7Z8w.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DMJ4UywX.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>渡者无归</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#0a0a0a;overflow:hidden;font-family:"Noto Serif SC","SimSun",serif;color:#dcc8b0;cursor:none}
+#cursor-glow{position:fixed;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(160,220,210,0.25) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);z-index:9999;mix-blend-mode:screen;transition:background .3s}
+#cursor-glow.warm{background:radial-gradient(circle,rgba(220,180,140,0.35) 0%,transparent 70%)}
+#cursor-glow.danger{background:radial-gradient(circle,rgba(180,40,40,0.4) 0%,transparent 70%)}
+.scene{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity 1.5s ease-in-out,filter 3s;z-index:1}
+.scene.active{opacity:1;pointer-events:auto;z-index:10}
+.scene .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85) contrast(1.1)}
+.hotzone{position:absolute;background:rgba(0,0,0,0);cursor:pointer;z-index:20;border:1px dashed rgba(220,200,180,0.08);transition:all .5s}
+.hotzone::before{content:"";position:absolute;inset:-6px;border-radius:3px;border:1px solid rgba(160,220,210,0);transition:all .5s}
+.hotzone:hover{background:rgba(160,220,210,.04);border-color:rgba(160,220,210,.2)}
+.hotzone:hover::before{border-color:rgba(160,220,210,.15);box-shadow:0 0 25px 6px rgba(160,220,210,.1),inset 0 0 15px rgba(160,220,210,.06)}
+.hotzone.locked{border:1px dashed rgba(139,0,0,.1)}
+.hotzone.locked:hover{background:rgba(139,0,0,.03);border-color:rgba(139,0,0,.15)}
+.hotzone.locked:hover::before{border-color:rgba(139,0,0,.12);box-shadow:0 0 25px 6px rgba(139,0,0,.08)}
+.hotzone-label{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.62rem;color:rgba(220,200,180,0);white-space:nowrap;letter-spacing:.06em;transition:color .5s;pointer-events:none;background:rgba(0,0,0,.35);padding:3px 10px;border-radius:3px}
+.hotzone:hover .hotzone-label{color:rgba(220,200,180,.5)}
+#hud{position:fixed;top:0;left:0;right:0;height:44px;background:linear-gradient(180deg,rgba(10,10,10,.85) 0%,transparent 100%);z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 24px;pointer-events:none;opacity:0;transition:opacity 1.5s}
+#hud.show{opacity:1}
+.hud-chapter{font-size:.8rem;letter-spacing:.12em;color:#a09080}
+.hud-chapter .chapter-label{font-size:.6rem;color:#5a4a3a;display:block;margin-bottom:1px}
+#chapter-card{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity 1.2s}
+#chapter-card.show{opacity:1;pointer-events:auto}
+.chapter-num{font-size:.75rem;letter-spacing:.4em;color:#8B0000;margin-bottom:14px}
+.chapter-title{font-size:clamp(1.5rem,4.5vw,2.4rem);letter-spacing:.25em;color:#dcc8b0;margin-bottom:10px;text-shadow:0 0 25px rgba(220,200,180,.12)}
+.chapter-sub{font-size:.8rem;color:#5a4a3a;letter-spacing:.12em;max-width:360px;text-align:center;line-height:1.7}
+.chapter-hint{margin-top:2.5em;font-size:.7rem;color:#3a2a1a;animation:pulse 2.5s ease-in-out infinite;letter-spacing:.1em}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
+#action-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:150;font-size:.75rem;color:rgba(220,200,180,.25);letter-spacing:.08em;pointer-events:none;opacity:0;transition:opacity 1s;background:rgba(0,0,0,.25);padding:5px 14px;border-radius:16px}
+#action-hint.show{opacity:1}
+#subtitle-container{position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);width:88%;max-width:720px;z-index:100;pointer-events:none;text-align:center}
+.subtitle-main{font-size:clamp(1rem,2.2vw,1.25rem);line-height:2.2;letter-spacing:.03em;text-shadow:0 2px 14px rgba(0,0,0,.97),0 0 28px rgba(0,0,0,.95);opacity:0;transition:opacity .8s;min-height:2.2em;white-space:pre-line}
+.subtitle-main.show{opacity:1}
+.subtitle-system{color:#8aa0b8;text-shadow:0 0 8px rgba(100,140,180,.4);letter-spacing:.08em;font-size:.95em}
+.subtitle-human{color:#dcc8b0;text-shadow:0 0 10px rgba(220,180,140,.35)}
+.subtitle-aying{color:#c8a090;text-shadow:0 0 10px rgba(180,100,80,.3);font-style:italic}
+.subtitle-child{color:#a0c0d0;text-shadow:0 0 8px rgba(100,160,200,.25);font-style:italic}
+.subtitle-warm{color:#e0c898;text-shadow:0 0 10px rgba(220,190,140,.25)}
+.subtitle-cave{color:#b0a890;text-shadow:0 0 8px rgba(160,140,100,.2);letter-spacing:.06em}
+.subtitle-appendix{font-size:.68em;color:rgba(200,160,140,.3);margin-top:.8em;text-shadow:0 0 8px rgba(0,0,0,.95);opacity:0;transition:opacity 1s .8s}
+.subtitle-appendix.show{opacity:1}
+#progress-bar{position:fixed;bottom:7vh;left:50%;transform:translateX(-50%);width:180px;height:2px;background:rgba(220,180,140,.12);z-index:100;opacity:0;transition:opacity .6s;border-radius:1px}
+#progress-bar.show{opacity:1}
+#progress-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,rgba(220,180,140,.5),rgba(200,160,100,.8));transition:width .08s;border-radius:1px}
+#chest-glow{position:absolute;width:100px;height:140px;border-radius:50%;background:radial-gradient(ellipse,rgba(240,220,200,.35) 0%,transparent 70%);pointer-events:none;opacity:0;transition:opacity .4s;z-index:15;filter:blur(10px)}
+.glitch-overlay{position:fixed;inset:0;background:rgba(100,150,200,.06);pointer-events:none;z-index:60;opacity:0}
+@keyframes glitch-flash{0%,100%{opacity:0}10%{opacity:.6}20%{opacity:0}30%{opacity:.4}40%{opacity:0}}
+.glitch-overlay.active{animation:glitch-flash .6s ease-out}
+.ember{position:absolute;width:2px;height:2px;background:rgba(255,120,40,.7);border-radius:50%;pointer-events:none;animation:ember-rise 4s ease-out forwards}
+@keyframes ember-rise{0%{transform:translateY(0) scale(1);opacity:.7}100%{transform:translateY(-100px) scale(.1);opacity:0}}
+#scanlines{position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.02) 3px,rgba(0,0,0,.02) 6px);pointer-events:none;z-index:50}
+#vignette{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.55) 100%);pointer-events:none;z-index:40}
+#start-screen{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity 2s}
+#start-screen.hidden{opacity:0;pointer-events:none}
+.start-title{font-size:clamp(2rem,6vw,4rem);letter-spacing:.4em;color:#dcc8b0;text-shadow:0 0 35px rgba(220,200,180,.15);margin-bottom:.6em}
+.start-sub{font-size:clamp(.75rem,1.8vw,1.1rem);color:#6a5a4a;letter-spacing:.12em;margin-bottom:3.5em;line-height:1.8;text-align:center;max-width:500px}
+.start-hint{font-size:.85rem;color:#4a3a2a;animation:pulse 2.5s ease-in-out infinite;cursor:pointer;padding:.8em 2em;border:1px solid rgba(139,0,0,.25);letter-spacing:.12em}
+.end-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#0a0a0a 0%,#1a1510 50%,#0a0a0a 100%)}
+.end-line{font-size:clamp(1rem,2.5vw,1.5rem);color:#b8a890;letter-spacing:.12em;margin:.6em 0;opacity:0;transform:translateY(24px);transition:all 2s;text-align:center;line-height:1.8}
+.end-line.show{opacity:1;transform:translateY(0)}
+#input-ritual{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);background:transparent;border:none;border-bottom:1px solid rgba(180,140,100,.25);color:#dcc8b0;font-family:"Noto Serif SC",serif;font-size:1.1rem;text-align:center;width:220px;outline:none;caret-color:#a08060;letter-spacing:.08em;opacity:0;transition:opacity 1.2s;z-index:50}
+#input-ritual.show{opacity:1}
+#final-lantern{position:fixed;left:50%;top:55%;transform:translate(-50%,-50%);opacity:0;transition:opacity 10s ease;z-index:100}
+.lantern-body{width:50px;height:70px;background:radial-gradient(ellipse,rgba(240,200,120,.5) 0%,transparent 70%);border-radius:50% 50% 45% 45%;filter:blur(2px);animation:lantern-float 5s ease-in-out infinite}
+@keyframes lantern-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.lantern-wish{margin-top:16px;font-size:.75rem;color:#dcc8b0;text-align:center;letter-spacing:.08em}
+@media(max-width:768px){.hud-chapter{font-size:.7rem}.hotzone-label{font-size:.55rem}#subtitle-container{bottom:14vh}}
+</style>
+</head>
+<body>
+<div id="cursor-glow"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+<div class="glitch-overlay" id="glitch-overlay"></div>
+<div id="hud">
+  <div class="hud-chapter"><span class="chapter-label">章节</span><span id="hud-chapter-text">序</span></div>
+</div>
+<div id="chapter-card">
+  <div class="chapter-num" id="cc-num"></div>
+  <div class="chapter-title" id="cc-title"></div>
+  <div class="chapter-sub" id="cc-sub"></div>
+  <div class="chapter-hint">触碰屏幕继续</div>
+</div>
+<div id="action-hint"></div>
+<div id="progress-bar"><div id="progress-bar-fill"></div></div>
+
+<div id="start-screen">
+  <div class="start-title">渡者无归</div>
+  <div class="start-sub">一部关于记忆、罪与轮回的互动叙事<br>东方哥特 · 非线性 · 无界面沉浸</div>
+  <div class="start-hint" onclick="startExperience()">触碰进入</div>
+</div>
+
+<div id="node-01" class="scene">
+  <video class="bg" src="视频Node_01_门前的异类.mp4" autoplay loop muted playsinline></video>
+  <div class="hotzone locked" data-action="A" style="top:15%;left:35%;width:30%;height:60%"><div class="hotzone-label">推入</div></div>
+  <div class="hotzone" data-action="B" style="top:45%;left:55%;width:35%;height:45%"><div class="hotzone-label">那块玉佩</div></div>
+  <div class="hotzone locked" data-action="C" style="top:60%;left:40%;width:20%;height:30%"><div class="hotzone-label">不能回头</div></div>
+</div>
+
+<div id="node-s02" class="scene">
+  <img class="bg" src="Node_S02_玉碎之问.png" alt="">
+  <div class="hotzone locked" data-action="B1" style="top:25%;left:40%;width:20%;height:25%"><div class="hotzone-label">名字</div></div>
+  <div class="hotzone" data-action="B2" style="top:15%;left:10%;width:35%;height:65%"><div class="hotzone-label">我们的事</div></div>
+  <div class="hotzone locked" data-action="B3" style="top:10%;left:60%;width:35%;height:45%"><div class="hotzone-label">这座墓</div></div>
+  <div class="hotzone locked" data-action="B4" style="top:60%;left:65%;width:30%;height:35%"><div class="hotzone-label">放手</div></div>
+</div>
+
+<div id="node-s02-2c" class="scene">
+  <img class="bg" src="Node_S02_玉碎之问.png" alt="" id="s02-2c-bg">
+  <div id="chest-glow" style="left:65%;top:40%"></div>
+  <div class="hotzone" id="chest-zone" style="top:35%;left:60%;width:25%;height:35%"><div class="hotzone-label">按进来</div></div>
+</div>
+
+<div id="node-d1" class="scene">
+  <img class="bg" src="Node_D1_溺亡的镜子.png" alt="">
+  <div class="hotzone locked" data-action="D1A" style="top:15%;left:60%;width:30%;height:50%"><div class="hotzone-label">推</div></div>
+  <div class="hotzone" data-action="D1B" style="top:30%;left:45%;width:25%;height:35%"><div class="hotzone-label">水声</div></div>
+  <div class="hotzone locked" data-action="D1C" style="top:50%;left:20%;width:30%;height:40%"><div class="hotzone-label">触碰</div></div>
+</div>
+
+<div id="node-d2" class="scene">
+  <img class="bg" src="Node_D2_战死的卷宗.png" alt="">
+  <div class="hotzone" data-action="D2A" style="top:40%;left:55%;width:30%;height:40%"><div class="hotzone-label">折断</div></div>
+  <div class="hotzone" data-action="D2B" style="top:25%;left:30%;width:25%;height:30%"><div class="hotzone-label">喉结</div></div>
+  <div class="hotzone" data-action="D2C" style="top:55%;left:15%;width:35%;height:30%"><div class="hotzone-label">读</div></div>
+</div>
+
+<div id="node-d3" class="scene">
+  <img class="bg" src="Node_01_门前的异类.png" alt="">
+  <div class="hotzone" data-action="D3A" style="top:10%;left:50%;width:40%;height:50%"><div class="hotzone-label">撕</div></div>
+  <div class="hotzone" data-action="D3B" style="top:55%;left:20%;width:30%;height:35%"><div class="hotzone-label">跪下</div></div>
+  <div class="hotzone" data-action="D3C" style="top:40%;left:65%;width:25%;height:40%"><div class="hotzone-label">同一根绳子</div></div>
+</div>
+
+<div id="node-s03" class="scene">
+  <img class="bg" src="Node_S03_汉骨.png" alt="">
+  <div class="hotzone" data-action="S03A" style="top:25%;right:15%;width:18%;height:28%"><div class="hotzone-label">笔</div></div>
+  <div class="hotzone" data-action="S03B" style="top:35%;left:35%;width:28%;height:35%"><div class="hotzone-label">疼痛</div></div>
+  <div class="hotzone" data-action="S03C" style="bottom:8%;left:20%;width:60%;height:18%"><div class="hotzone-label">悔</div></div>
+</div>
+
+<div id="node-s03c" class="scene">
+  <img class="bg" src="Node_S03_汉骨.png" alt="" style="filter:brightness(0.55) contrast(1.4)">
+  <div class="hotzone" data-action="S03C1" style="bottom:15%;left:30%;width:40%;height:20%"><div class="hotzone-label">擦</div></div>
+  <div class="hotzone" data-action="S03C2" style="top:30%;left:60%;width:30%;height:40%"><div class="hotzone-label">不看</div></div>
+</div>
+
+<div id="node-s04" class="scene">
+  <div style="position:absolute;inset:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-direction:column">
+    <div id="char-hui" style="font-family:'Noto Serif SC',serif;font-size:clamp(4rem,12vw,10rem);color:#2a2a2a;position:relative;line-height:1;transition:all 15s"><span style="color:#2a2a2a">悔</span></div>
+    <input type="text" id="input-ritual" autocomplete="off" spellcheck="false" maxlength="5" placeholder="">
+  </div>
+</div>
+
+<div id="node-d3c" class="scene">
+  <img class="bg" src="Node_D3c_共振三角.png" alt="">
+  <div class="hotzone" data-action="D3CA" style="top:15%;left:5%;width:40%;height:70%"><div class="hotzone-label">她的墙</div></div>
+  <div class="hotzone" data-action="D3CB" style="top:15%;right:5%;width:40%;height:70%"><div class="hotzone-label">歌姬的墙</div></div>
+  <div class="hotzone" data-action="D3CC" style="bottom:5%;left:35%;width:30%;height:25%"><div class="hotzone-label">你的墙</div></div>
+</div>
+
+<div id="node-d3c1" class="scene">
+  <img class="bg" src="Node_D3c1_歌姬返场.png" alt="">
+  <div class="hotzone" data-action="D3C1A" style="top:60%;left:10%;width:25%;height:30%"><div class="hotzone-label">撕票</div></div>
+  <div class="hotzone" data-action="D3C1B" style="top:20%;left:40%;width:25%;height:20%"><div class="hotzone-label">横梁</div></div>
+  <div class="hotzone" data-action="D3C1C" style="top:70%;left:35%;width:30%;height:25%"><div class="hotzone-label">沉默</div></div>
+</div>
+
+<div id="node-d3c1b" class="scene">
+  <img class="bg" src="Node_D3c1b_横梁上的手.png" alt="">
+  <div class="hotzone" data-action="D3C1BA" style="top:30%;left:40%;width:30%;height:25%"><div class="hotzone-label">看完</div></div>
+  <div class="hotzone" data-action="D3C1BB" style="top:15%;left:55%;width:30%;height:30%"><div class="hotzone-label">一半</div></div>
+  <div class="hotzone" data-action="D3C1BC" style="top:55%;left:20%;width:35%;height:30%"><div class="hotzone-label">不看</div></div>
+</div>
+
+<div id="node-x" class="scene">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1510 0%,#2a2018 50%,#1a1814 100%)">
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
+      <div style="font-size:clamp(1.2rem,3vw,2rem);color:#e8c880;letter-spacing:.2em;text-shadow:0 0 30px rgba(232,200,128,.25);margin-bottom:.5em">盲区</div>
+      <div style="font-size:.85rem;color:#8a7a6a;letter-spacing:.1em">不是结束</div>
+    </div>
+  </div>
+  <div class="hotzone" data-action="XA" style="top:40%;left:30%;width:40%;height:30%"><div class="hotzone-label">松手</div></div>
+</div>
+
+<div id="node-y1" class="scene">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#3a2a1a 0%,#4a3a2a 50%,#3a2a1a 100%)"></div>
+  <div class="hotzone" data-action="Y1A" style="top:50%;left:20%;width:20%;height:25%"><div class="hotzone-label">赭红</div></div>
+  <div class="hotzone" data-action="Y1B" style="top:50%;left:40%;width:20%;height:25%"><div class="hotzone-label">靛青</div></div>
+  <div class="hotzone" data-action="Y1C" style="top:50%;left:60%;width:20%;height:25%"><div class="hotzone-label">藤黄</div></div>
+</div>
+
+<div id="node-y2" class="scene">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#4a3a2a 0%,#5a4a3a 50%,#4a3a2a 100%)"></div>
+  <div class="hotzone" data-action="Y2A" style="top:30%;left:40%;width:20%;height:20%"><div class="hotzone-label">霜降</div></div>
+  <div class="hotzone" data-action="Y2B" style="top:60%;left:30%;width:40%;height:20%"><div class="hotzone-label">不剪</div></div>
+</div>
+
+<div id="node-y3" class="scene">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#5a4a3a 0%,#6a5a4a 50%,#5a4a3a 100%)"></div>
+  <div class="hotzone" data-action="Y3A" style="top:40%;left:30%;width:40%;height:30%"><div class="hotzone-label">带走什么</div></div>
+</div>
+
+<div id="node-s04b" class="scene">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1814 0%,#2a2018 40%,#3a2a1a 70%,#1a1510 100%)">
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
+      <div style="font-size:clamp(1.5rem,4vw,2.5rem);color:#e8c880;letter-spacing:.2em;text-shadow:0 0 40px rgba(232,200,128,.25);margin-bottom:.5em">千纸鹤</div>
+      <div style="font-size:.85rem;color:#8a7a6a;letter-spacing:.1em;margin-bottom:2em">准备好了吗</div>
+      <input type="text" id="input-final" autocomplete="off" spellcheck="false" maxlength="6" style="background:transparent;border:none;border-bottom:1px solid rgba(220,180,140,.35);color:#e8c880;font-family:'Noto Serif SC',serif;font-size:1.1rem;text-align:center;width:200px;outline:none;caret-color:#e8c880;letter-spacing:.08em">
+    </div>
+  </div>
+</div>
+
+<div id="node-end" class="scene">
+  <div class="end-content">
+    <div class="end-line" id="end-line-1">渡者无归</div>
+    <div class="end-line" id="end-line-2">体验结束</div>
+    <div class="end-line" id="end-line-3">刷新重来</div>
+  </div>
+</div>
+
+<div id="subtitle-container">
+  <div class="subtitle-main" id="subtitle-main"></div>
+  <div class="subtitle-appendix" id="subtitle-appendix"></div>
+</div>
+
+<audio id="a01" src="A01全局底层环境氛围循环背景音.mp3" loop preload="auto"></audio>
+<audio id="a02" src="A02Node_01玉佩共鸣触发音.mp3" preload="auto"></audio>
+<audio id="a03" src="A03Node_01 : S02黑线灼烧压迫音效.mp3" preload="auto"></audio>
+<audio id="a04" src="A04Node_S02 : S03记忆闪回事件音效.mp3" preload="auto"></audio>
+<audio id="a05" src="A05Node_S03汉骨ambience循环背景音.mp3" loop preload="auto"></audio>
+<audio id="a06" src="A06Node_D1溺亡水滴亡魂特征音.mp3" loop preload="auto"></audio>
+<audio id="a07" src="A07Node_D3c1剧场环境循环背景音.mp3" loop preload="auto"></audio>
+<audio id="a08" src="A08Node_D3c1歌姬人声人声处理参数.mp3" preload="auto"></audio>
+<audio id="a09" src="A09Node_S04终幕仪式崩解事件音.mp3" preload="auto"></audio>
+
+<script>
+
+// ========== STATE ==========
+const State={System_Control:3,Humanity_Memory:0,Ferryman_Name:"unknown",Jade_Fragment:false,Aying_Existence:3,Aying_Internalized:false,Aying_Textified:false,Guilt_Memory:0,Tomb_Insight:0,Tomb_Access_Han:false,Voice_Corruption_Level:1,Pain_Sync:false,Mirror_Triangle:false,Resonance_Triangle:false,Aying_Knowledge:false,Pain_Overload:false,Name_Deconstructed:false,System_Trapped:false,Hand_Lost:false,History_Erased:false,Frozen_Memory:false,Jade_Embedded:false,Red_Rope:false,Silence_Resistance:false,Encore_Complete:0,Existence_Null:false,Regret_Loop:false,nextLifeInput:"",currentNode:null};
+
+// ========== DOM ==========
+const cursorGlow=document.getElementById("cursor-glow"),hud=document.getElementById("hud"),hudChapter=document.getElementById("hud-chapter-text"),chapterCard=document.getElementById("chapter-card"),ccNum=document.getElementById("cc-num"),ccTitle=document.getElementById("cc-title"),ccSub=document.getElementById("cc-sub"),actionHint=document.getElementById("action-hint"),subMain=document.getElementById("subtitle-main"),subAppendix=document.getElementById("subtitle-appendix"),progressBar=document.getElementById("progress-bar"),progressFill=document.getElementById("progress-bar-fill"),glitchOverlay=document.getElementById("glitch-overlay"),chestGlow=document.getElementById("chest-glow"),inputRitual=document.getElementById("input-ritual");
+
+document.addEventListener("mousemove",e=>{cursorGlow.style.left=e.clientX+"px";cursorGlow.style.top=e.clientY+"px"});
+
+// ========== AUDIO ==========
+const audio={};["a01","a02","a03","a04","a05","a06","a07","a08","a09"].forEach(id=>audio[id]=document.getElementById(id));
+function playAudio(id,v=1){const el=audio[id];if(!el)return;el.volume=v;el.currentTime=0;const p=el.play();if(p)p.catch(()=>{})}
+function fadeAudio(id,tv,dur=2000){const el=audio[id];if(!el)return;const sv=el.volume,st=performance.now();function tick(n){const t=Math.min((n-st)/dur,1);el.volume=sv+(tv-sv)*t;if(t<1)requestAnimationFrame(tick);else if(tv<=0.01){el.pause();el.currentTime=0}}requestAnimationFrame(tick)}
+function crossfade(fid,tid,dur=3000){fadeAudio(fid,0,dur);setTimeout(()=>{playAudio(tid,0);fadeAudio(tid,1,dur)},200)}
+
+// ========== HUD ==========
+function updateHUD(){}
+
+// ========== CHAPTER CARD ==========
+function showChapterCard(n,t,s,onDone){ccNum.textContent=n;ccTitle.textContent=t;ccSub.textContent=s;chapterCard.classList.add("show");function handler(){chapterCard.classList.remove("show");document.removeEventListener("click",handler);document.removeEventListener("touchend",handler);if(onDone)setTimeout(onDone,800)}setTimeout(()=>{document.addEventListener("click",handler);document.addEventListener("touchend",handler)},500)}
+
+// ========== SUBTITLES ==========
+let subTimer=null,subQ=[],subPlaying=false;
+function showSub(txt,opts={}){clearTimeout(subTimer);subMain.className="subtitle-main show "+(opts.cls||"subtitle-human");subMain.textContent=txt;subAppendix.classList.remove("show");subAppendix.textContent="";if(opts.appx){setTimeout(()=>{subAppendix.textContent=opts.appx;subAppendix.classList.add("show")},800)}const dur=opts.dur||(opts.appx?7000:5000);subTimer=setTimeout(()=>{subMain.classList.remove("show");subAppendix.classList.remove("show");if(opts.end)opts.end()},dur)}
+function qSub(list){subQ=list;nextSub()}
+function nextSub(){if(!subQ.length){subPlaying=false;return}subPlaying=true;const item=subQ.shift();showSub(item.txt,{cls:item.cls,appx:item.appx,dur:item.dur,end:()=>{if(item.end)item.end();if(item.delay)setTimeout(nextSub,item.delay);else nextSub()}})}
+
+// ========== HINTS ==========
+function showHint(t){actionHint.textContent=t;actionHint.classList.add("show")}
+function hideHint(){actionHint.classList.remove("show")}
+
+// ========== SCENE ==========
+function goScene(id,opts={}){const cur=document.querySelector(".scene.active"),next=document.getElementById(id);if(!next)return;State.currentNode=id;if(cur){cur.classList.remove("active");cur.style.opacity="0";cur.style.pointerEvents="none"}next.style.opacity="0";next.style.pointerEvents="auto";next.classList.add("active");requestAnimationFrame(()=>next.style.opacity="1");if(opts.enter)setTimeout(opts.enter,opts.delay||1000)}
+
+// ========== FX ==========
+function spawnEmbers(el){const rect=el.getBoundingClientRect();for(let i=0;i<5;i++){const e=document.createElement("div");e.className="ember";e.style.left=(rect.left+Math.random()*rect.width)+"px";e.style.top=(rect.top+rect.height-10)+"px";e.style.animationDelay=Math.random()+"s";document.body.appendChild(e);setTimeout(()=>e.remove(),4000)}}
+function triggerGlitch(){const g=document.getElementById("glitch-overlay");g.classList.remove("active");void g.offsetWidth;g.classList.add("active");setTimeout(()=>g.classList.remove("active"),600)}
+function tombVibrate(p){if(navigator.vibrate)navigator.vibrate(p)}
+
+// ========== START ==========
+function startExperience(){document.getElementById("start-screen").classList.add("hidden");Object.values(audio).forEach(a=>{a.play().then(()=>{a.pause();a.currentTime=0}).catch(()=>{})});setTimeout(()=>{document.getElementById("start-screen").style.display="none";hud.classList.add("show");enterNode01()},1500)}
+
+
+// ========== NODE 01: 门前的异类 ==========
+function enterNode01(){showChapterCard("第一幕","门前的异类","",()=>{goScene("node-01",{delay:1000,enter:()=>{playAudio("a01",.6);playAudio("a02",.7);showHint("触碰发光区域");qSub([{txt:`编号，丁亥七三。
+死因，缢。`,cls:"subtitle-system",dur:4500},{txt:"你来了。",cls:"subtitle-system",delay:600,dur:2500},{txt:"霜降那天的风，你还记得吗？",cls:"subtitle-aying",dur:5000},{txt:`城门外有人等你。
+带着半块玉。`,cls:"subtitle-aying",dur:5000},{txt:`那个人，
+现在站在壁画前面。`,cls:"subtitle-aying",dur:4500},{txt:`你感觉不到冷。
+因为你是冷的本身。`,cls:"subtitle-human",delay:800,dur:5000},{txt:"但我记得你的温度。",cls:"subtitle-aying",appx:"点击那块玉佩",dur:4000}])}})})}
+document.querySelectorAll("#node-01 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="B"){cursorGlow.classList.add("warm");playAudio("a02",.3);spawnEmbers(h)}else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>{cursorGlow.className=""});h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="A"){showSub(`门还没准备好。
+先完成别的事。`,{cls:"subtitle-system"});triggerGlitch()}else if(a==="B"){hideHint();showChapterCard("","玉碎之问","",enterNodeS02)}else if(a==="C"){showSub(`你不能进去。
+你是门的一部分。`,{cls:"subtitle-system"});triggerGlitch();tombVibrate([50,30,50])}})});
+
+// ========== NODE S02: 玉碎之问 ==========
+function enterNodeS02(){State.Humanity_Memory+=1;State.System_Control-=1;State.Jade_Fragment=true;crossfade("a01","a03",3000);goScene("node-s02",{delay:1200,enter:()=>{hudChapter.textContent="玉碎之问";showHint("她在你左边");qSub([{txt:"那枚指印，还在纸上。",cls:"subtitle-aying",dur:5000},{txt:"朱砂干了。但血没有。",cls:"subtitle-aying",dur:4000},{txt:"你写：畏罪自缢。",cls:"subtitle-aying",dur:3500},{txt:`可我的嘴被布条塞着。
+怎么认罪？`,cls:"subtitle-aying",dur:5000},{txt:`城楼的绳子是别人的手系上去的。
+不是你的。`,cls:"subtitle-aying",dur:5000},{txt:"但你在场。",cls:"subtitle-aying",dur:2500},{txt:"你在场，就够了。",cls:"subtitle-aying",delay:600,dur:3000},{txt:`我想起来了。
+不是全部。是足够的。`,cls:"subtitle-human",appx:"点击她",dur:5000}])}})}
+document.querySelectorAll("#node-s02 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="B2"){cursorGlow.classList.add("warm");playAudio("a04",.4)}else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="B2"){hideHint();showChapterCard("","共犯","内化",enterNodeS02_2c)}else if(a==="B1")showSub(`玉佩在等。
+但它不知道等什么。`,{cls:"subtitle-system"});else if(a==="B3"){showSub(`那扇门后面
+还没有名字。`,{cls:"subtitle-system"});triggerGlitch()}else if(a==="B4")showSub(`放手的话，
+连冷的资格都没有了。`,{cls:"subtitle-system"})})});
+
+// ========== NODE S02-2c: 内化 ==========
+function enterNodeS02_2c(){State.Humanity_Memory+=2;State.Guilt_Memory=2;State.Aying_Existence=0;State.Aying_Internalized=true;State.System_Control-=2;fadeAudio("a03",0,2000);goScene("node-s02-2c",{delay:1200,enter:()=>{hudChapter.textContent="共犯内化";showHint("按住胸口。别松手。");document.getElementById("s02-2c-bg").style.filter="brightness(0.5) contrast(1.3) saturate(0.6)";qSub([{txt:"我不擦了。",cls:"subtitle-human",dur:3000},{txt:`那枚指印，
+让它留在纸上。`,cls:"subtitle-human",dur:4000},{txt:"我不进门了。",cls:"subtitle-human",dur:3000},{txt:"你留在这里。",cls:"subtitle-human",dur:2500},{txt:"不是作为鬼。",cls:"subtitle-human",dur:2500},{txt:"作为我的肺。",cls:"subtitle-human",dur:3000},{txt:`每一次吸气，
+都要经过你的提醒。`,cls:"subtitle-human",dur:4500},{txt:"进来。",cls:"subtitle-aying",dur:2500,end:()=>startInternalization()}])}})}
+
+let holdStart=0,holdProgress=0,holdAnim=null,isHolding=false;
+function startHold(e){if(e)e.preventDefault();isHolding=true;holdStart=Date.now();progressBar.classList.add("show");chestGlow.style.opacity="0.3";updateHold();showSub("按住。",{cls:"subtitle-aying",dur:2000})}
+function updateHold(){if(!isHolding)return;const elapsed=Date.now()-holdStart;holdProgress=Math.min(elapsed/2500,1);progressFill.style.width=(holdProgress*100)+"%";chestGlow.style.opacity=0.3+holdProgress*0.5;if(holdProgress>0.7){document.body.classList.add("screen-shake");tombVibrate([20,20])}if(holdProgress<1)holdAnim=requestAnimationFrame(updateHold);else completeInternalization()}
+function endHold(){if(!isHolding)return;isHolding=false;cancelAnimationFrame(holdAnim);document.body.classList.remove("screen-shake");if(holdProgress<1){holdProgress=0;progressFill.style.width="0%";chestGlow.style.opacity="0";progressBar.classList.remove("show");showSub(`还没进来。
+再用力。`,{cls:"subtitle-aying",dur:2000})}}
+function startInternalization(){document.getElementById("chest-zone").addEventListener("mousedown",startHold);document.getElementById("chest-zone").addEventListener("touchstart",startHold,{passive:false});document.addEventListener("mouseup",endHold);document.addEventListener("touchend",endHold)}
+function completeInternalization(){isHolding=false;cancelAnimationFrame(holdAnim);document.body.classList.remove("screen-shake");chestGlow.style.opacity="1";chestGlow.style.transform="scale(2)";chestGlow.style.transition="all 0.6s ease";const bg=document.getElementById("s02-2c-bg");bg.style.filter="brightness(2) hue-rotate(90deg) saturate(3)";setTimeout(()=>bg.style.filter="brightness(0.3) grayscale(1)",200);setTimeout(()=>bg.style.filter="brightness(0.8) grayscale(0.5)",600);triggerGlitch();hideHint();progressBar.classList.remove("show");showSub("系统正在撤回。",{cls:"subtitle-system",dur:3000,end:()=>{showSub("错误。",{cls:"subtitle-system",dur:2000,end:()=>{showSub("渡者仍在呼吸。",{cls:"subtitle-human",dur:3000,end:()=>{showSub("......",{cls:"subtitle-human",dur:1500,end:()=>{showSub(`不。
+我有。`,{cls:"subtitle-human",dur:3000,end:()=>{subMain.classList.remove("show");subAppendix.classList.remove("show");setTimeout(()=>showChapterCard("第二幕","日常","三个亡魂",enterNodeD1),1500)}})}})}})}})}});playAudio("a09",.8);fadeAudio("a03",0,3000);document.getElementById("chest-zone").style.pointerEvents="none"}
+
+// ========== NODE D1: 溺亡的镜子 ==========
+function enterNodeD1(){State.Voice_Corruption_Level=1;crossfade("a09","a06",3000);goScene("node-d1",{delay:1200,enter:()=>{hudChapter.textContent="日常一 · 溺";showHint("听听水声");qSub([{txt:"孩子。\n七岁。",cls:"subtitle-system",dur:3000},{txt:"水从他的头发往下滴。",cls:"subtitle-human",dur:4000},{txt:"不是普通的水。",cls:"subtitle-human",dur:2500},{txt:"是已经碎掉的记忆。",cls:"subtitle-human",dur:3500},{txt:"哥哥。",cls:"subtitle-child",dur:2000},{txt:"你肺里...",cls:"subtitle-child",dur:2500},{txt:"...也在涨水吗？",cls:"subtitle-child",dur:3000},{txt:"听他说完。",cls:"subtitle-aying",appx:"【后缀耳语】每句话后面都跟着看不见的字",dur:3000}])}})}
+document.querySelectorAll("#node-d1 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="D1B")cursorGlow.classList.add("warm");else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="D1B"){State.Humanity_Memory+=1;State.System_Control-=1;State.Voice_Corruption_Level=2;hideHint();showChapterCard("","日常二 · 卷宗","",enterNodeD2)}else if(a==="D1A")showSub(`推进去的话，
+你就听不到后面的字了。`,{cls:"subtitle-system"});else if(a==="D1C"){State.Pain_Sync=true;showSub(`你碰了那滴水。
+它进到你的骨头里了。`,{cls:"subtitle-aying"})}})});
+
+// ========== NODE D2: 战死的卷宗 ==========
+function enterNodeD2(){crossfade("a06","a03",3000);goScene("node-d2",{delay:1200,enter:()=>{hudChapter.textContent="日常二 · 卷宗";showHint("注意括号里的字");qSub([{txt:"皆为匪徒。",cls:"subtitle-system",dur:3000},{txt:"（废土）",cls:"subtitle-human",dur:2000},{txt:"前冤禁断。",cls:"subtitle-system",dur:3000},{txt:"（前缘）",cls:"subtitle-human",dur:2000},{txt:"不可沦回。",cls:"subtitle-system",dur:3000},{txt:"（轮回）",cls:"subtitle-human",dur:2000},{txt:"你的舌头。",cls:"subtitle-aying",dur:2500},{txt:"变成刀了。",cls:"subtitle-aying",dur:2500},{txt:"刀上刻着每个人的名字。",cls:"subtitle-aying",dur:4000},{txt:"你想吐出来。",cls:"subtitle-human",appx:"按住喉结，试试",dur:3500}])}})}
+document.querySelectorAll("#node-d2 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="D2B")cursorGlow.classList.add("warm");else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="D2A"){State.System_Control+=1;State.Humanity_Memory-=1;showSub(`竹简断了。
+字还在。`,{cls:"subtitle-system"})}else if(a==="D2B"){State.System_Control-=1;State.Humanity_Memory+=1;State.Voice_Corruption_Level=3;hideHint();showChapterCard("","日常三 · 镜像","",enterNodeD3)}else if(a==="D2C"){State.Humanity_Memory+=1;State.System_Control-=0.5;showSub(`你读了。
+系统承认错误。`,{cls:"subtitle-human"})}})});
+
+// ========== NODE D3: 自缢的镜像 ==========
+function enterNodeD3(){crossfade("a03","a07",3000);goScene("node-d3",{delay:1200,enter:()=>{hudChapter.textContent="日常三 · 镜像";showHint("主角没有声音了。听她说。");qSub([{txt:"[主角张开嘴。没有声音。]",cls:"subtitle-system",dur:3000},{txt:"亡魂编号：癸未八九。",cls:"subtitle-aying",dur:3000},{txt:"死因：缢。",cls:"subtitle-aying",dur:2500},{txt:"我替你说了。",cls:"subtitle-aying",dur:2500},{txt:"因为你已经忘了怎么说话。",cls:"subtitle-aying",dur:4000},{txt:"这是你的镜子。",cls:"subtitle-aying",dur:3000},{txt:`两千年前的城楼上，
+有人用同一根绳子。`,cls:"subtitle-aying",dur:5000},{txt:`那人的脸，
+和你一样模糊。`,cls:"subtitle-aying",dur:4000},{txt:"因为她就是你。",cls:"subtitle-aying",appx:"跪下，或者触碰",dur:3000}])}})}
+document.querySelectorAll("#node-d3 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="D3B")cursorGlow.classList.add("warm");else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="D3A"){State.System_Control+=2;State.Humanity_Memory-=1.5;showSub(`壁画撕开了。
+但后面还是墙。`,{cls:"subtitle-system"});hideHint();setTimeout(()=>enterEndScreen(),3000)}else if(a==="D3B"){State.System_Control-=2;State.Humanity_Memory+=2;hideHint();showSub(`你放弃了。
+两只手隔着纸碰在一起。`,{cls:"subtitle-aying"});setTimeout(()=>showChapterCard("","汉骨","",enterNodeS03),3000)}else if(a==="D3C"){State.Humanity_Memory+=2;State.System_Control-=1;State.Pain_Sync=true;State.Mirror_Triangle=true;showSub(`同一根绳子。
+三个脖子。`,{cls:"subtitle-aying"});setTimeout(()=>showChapterCard("","共振三角","",enterNodeD3c),3000)}})});
+
+// ========== NODE D3c: 共振三角 ==========
+function enterNodeD3c(){goScene("node-d3c",{delay:1000,enter:()=>{hudChapter.textContent="共振三角";showHint("选择一面墙");qSub([{txt:"三面墙。",cls:"subtitle-human",dur:2000},{txt:"三个挂过的人。",cls:"subtitle-human",dur:2500},{txt:"选一个。",cls:"subtitle-human",dur:2000},{txt:"墙不会说话。",cls:"subtitle-aying",dur:2500},{txt:"但绳子会。",cls:"subtitle-aying",dur:2500}])}})}
+document.querySelectorAll("#node-d3c .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;State.Resonance_Triangle=true;if(a==="D3CA"){State.Aying_Knowledge=true;showSub(`不完整的字，
+系统读不出来。`,{cls:"subtitle-aying"})}else if(a==="D3CB"){State.Pain_Overload=true;showSub(`疼。
+两千年的疼，
+一次性还回去。`,{cls:"subtitle-aying"})}else if(a==="D3CC"){State.Name_Deconstructed=true;showSub(`名字倒过来写，
+意思就变了。`,{cls:"subtitle-human"});setTimeout(()=>showChapterCard("","汉骨","",enterNodeS03),2000)}})});
+
+// ========== NODE S03: 汉骨 ==========
+function enterNodeS03(){crossfade("a07","a05",3000);goScene("node-s03",{delay:1200,enter:()=>{hudChapter.textContent="汉骨";showHint("原始层。没有系统了。");qSub([{txt:"石头。",cls:"subtitle-cave",dur:2000},{txt:"两千年前的石头。",cls:"subtitle-cave",dur:2500},{txt:"龙在墙上游。",cls:"subtitle-cave",dur:2500},{txt:"眼睛是黑曜石。",cls:"subtitle-cave",dur:2500},{txt:"他在看你。",cls:"subtitle-aying",dur:2500},{txt:"那个被钉在龙背上的人。",cls:"subtitle-aying",dur:3500},{txt:"脸和你一样。",cls:"subtitle-aying",dur:2500},{txt:"但他闭着眼。",cls:"subtitle-aying",dur:2500},{txt:"他不想看见。",cls:"subtitle-aying",dur:2500},{txt:"你读了。",cls:"subtitle-aying",appx:"悔",dur:2000}])}})}
+document.querySelectorAll("#node-s03 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>{const a=h.dataset.action;if(a==="S03C")cursorGlow.classList.add("warm");else cursorGlow.classList.add("danger")});h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="S03A"){State.Humanity_Memory-=2;State.Guilt_Memory=3;State.Aying_Internalized=false;State.System_Control+=3;showSub(`笔在手里。
+手变成石头了。`,{cls:"subtitle-cave"});setTimeout(()=>enterEndScreen(),3000)}else if(a==="S03B"){State.Humanity_Memory+=1;State.Guilt_Memory=3;State.Pain_Sync=true;State.Aying_Internalized=true;State.System_Control-=1;showSub(`疼。
+但疼让你活着。`,{cls:"subtitle-cave"});setTimeout(()=>enterEndScreen(),3000)}else if(a==="S03C"){State.Humanity_Memory+=2;State.Guilt_Memory=3;State.Tomb_Insight=3;hideHint();showChapterCard("","读者","被文字吃掉",enterNodeS03c)}})});
+
+// ========== NODE S03c: 读者 ==========
+function enterNodeS03c(){goScene("node-s03c",{delay:1000,enter:()=>{hudChapter.textContent="读者";showHint("擦那一点血粉");qSub([{txt:"石壁上有字。",cls:"subtitle-cave",dur:2500},{txt:"字里面有血。",cls:"subtitle-cave",dur:2500},{txt:"血是两千年前灌进去的。",cls:"subtitle-cave",dur:3500},{txt:"你读。",cls:"subtitle-aying",dur:2000},{txt:"每读一个字，",cls:"subtitle-aying",dur:2500},{txt:"血就少一滴。",cls:"subtitle-aying",dur:2500},{txt:"最后一个字，",cls:"subtitle-aying",dur:2500},{txt:"被血盖住了。",cls:"subtitle-aying",dur:2500},{txt:"擦了它。",cls:"subtitle-aying",dur:2000},{txt:"你就能走了。",cls:"subtitle-aying",appx:"按住摩擦",dur:3000,end:()=>startBloodWipe()}])}})}
+let wipeStart=0,wipeProgress=0,wipeAnim=null,isWiping=false;
+function startWipe(e){if(e)e.preventDefault();isWiping=true;wipeStart=Date.now();progressBar.classList.add("show");updateWipe()}
+function updateWipe(){if(!isWiping)return;const elapsed=Date.now()-wipeStart;wipeProgress=Math.min(elapsed/2500,1);progressFill.style.width=(wipeProgress*100)+"%";if(wipeProgress>0.7)triggerGlitch();if(wipeProgress<1)wipeAnim=requestAnimationFrame(updateWipe);else completeWipe()}
+function endWipe(){if(!isWiping)return;isWiping=false;cancelAnimationFrame(wipeAnim);if(wipeProgress<1){wipeProgress=0;progressFill.style.width="0%";progressBar.classList.remove("show");showSub(`血还在。
+继续。`,{cls:"subtitle-aying",dur:2000})}}
+function startBloodWipe(){document.querySelector("#node-s03c [data-action=S03C1]").addEventListener("mousedown",startWipe);document.querySelector("#node-s03c [data-action=S03C1]").addEventListener("touchstart",startWipe,{passive:false});document.addEventListener("mouseup",endWipe);document.addEventListener("touchend",endWipe)}
+function completeWipe(){isWiping=false;cancelAnimationFrame(wipeAnim);progressBar.classList.remove("show");State.Tomb_Insight=3;State.Aying_Textified=true;State.Existence_Null=true;State.Humanity_Memory=5;triggerGlitch();showSub("字完整了。",{cls:"subtitle-human",dur:3000,end:()=>{showSub("但你必须在字里面。",{cls:"subtitle-aying",dur:4000,end:()=>showChapterCard("","终幕","",enterNodeS04)})}})}
+document.querySelectorAll("#node-s03c .hotzone").forEach(h=>{h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="S03C2"){showSub(`你不看。
+字永远是缺的。`,{cls:"subtitle-cave"});setTimeout(()=>enterEndScreen(),3000)}})});
+
+// ========== NODE S04: 终幕 ==========
+function enterNodeS04(){crossfade("a05","a09",4000);goScene("node-s04",{delay:1500,enter:()=>{hud.classList.remove("show");hideHint();showSub(`写一个字。
+让系统读不出来。`,{cls:"subtitle-aying",dur:8000});inputRitual.classList.add("show");inputRitual.focus();inputRitual.value="";inputRitual.addEventListener("keydown",handleRitualInput)}})}
+function handleRitualInput(e){if(e.key!=="Enter")return;const val=inputRitual.value.trim();if(val==="我放下笔"||val==="渡者无归"){inputRitual.classList.remove("show");inputRitual.removeEventListener("keydown",handleRitualInput);triggerDomSuicide()}else if(val.length>0){inputRitual.value="▓".repeat(val.length);showSub(`不是这个。
+你知道是什么。`,{cls:"subtitle-aying",dur:2000});setTimeout(()=>inputRitual.value="",1500)}}
+function triggerDomSuicide(){const hui=document.getElementById("char-hui");hui.style.transition="all 15s ease";hui.style.filter="blur(24px)";hui.style.opacity="0";tombVibrate([500,200,500,200,1000]);playAudio("a09",.9);fadeAudio("a09",0,8000);const allText=document.querySelectorAll("div,span,p,h1,h2,input");let delay=0;for(let i=allText.length-1;i>=0;i--){delay+=100;setTimeout(()=>{allText[i].style.transition="all .6s";allText[i].style.color="#000";allText[i].style.background="#000";allText[i].innerHTML="▓".repeat(Math.max(allText[i].textContent.length,1))},delay)}setTimeout(()=>{document.body.innerHTML="";document.body.style.background="#0a0a0a";const line1=document.createElement("div");line1.style.cssText="color:#dcc8b0;font-family:serif;font-size:16px;text-align:center;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 10s";line1.textContent="没有墙了。";document.body.appendChild(line1);requestAnimationFrame(()=>line1.style.opacity="0.7");setTimeout(()=>{line1.style.transition="opacity 5s";line1.style.opacity="0";setTimeout(()=>{line1.textContent="但你还在这里。";line1.style.opacity="0.5";document.body.style.pointerEvents="none";document.body.style.userSelect="none"},5000)},8000)},delay+2000)}
+
+// ========== NODE D3c1: 歌姬返场 ==========
+function enterNodeD3c1(){crossfade("a05","a07",3000);goScene("node-d3c1",{delay:1200,enter:()=>{hudChapter.textContent="歌姬";showHint("消费也是一种绞索");qSub([{txt:"她在台上。",cls:"subtitle-aying",dur:2500},{txt:"脖子上有妆。",cls:"subtitle-aying",dur:2500},{txt:"妆下面是勒痕。",cls:"subtitle-aying",dur:3000},{txt:"你在台下。",cls:"subtitle-aying",dur:2500},{txt:"鼓掌。",cls:"subtitle-aying",dur:2000},{txt:"每鼓一次，",cls:"subtitle-aying",dur:2500},{txt:"绳子紧一圈。",cls:"subtitle-aying",dur:2500},{txt:"但你不鼓掌的话，",cls:"subtitle-aying",dur:3000},{txt:"她就白死了。",cls:"subtitle-aying",appx:"选择",dur:3000}])}})}
+document.querySelectorAll("#node-d3c1 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="D3C1A"){State.Contract_Void=true;State.System_Control+=1.5;State.Memory_Debt=20000000;State.Humanity_Memory-=2;showSub(`票撕了。
+债还在。`,{cls:"subtitle-system"});setTimeout(()=>enterEndScreen(),3000)}else if(a==="D3C1B"){State.Beam_Touched=true;State.Replacement_Offered=true;State.Humanity_Memory+=1;showSub(`你碰了横梁。
+木头记住你了。`,{cls:"subtitle-human"});setTimeout(()=>showChapterCard("","横梁","",enterNodeD3c1b),2000)}else if(a==="D3C1C"){State.Silence_Resistance=true;State.Red_Rope=true;State.Humanity_Memory+=2;State.System_Control-=1;showSub(`你不鼓掌。
+雨就停了。`,{cls:"subtitle-human"});setTimeout(()=>showChapterCard("","奈何桥","",enterNodeX),2000)}})});
+
+// ========== NODE D3c1b: 横梁上的手 ==========
+function enterNodeD3c1b(){goScene("node-d3c1b",{delay:1000,enter:()=>{hudChapter.textContent="横梁";showHint("看几次？");qSub([{txt:"横梁是空的。",cls:"subtitle-aying",dur:2500},{txt:"里面塞满了票。",cls:"subtitle-aying",dur:2500},{txt:"每张票是一个名字。",cls:"subtitle-aying",dur:3000},{txt:"你看了。",cls:"subtitle-aying",dur:2000},{txt:"名字就变成你的了。",cls:"subtitle-aying",dur:3000}])}})}
+document.querySelectorAll("#node-d3c1b .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="D3C1BA"){State.Encore_Complete=3;State.System_Trapped=true;State.Maintenance_Window=17;State.Wood_Hand=true;State.Humanity_Memory+=2;showSub(`系统被困在台上了。
+它也得表演。`,{cls:"subtitle-human"});setTimeout(()=>showChapterCard("","奈何桥","",enterNodeX),3000)}else if(a==="D3C1BB"){State.Encore_Complete=1;State.Wood_Hand=true;showSub(`没看完。
+手变成木头了。`,{cls:"subtitle-system"});setTimeout(()=>enterEndScreen(),3000)}else if(a==="D3C1BC"){State.Hand_Lost=true;State.History_Erased=true;State.Humanity_Memory-=2;State.System_Control+=2;showSub(`手没了。
+历史也没了。`,{cls:"subtitle-system"});setTimeout(()=>enterEndScreen(),3000)}})});
+
+// ========== NODE X: 奈何桥 ==========
+function enterNodeX(){crossfade("a07","a01",5000);const bg=document.querySelector("#node-x > div");bg.style.filter="grayscale(70%) brightness(0.7)";goScene("node-x",{delay:2000,enter:()=>{hudChapter.textContent="盲区";showHint("松手");setTimeout(()=>{bg.style.transition="filter 8s ease";bg.style.filter="grayscale(0%) brightness(0.9)"},100);qSub([{txt:"系统找不到你了。",cls:"subtitle-system",dur:3000},{txt:"这里不在记录里。",cls:"subtitle-system",dur:3000},{txt:"有光。",cls:"subtitle-warm",dur:2000},{txt:"还有糖的味道。",cls:"subtitle-warm",dur:2500},{txt:"你攥了两千年的拳头。",cls:"subtitle-warm",dur:3000},{txt:"可以松开了。",cls:"subtitle-warm",dur:2500}])}})}
+document.querySelectorAll("#node-x .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{State.Humanity_Memory+=1;State.System_Control-=2;showChapterCard("","糖人铺","",enterNodeY1)})});
+
+// ========== NODE Y1: 糖人铺 ==========
+function enterNodeY1(){crossfade("a01","a06",3000);goScene("node-y1",{delay:1200,enter:()=>{hudChapter.textContent="糖人铺";showHint("选一种颜色");qSub([{txt:"糖是热的。",cls:"subtitle-warm",dur:2500},{txt:"从指尖开始化。",cls:"subtitle-warm",dur:2500},{txt:"你想吹一个谁？",cls:"subtitle-warm",dur:3000},{txt:"吹得太快，会破。",cls:"subtitle-warm",dur:2500},{txt:"太慢，会凉。",cls:"subtitle-warm",dur:2500},{txt:"刚刚好，",cls:"subtitle-warm",dur:2000},{txt:"糖壳上会有裂缝。",cls:"subtitle-warm",dur:3000},{txt:"裂缝里才有光。",cls:"subtitle-warm",appx:"选择",dur:3000}])}})}
+document.querySelectorAll("#node-y1 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{showSub(`糖人吹好了。
+甜的。`,{cls:"subtitle-warm",dur:4000,end:()=>showChapterCard("","风筝场","",enterNodeY2)})})});
+
+// ========== NODE Y2: 风筝场 ==========
+function enterNodeY2(){goScene("node-y2",{delay:1000,enter:()=>{hudChapter.textContent="风筝";showHint("剪不剪");qSub([{txt:"风筝不会飞走。",cls:"subtitle-warm",dur:2500},{txt:"因为线上系着东西。",cls:"subtitle-warm",dur:2500},{txt:"剪了，就散了。",cls:"subtitle-warm",dur:2500},{txt:"不剪，就永远悬着。",cls:"subtitle-warm",dur:3000},{txt:"找到你的那根线。",cls:"subtitle-warm",appx:"霜降",dur:3000}])}})}
+document.querySelectorAll("#node-y2 .hotzone").forEach(h=>{h.addEventListener("mouseenter",()=>cursorGlow.classList.add("warm"));h.addEventListener("mouseleave",()=>cursorGlow.className="");h.addEventListener("click",()=>{const a=h.dataset.action;if(a==="Y2A")showSub(`找到了。
+线上有勒痕。`,{cls:"subtitle-human",dur:4000});else if(a==="Y2B")showSub(`不剪。
+两个人系着同一根线。`,{cls:"subtitle-warm",dur:4000,end:()=>showChapterCard("","织补处","",enterNodeY3)})})});
+
+// ========== NODE Y3: 织补处 ==========
+function enterNodeY3(){goScene("node-y3",{delay:1000,enter:()=>{hudChapter.textContent="织补处";showHint("输入");qSub([{txt:"你的毛衣破了。",cls:"subtitle-warm",dur:2500},{txt:"两千年的洞。",cls:"subtitle-warm",dur:2500},{txt:"只能补一个地方。",cls:"subtitle-warm",dur:2500},{txt:"想带什么走？",cls:"subtitle-warm",dur:2500},{txt:"不是'谁'。",cls:"subtitle-warm",dur:2000},{txt:"是'什么'。",cls:"subtitle-warm",dur:2000},{txt:"用记忆织出来的那种。",cls:"subtitle-warm",appx:"输入任意文字",dur:3000}])}})}
+function showY3Input(){const inp=document.createElement("input");inp.type="text";inp.style.cssText="position:absolute;bottom:18%;left:50%;transform:translateX(-50%);background:transparent;border:none;border-bottom:1px solid rgba(220,180,140,.35);color:#e8c880;font-family:'Noto Serif SC',serif;font-size:1.1rem;text-align:center;width:220px;outline:none;caret-color:#e8c880;letter-spacing:.08em;z-index:50";document.getElementById("node-y3").appendChild(inp);inp.focus();inp.addEventListener("keydown",(e)=>{if(e.key!=="Enter")return;const val=inp.value.trim();State.nextLifeInput=val;inp.remove();let response="";if(val.includes("阿缨"))response=`织在领口。
+最靠近心跳的位置。`;else if(val.includes("玉佩"))response=`熔成纽扣。
+缝在袖口。`;else if(val.includes("记忆"))response=`记忆是毛线本身。
+你带的是织出来的东西。`;else if(val.includes("笔"))response=`织成一根肋骨。
+内置的。别人看不见。`;else if(!val||/空|无|nothing/i.test(val))response=`留一个洞。
+最轻。也最冷。`;else response=val+`
+织成花纹。`;showSub(response,{cls:"subtitle-warm",dur:5000,end:()=>showChapterCard("","千纸鹤","",enterNodeS04b)})})}
+document.querySelectorAll("#node-y3 .hotzone").forEach(h=>{h.addEventListener("click",()=>{hideHint();showY3Input()})});
+
+// ========== NODE S04b: 千纸鹤门 ==========
+function enterNodeS04b(){crossfade("a06","a09",4000);goScene("node-s04b",{delay:1500,enter:()=>{hud.classList.remove("show");hideHint();qSub([{txt:"穿着那件毛衣。",cls:"subtitle-warm",dur:3000},{txt:"上面有她的花纹。",cls:"subtitle-warm",dur:3000},{txt:"还有玉佩的纽扣。",cls:"subtitle-warm",dur:3000},{txt:"门是纸鹤叠的。",cls:"subtitle-warm",dur:3000},{txt:"每一只翅膀上",cls:"subtitle-warm",dur:2500},{txt:"都写着一个没实现的愿望。",cls:"subtitle-warm",dur:3500},{txt:"你准备好了吗？",cls:"subtitle-warm",dur:3000,end:()=>{document.getElementById("input-final").focus()}}])}})}
+document.getElementById("input-final").addEventListener("keydown",(e)=>{if(e.key!=="Enter")return;const val=e.target.value.trim();if(/准备好了|走吧|糖人|甜/i.test(val)){e.target.disabled=true;showSub("笑着跳进去。",{cls:"subtitle-warm",dur:3000,end:()=>{document.body.style.transition="background 5s ease";document.body.style.background="#faf8f5";const lantern=document.createElement("div");lantern.id="final-lantern";lantern.innerHTML='<div class="lantern-body"></div><div class="lantern-wish">你想带着什么走？</div>';document.body.appendChild(lantern);requestAnimationFrame(()=>lantern.style.opacity="1");document.body.style.pointerEvents="none";document.body.style.userSelect="none"}})}else if(val.length>0){e.target.value="";showSub(`不是说这个。
+说'我准备好了'。`,{cls:"subtitle-warm",dur:2000})}});
+
+// ========== END ==========
+function enterEndScreen(){hud.classList.remove("show");hideHint();crossfade("a07","a09",4000);goScene("node-end",{delay:2000,enter:()=>{fadeAudio("a09",0,8000);setTimeout(()=>document.getElementById("end-line-1").classList.add("show"),600);setTimeout(()=>document.getElementById("end-line-2").classList.add("show"),2800);setTimeout(()=>document.getElementById("end-line-3").classList.add("show"),5000)}})}
+
+// ========== INIT ==========
+document.addEventListener("DOMContentLoaded",()=>{document.addEventListener("click",()=>{Object.values(audio).forEach(a=>{if(a.paused&&a.currentTime===0){a.play().then(()=>{a.pause();a.currentTime=0}).catch(()=>{})}})},{once:true})});
+
+</script>
+
+</body>
 </html>
