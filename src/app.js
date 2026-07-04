@@ -341,12 +341,21 @@ function renderAssets() {
 }
 
 function renderDoctorReport(report) {
+  const actions = report.actions || [];
   return `
     <article>
       <strong>${escapeHtml(report.summary)}</strong>
       <ul>${report.findings.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
       <div class="panel-title">下一步</div>
-      <ol>${report.nextActions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+      <div class="doctor-action-list">
+        ${actions.map((action) => `
+          <label class="doctor-action ${action.done ? "done" : ""}" data-action-id="${escapeHtml(action.id)}">
+            <input type="checkbox" ${action.done ? "checked" : ""} />
+            <span>${escapeHtml(action.text)}</span>
+            <button type="button" class="button send-action">发送到任务</button>
+          </label>
+        `).join("")}
+      </div>
     </article>
   `;
 }
@@ -361,6 +370,7 @@ function renderTab() {
     const templates = studio.getKnowledgeTemplates();
     const presets = studio.getAiTaskPresets();
     const workflows = studio.getWorkflowPresets();
+    const report = state.doctorReport || (project.doctorActions?.length ? { ...studio.generateScriptDoctorReport(), actions: project.doctorActions } : null);
     const activeWorkflow = workflows.find((workflow) => workflow.id === state.selectedWorkflowId) || workflows[0];
     const doctorMeta = getDoctorWorkbenchMeta(project.writingType || "screenplay", activeWorkflow, state.selectedTemplateIds, templates);
     const packet = studio.buildAiPacket({
@@ -443,22 +453,39 @@ function renderTab() {
       ${doctorMeta.footer}
       <div class="doctor-actions">
         <button id="runDoctor" class="button primary">一键生成诊断</button>
-        <button id="copyDoctor" class="button" ${state.doctorReport ? "" : "disabled"}>复制诊断</button>
+        <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
       </div>
       <div id="doctorReport" class="doctor-report">
-        ${state.doctorReport ? renderDoctorReport(state.doctorReport) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
+        ${report ? renderDoctorReport(report) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
       </div>
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
     document.querySelector("#runDoctor").addEventListener("click", () => {
       state.doctorReport = studio.generateScriptDoctorReport();
+      studio.setProject({ ...studio.getState().project, doctorActions: state.doctorReport.actions });
+      persist();
       renderTab();
     });
     document.querySelector("#copyDoctor")?.addEventListener("click", async () => {
-      if (!state.doctorReport) return;
-      await navigator.clipboard?.writeText(state.doctorReport.markdown);
+      if (!report) return;
+      await navigator.clipboard?.writeText(report.markdown);
       flash("诊断已复制");
+    });
+    document.querySelectorAll(".doctor-action").forEach((row) => {
+      row.querySelector("input")?.addEventListener("change", (event) => {
+        studio.updateDoctorAction(row.dataset.actionId, { done: event.target.checked });
+        state.doctorReport = null;
+        persist();
+        renderTab();
+      });
+      row.querySelector(".send-action")?.addEventListener("click", () => {
+        const action = (report?.actions || []).find((item) => item.id === row.dataset.actionId);
+        if (!action) return;
+        state.aiTask = action.prompt;
+        flash("已发送到 AI 任务");
+        renderTab();
+      });
     });
     document.querySelector("#aiTask").addEventListener("input", (event) => {
       state.aiTask = event.target.value;

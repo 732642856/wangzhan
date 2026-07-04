@@ -14,6 +14,7 @@ import {
   exportFountain,
   extractAssetSeeds,
   generateShotPlan,
+  updateDoctorAction,
   getAiTaskPresets,
   getWritingWorkbenchDefaults,
   getWritingTypeConfig,
@@ -877,8 +878,23 @@ EXT. 天台 - DAWN
   assert.match(report.summary, /2 场/);
   assert.equal(report.findings.length >= 3, true);
   assert.equal(report.nextActions.length >= 3, true);
+  assert.equal(report.actions.length >= 3, true);
+  assert.equal(report.actions[0].done, false);
+  assert.match(report.actions[0].prompt, /请处理这个剧本诊断任务/);
   assert.match(report.markdown, /Script Doctor/);
   assert.match(report.markdown, /下一步/);
+});
+
+test("doctor actions persist on projects and can be checked off", () => {
+  const project = createProject({
+    title: "行动稿",
+    doctorActions: [{ id: "a1", text: "补人物代价", prompt: "请补人物代价", done: false }],
+  });
+  const updated = updateDoctorAction(project, "a1", { done: true });
+
+  assert.equal(project.doctorActions.length, 1);
+  assert.equal(updated.doctorActions[0].done, true);
+  assert.equal(updated.doctorActions[0].text, "补人物代价");
 });
 
 test("literary-screenplay config exposes adaptation workbench signals", () => {

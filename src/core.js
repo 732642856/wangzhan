@@ -588,6 +588,7 @@ export function createProject(input = {}) {
   const tagCategories = normalizeTagCategories(input.tagCategories);
   const tagFieldMappings = normalizeTagFieldMappings(input.tagFieldMappings);
   const tags = normalizeTags(input.tags);
+  const doctorActions = normalizeDoctorActions(input.doctorActions);
 
   return {
     schema: "personal-screenwriter.project.v1",
@@ -604,6 +605,7 @@ export function createProject(input = {}) {
     tagCategories,
     tagFieldMappings,
     tags,
+    doctorActions,
     assets: Array.isArray(input.assets) ? input.assets : [],
     versions: Array.isArray(input.versions) ? input.versions : [],
     shotPlan,
@@ -793,6 +795,12 @@ export function generateScriptDoctorReport(project) {
     "给主要人物补目标、恐惧、误信念、代价四项。",
     "挑最弱一场重写：入场目标、阻碍、突转、离场变化必须清楚。",
   ];
+  const actions = nextActions.map((text, index) => ({
+    id: `doctor-action-${index + 1}`,
+    text,
+    prompt: `请处理这个剧本诊断任务：${text}\n\n项目：${summary.title}\n概览：${summary.sceneCount} 场 / ${summary.characterCount} 人物 / ${summary.locationCount} 地点。`,
+    done: false,
+  }));
   const markdown = [
     `# Script Doctor · ${summary.title}`,
     "",
@@ -811,8 +819,19 @@ export function generateScriptDoctorReport(project) {
     metrics: summary,
     findings,
     nextActions,
+    actions,
     markdown,
   };
+}
+
+export function updateDoctorAction(project, actionId, patch = {}) {
+  const current = createProject(project);
+  return createProject({
+    ...current,
+    doctorActions: (current.doctorActions || []).map((action) => (
+      action.id === actionId ? { ...action, ...patch } : action
+    )),
+  });
 }
 
 export function buildStoryExplorer(project) {
@@ -1238,6 +1257,17 @@ function normalizeTags(tags = []) {
         notes: tag.notes || "",
         createdAt: tag.createdAt || "",
         updatedAt: tag.updatedAt || "",
+      }))
+    : [];
+}
+
+function normalizeDoctorActions(actions = []) {
+  return Array.isArray(actions)
+    ? actions.map((action, index) => ({
+        id: action.id || `doctor-action-${index + 1}`,
+        text: action.text || "",
+        prompt: action.prompt || action.text || "",
+        done: Boolean(action.done),
       }))
     : [];
 }

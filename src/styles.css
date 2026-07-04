@@ -691,6 +691,27 @@ h1 {
   padding-left: 18px;
 }
 
+.doctor-action-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.doctor-action {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.doctor-action.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
 .mini-editor,
 .prompt-output {
   width: 100%;

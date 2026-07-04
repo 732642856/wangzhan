@@ -23,6 +23,7 @@ import {
   serializeProject,
   summarizeShotPlan,
   summarizeProject,
+  updateDoctorAction,
   updateShotPlanShot,
 } from "./core.js";
 
@@ -47,6 +48,11 @@ export function createPersonalScreenwriter(options = {}) {
     createProjectLibrary,
     generateScriptDoctorReport(project = getState().project) {
       return generateScriptDoctorReport(project);
+    },
+    updateDoctorAction(actionId, patch) {
+      project = updateDoctorAction(project, actionId, patch);
+      emit();
+      return getState();
     },
     parseFountain,
     setFountain(fountain) {
