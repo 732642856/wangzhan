@@ -60,17 +60,17 @@ function render() {
   const writingType = project.writingType || "screenplay";
   const writingConfig = studio.getWritingTypeConfig(writingType);
   app.innerHTML = `
-    <main class="shell">
-      <aside class="rail">
+    <main class="shell professional-shell">
+      <aside class="rail project-database">
         <div class="brand">
           <span class="brand-mark">剧</span>
           <div>
-            <strong>个人编剧工作台</strong>
-            <small>浅色、暖灰、留白、安静工作台</small>
+            <strong>Screenwriter Studio</strong>
+            <small>剧本数据库 · AI 编剧室 · 制作预备</small>
           </div>
         </div>
         <section class="panel compact project-panel">
-          <div class="panel-title">项目</div>
+          <div class="panel-title">剧本数据库</div>
           <input id="projectTitle" class="input" aria-label="项目名" />
           <div class="type-switch" role="tablist" aria-label="写作类型">
             <button class="type-pill ${writingType === "screenplay" ? "active" : ""}" data-writing-type="screenplay">剧本</button>
@@ -93,8 +93,8 @@ function render() {
         <section class="panel asset-panel">
           <div class="panel-heading">
             <div>
-              <div class="panel-title">资料卡片</div>
-              <small>模板 / 工作流 / 角色 / 分镜预备</small>
+              <div class="panel-title">对象库</div>
+              <small>Characters / Locations / Props / Beats / Assets</small>
             </div>
             <span id="assetCount" class="badge"></span>
           </div>
@@ -107,9 +107,9 @@ function render() {
         <div class="writer-head">
           <div class="toolbar">
             <div>
-              <div class="eyebrow">Writing core layer</div>
+              <div class="eyebrow">Professional screenplay workbench</div>
               <h1>${escapeHtml(writingConfig.editorTitle)}</h1>
-              <small>只保留写作核心层，可独立使用，后续再接入任意应用。</small>
+              <small>分页剧本、场景大纲、人物地点道具和 AI 会诊共用同一份剧本上下文。</small>
             </div>
             <div class="toolbar-actions">
               <button id="exportFountain" class="icon-button" title="导出 Fountain">Fountain</button>
@@ -124,9 +124,9 @@ function render() {
         <div id="screenplayHost" class="screenplay-host-shell"></div>
       </section>
 
-      <aside class="inspector">
+      <aside class="inspector script-doctor">
         <section class="panel stats">
-          <div class="panel-title">Script data</div>
+          <div class="panel-title">Script Doctor</div>
           <div id="statsGrid" class="stats-grid"></div>
         </section>
         <section class="panel">
