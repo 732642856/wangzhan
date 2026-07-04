@@ -9,6 +9,7 @@ import {
   buildProjectCatalog,
   buildTextQualityReport,
   buildVisualDevelopmentPack,
+  buildWritingControlReport,
   createProjectLibrary,
   compareVersions,
   checkInVersion,
@@ -979,6 +980,26 @@ INT. 档案室 - NIGHT
   assert.equal(report.rewritePriorities.length >= 3, true);
   assert.match(report.markdown, /## 场景功能表/);
   assert.match(report.markdown, /## 对白问题清单/);
+});
+
+test("writing control report aggregates status quality doctor and next task", () => {
+  const project = createProject({
+    title: "总控稿",
+    fountain: `Title: 总控稿
+
+INT. 房间 - NIGHT
+
+编剧
+先把下一步讲清楚。`,
+  });
+  const report = buildWritingControlReport(project);
+
+  assert.equal(report.title, "总控稿 · Writing Control");
+  assert.equal(report.status.sceneCount, 1);
+  assert.equal(report.nextTask.includes("请处理这个剧本诊断任务"), true);
+  assert.match(report.markdown, /## 当前状态/);
+  assert.match(report.markdown, /## 文本质检/);
+  assert.match(report.markdown, /## 下一步任务/);
 });
 
 test("visual development pack turns script objects into production prompts", () => {

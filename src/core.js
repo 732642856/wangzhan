@@ -931,6 +931,30 @@ export function buildTextQualityReport(project) {
   return { title: `${current.title} · Text Quality Report`, sceneFunctions, characterArcs, dialogueIssues, rewritePriorities, markdown };
 }
 
+export function buildWritingControlReport(project) {
+  const current = createProject(project);
+  const status = summarizeProject(current);
+  const doctor = generateScriptDoctorReport(current);
+  const quality = buildTextQualityReport(current);
+  const nextTask = doctor.actions[0]?.prompt || buildAiPacket(current).prompt;
+  const markdown = [
+    `# ${current.title} · Writing Control`,
+    "",
+    "## 当前状态",
+    `- ${status.sceneCount} 场 / ${status.characterCount} 人物 / ${status.locationCount} 地点 / ${status.wordCount} 字`,
+    "",
+    "## Script Doctor",
+    ...doctor.findings.map((item) => `- ${item}`),
+    "",
+    "## 文本质检",
+    ...quality.rewritePriorities.map((item) => `- ${item}`),
+    "",
+    "## 下一步任务",
+    nextTask,
+  ].join("\n");
+  return { title: `${current.title} · Writing Control`, status, doctor, quality, nextTask, markdown };
+}
+
 export function updateDoctorAction(project, actionId, patch = {}) {
   const current = createProject(project);
   return createProject({

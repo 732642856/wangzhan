@@ -6,6 +6,7 @@ import {
   buildProjectCatalog,
   buildTextQualityReport,
   buildVisualDevelopmentPack,
+  buildWritingControlReport,
   buildStoryExplorer,
   checkInVersion,
   compareVersions,
@@ -67,6 +68,9 @@ export function createPersonalScreenwriter(options = {}) {
     },
     buildTextQualityReport(project = getState().project) {
       return buildTextQualityReport(project);
+    },
+    buildWritingControlReport(project = getState().project) {
+      return buildWritingControlReport(project);
     },
     createProjectLibrary,
     importProjectLibrary,

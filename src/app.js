@@ -50,6 +50,7 @@ const state = {
   doctorReport: null,
   rewriteDraft: null,
   textQualityReport: null,
+  writingControlReport: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
@@ -501,6 +502,8 @@ function renderTab() {
         <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
         <button id="runQuality" class="button">生成质检</button>
         <button id="copyQuality" class="button" ${state.textQualityReport ? "" : "disabled"}>复制质检</button>
+        <button id="runControl" class="button">生成总控</button>
+        <button id="copyControl" class="button" ${state.writingControlReport ? "" : "disabled"}>复制总控</button>
         <button id="copyDelivery" class="button">复制交付包</button>
         <button id="downloadDelivery" class="button">下载交付包</button>
       </div>
@@ -538,6 +541,22 @@ function renderTab() {
           `
           : ""
       }
+      ${
+        state.writingControlReport
+          ? `
+            <div class="rewrite-draft writing-control-report">
+              <div class="section-head">
+                <div>
+                  <small>Writing Control</small>
+                  <strong>${escapeHtml(state.writingControlReport.title)}</strong>
+                </div>
+                <button id="sendControlTask" class="button">发送下一步</button>
+              </div>
+              <textarea class="prompt-output" readonly>${escapeHtml(state.writingControlReport.markdown)}</textarea>
+            </div>
+          `
+          : ""
+      }
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
@@ -561,6 +580,22 @@ function renderTab() {
       if (!state.textQualityReport) return;
       await navigator.clipboard?.writeText(state.textQualityReport.markdown);
       flash("质检已复制");
+    });
+    document.querySelector("#runControl")?.addEventListener("click", () => {
+      state.writingControlReport = studio.buildWritingControlReport();
+      flash("文字总控已生成");
+      renderTab();
+    });
+    document.querySelector("#copyControl")?.addEventListener("click", async () => {
+      if (!state.writingControlReport) return;
+      await navigator.clipboard?.writeText(state.writingControlReport.markdown);
+      flash("总控已复制");
+    });
+    document.querySelector("#sendControlTask")?.addEventListener("click", () => {
+      if (!state.writingControlReport) return;
+      state.aiTask = state.writingControlReport.nextTask;
+      flash("下一步任务已发送");
+      renderTab();
     });
     document.querySelector("#copyDelivery")?.addEventListener("click", async () => {
       const delivery = studio.buildDeliveryPacket();
