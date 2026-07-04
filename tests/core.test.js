@@ -5,6 +5,7 @@ import { Compiler } from "inkjs/compiler/Compiler";
 import {
   buildAiPacket,
   buildBreakdownBoard,
+  buildDeliveryPacket,
   buildProjectCatalog,
   createProjectLibrary,
   compareVersions,
@@ -914,6 +915,27 @@ INT. 档案室 - NIGHT
   assert.equal(draft.assets.includes("钥匙"), true);
   assert.match(draft.prompt, /请改写/);
   assert.match(draft.prompt, /钥匙在哪里/);
+});
+
+test("delivery packet bundles diagnosis rewrite relations and script", () => {
+  const project = createProject({
+    title: "交付稿",
+    fountain: `Title: 交付稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: { props: [{ name: "钥匙", notes: "关键道具" }] },
+  });
+  const packet = buildDeliveryPacket(project);
+
+  assert.equal(packet.filename, "交付稿-delivery.md");
+  assert.match(packet.markdown, /# 交付稿 · Delivery Packet/);
+  assert.match(packet.markdown, /## Script Doctor/);
+  assert.match(packet.markdown, /## Rewrite Draft/);
+  assert.match(packet.markdown, /## Relationship Board/);
+  assert.match(packet.markdown, /钥匙在哪里/);
 });
 
 test("doctor actions persist on projects and can be checked off", () => {

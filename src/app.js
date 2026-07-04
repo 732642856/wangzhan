@@ -461,6 +461,8 @@ function renderTab() {
       <div class="doctor-actions">
         <button id="runDoctor" class="button primary">一键生成诊断</button>
         <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
+        <button id="copyDelivery" class="button">复制交付包</button>
+        <button id="downloadDelivery" class="button">下载交付包</button>
       </div>
       <div id="doctorReport" class="doctor-report">
         ${report ? renderDoctorReport(report) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
@@ -494,6 +496,15 @@ function renderTab() {
       if (!report) return;
       await navigator.clipboard?.writeText(report.markdown);
       flash("诊断已复制");
+    });
+    document.querySelector("#copyDelivery")?.addEventListener("click", async () => {
+      const delivery = studio.buildDeliveryPacket();
+      await navigator.clipboard?.writeText(delivery.markdown);
+      flash("交付包已复制");
+    });
+    document.querySelector("#downloadDelivery")?.addEventListener("click", () => {
+      const delivery = studio.buildDeliveryPacket();
+      download(delivery.filename, delivery.markdown, "text/markdown");
     });
     document.querySelectorAll(".doctor-action").forEach((row) => {
       row.querySelector("input")?.addEventListener("change", (event) => {

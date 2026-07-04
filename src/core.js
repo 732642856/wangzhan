@@ -917,6 +917,35 @@ export function generateRewriteDraft(project, action = {}) {
   };
 }
 
+export function buildDeliveryPacket(project) {
+  const current = createProject(project);
+  const report = generateScriptDoctorReport(current);
+  const draft = generateRewriteDraft(current, report.actions[0]);
+  const board = buildBreakdownBoard(current);
+  const edges = board.relationships.edges.map((edge) => `- ${edge.source} -> ${edge.target}`).join("\n") || "- 暂无关系线";
+  const markdown = [
+    `# ${current.title} · Delivery Packet`,
+    "",
+    "## Script Doctor",
+    report.markdown,
+    "",
+    "## Rewrite Draft",
+    draft.prompt,
+    "",
+    "## Relationship Board",
+    edges,
+    "",
+    "## Script",
+    "```fountain",
+    current.fountain || exportFountain(current),
+    "```",
+  ].join("\n");
+  return {
+    filename: `${current.title || "screenwriter"}-delivery.md`,
+    markdown,
+  };
+}
+
 export function buildStoryExplorer(project) {
   const current = createProject(project);
   const scenes = current.parsed.scenes.length

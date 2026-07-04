@@ -2,6 +2,7 @@ import {
   addShotPlanShot,
   buildAiPacket,
   buildBreakdownBoard,
+  buildDeliveryPacket,
   buildProjectCatalog,
   buildStoryExplorer,
   checkInVersion,
@@ -53,6 +54,9 @@ export function createPersonalScreenwriter(options = {}) {
     },
     buildBreakdownBoard(project = getState().project) {
       return buildBreakdownBoard(project);
+    },
+    buildDeliveryPacket(project = getState().project) {
+      return buildDeliveryPacket(project);
     },
     createProjectLibrary,
     generateScriptDoctorReport(project = getState().project) {

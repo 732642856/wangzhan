@@ -28,6 +28,8 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "生成草案",
     "Rewrite draft",
     "rewrite-draft",
+    "复制交付包",
+    "下载交付包",
     "Breakdown board",
     "关系墙",
     "breakdown-card",
