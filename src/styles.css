@@ -1,15 +1,15 @@
 :root {
   color-scheme: light;
-  --ink: #171717;
-  --muted: #6f7379;
-  --line: #d7dbe1;
-  --paper: #f4f6f8;
-  --panel: #fbfcfd;
-  --accent: #b78335;
-  --accent-dark: #20242a;
-  --mark: #b78335;
-  --blue: #4f6f94;
-  --shadow: 0 18px 44px rgba(14, 20, 28, 0.09);
+  --ink: #171a1f;
+  --muted: #68707d;
+  --line: #d8dde3;
+  --paper: #eef2f1;
+  --panel: #ffffff;
+  --accent: #2f6f6d;
+  --accent-dark: #151922;
+  --mark: #c14a2d;
+  --blue: #365f8d;
+  --shadow: 0 14px 32px rgba(20, 25, 34, 0.08);
   font-family: Inter, "SF Pro Display", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -1347,4 +1347,222 @@ pre {
 .inspector-list-item.active {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(139, 114, 87, 0.1);
+}
+
+/* M1 UX pass: denser production workbench, fewer floating-card cues. */
+body {
+  background:
+    linear-gradient(180deg, #e9efee 0%, #f6f7f4 100%),
+    radial-gradient(circle at 85% 8%, rgba(47, 111, 109, 0.12), transparent 28%);
+}
+
+.shell {
+  grid-template-columns: 286px minmax(620px, 1fr) 390px;
+}
+
+.professional-shell {
+  border-top: 0;
+}
+
+.rail {
+  color: #f2f5f4;
+  background: #141820;
+  border-right: 1px solid #252b34;
+}
+
+.rail .brand-mark {
+  color: #141820;
+  background: #e7f0ea;
+}
+
+.rail small,
+.rail .eyebrow {
+  color: #9aa6b1;
+}
+
+.rail .panel {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.rail .panel-title,
+.rail .asset-group-title {
+  color: #f4f7f6;
+}
+
+.rail .input,
+.rail .type-pill,
+.rail .button,
+.rail .asset,
+.rail .project-row {
+  color: #f4f7f6;
+  background: rgba(255, 255, 255, 0.065);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.rail .input::placeholder {
+  color: #788390;
+}
+
+.rail .button.primary,
+.rail .type-pill.active,
+.rail .project-row.active {
+  color: #10201e;
+  background: #d7ebe4;
+  border-color: #d7ebe4;
+}
+
+.rail .badge {
+  color: #111820;
+  background: #d9ebe4;
+}
+
+.rail .badge.soft {
+  color: #dbeae7;
+  background: rgba(47, 111, 109, 0.3);
+}
+
+.rail .asset small,
+.rail .project-row small {
+  color: #a4adb8;
+}
+
+.writer {
+  padding: 22px 24px;
+}
+
+.writer-head {
+  display: grid;
+  gap: 12px;
+}
+
+.toolbar {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.toolbar h1 {
+  font-size: 36px;
+}
+
+.ux-command-bar {
+  align-items: center;
+}
+
+.workspace-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.workspace-status span,
+.workspace-status small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.workspace-status strong {
+  display: block;
+  font-size: 18px;
+}
+
+.quick-command-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.quick-command {
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--accent-dark);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+.quick-command.primary {
+  color: #fff;
+  background: var(--mark);
+  border-color: var(--mark);
+}
+
+.focus-strip {
+  margin: 0;
+}
+
+.screenplay-workbench {
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(20, 25, 34, 0.1);
+}
+
+.inspector {
+  background: #f8faf9;
+  border-left: 1px solid var(--line);
+}
+
+.inspector .panel {
+  background: transparent;
+  box-shadow: none;
+}
+
+.stats .panel-title {
+  font-size: 16px;
+}
+
+.tabs {
+  padding: 4px;
+  background: #ecefed;
+  border-radius: 8px;
+}
+
+.tab {
+  border-color: transparent;
+  background: transparent;
+}
+
+.tab.active {
+  color: var(--accent-dark);
+  background: #fff;
+  border-color: #fff;
+}
+
+.field-label {
+  color: var(--accent-dark);
+}
+
+.doctor-actions {
+  padding: 10px;
+  background: #eef2f1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.doctor-actions .button.primary {
+  background: var(--mark);
+  border-color: var(--mark);
+}
+
+.workflow-card,
+.preset-button,
+.template-choice,
+.doctor-report,
+.rewrite-draft,
+.doctor-action {
+  box-shadow: none;
+}
+
+.rewrite-draft {
+  background: #fff;
+  border-color: rgba(193, 74, 45, 0.28);
 }

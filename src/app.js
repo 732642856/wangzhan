@@ -66,7 +66,7 @@ render();
 studio.subscribe(() => renderDynamic());
 
 function render() {
-  const { project } = studio.getState();
+  const { project, summary } = studio.getState();
   const writingType = project.writingType || "screenplay";
   const writingConfig = studio.getWritingTypeConfig(writingType);
   app.innerHTML = `
@@ -126,14 +126,25 @@ function render() {
         <div class="writer-head">
           <div class="toolbar">
             <div>
-              <div class="eyebrow">Professional screenplay workbench</div>
+              <div class="eyebrow">Writing room</div>
               <h1>${escapeHtml(writingConfig.editorTitle)}</h1>
-              <small>分页剧本、场景大纲、人物地点道具和 AI 会诊共用同一份剧本上下文。</small>
+              <small>项目库、剧本页、诊断总控共用同一份上下文。</small>
             </div>
-            <div class="toolbar-actions">
+            <div class="toolbar-actions ux-command-bar">
               <button id="exportFountain" class="icon-button" title="导出 Fountain">Fountain</button>
               <button id="exportFdx" class="icon-button" title="导出 Final Draft XML">FDX</button>
               <button id="copyPrompt" class="icon-button" title="复制 AI 任务包">复制 AI 包</button>
+            </div>
+          </div>
+          <div class="workspace-status">
+            <div>
+              <span>当前项目</span>
+              <strong>${escapeHtml(project.title)}</strong>
+              <small>${summary.sceneCount} 场 · ${summary.characterCount} 人物 · ${summary.locationCount} 地点</small>
+            </div>
+            <div class="quick-command-row">
+              <button id="openControl" class="quick-command primary">工作流总控</button>
+              <button id="openDoctor" class="quick-command">Script Doctor</button>
             </div>
           </div>
           <div class="focus-strip">
@@ -245,6 +256,20 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelector("#openControl").addEventListener("click", () => {
+    state.activeTab = "doctor";
+    state.writingControlReport = studio.buildWritingControlReport();
+    render();
+    flash("文字总控已生成");
+  });
+  document.querySelector("#openDoctor").addEventListener("click", () => {
+    state.activeTab = "doctor";
+    state.doctorReport = studio.generateScriptDoctorReport();
+    studio.setProject({ ...studio.getState().project, doctorActions: state.doctorReport.actions });
+    persist();
+    render();
+    flash("诊断已生成");
+  });
   document.querySelector("#projectFilter").addEventListener("input", (event) => {
     state.projectFilter = event.target.value;
     renderProjects();
@@ -497,13 +522,14 @@ function renderTab() {
           .join("")}
       </div>
       ${doctorMeta.footer}
+      <label class="field-label">主线动作</label>
       <div class="doctor-actions">
-        <button id="runDoctor" class="button primary">一键生成诊断</button>
+        <button id="runControl" class="button primary">生成总控</button>
+        <button id="copyControl" class="button" ${state.writingControlReport ? "" : "disabled"}>复制总控</button>
+        <button id="runDoctor" class="button">一键生成诊断</button>
         <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
         <button id="runQuality" class="button">生成质检</button>
         <button id="copyQuality" class="button" ${state.textQualityReport ? "" : "disabled"}>复制质检</button>
-        <button id="runControl" class="button">生成总控</button>
-        <button id="copyControl" class="button" ${state.writingControlReport ? "" : "disabled"}>复制总控</button>
         <button id="copyDelivery" class="button">复制交付包</button>
         <button id="downloadDelivery" class="button">下载交付包</button>
       </div>
@@ -1051,6 +1077,11 @@ async function copyAiPacket() {
 function mountOrUpdateScreenplayHost(project) {
   const root = document.querySelector("#screenplayHost");
   if (!root) return;
+
+  if (screenplayHost && screenplayHost.root !== root) {
+    screenplayHost.destroy();
+    screenplayHost = null;
+  }
 
   if (!screenplayHost) {
     screenplayHost = mountScreenplayEditorHost(root, {
