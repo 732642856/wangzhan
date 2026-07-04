@@ -7,6 +7,7 @@ import {
   buildBreakdownBoard,
   buildDeliveryPacket,
   buildProjectCatalog,
+  buildVisualDevelopmentPack,
   createProjectLibrary,
   compareVersions,
   checkInVersion,
@@ -936,6 +937,31 @@ INT. 档案室 - NIGHT
   assert.match(packet.markdown, /## Rewrite Draft/);
   assert.match(packet.markdown, /## Relationship Board/);
   assert.match(packet.markdown, /钥匙在哪里/);
+});
+
+test("visual development pack turns script objects into production prompts", () => {
+  const project = createProject({
+    title: "视觉稿",
+    fountain: `Title: 视觉稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: {
+      characters: [{ name: "侦探", role: "主角", goal: "找到出口" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+      locations: [{ name: "档案室", notes: "昏暗、拥挤" }],
+    },
+  });
+  const pack = buildVisualDevelopmentPack(project);
+
+  assert.equal(pack.title, "视觉稿 · Visual Development Pack");
+  assert.equal(pack.assets.some((asset) => asset.type === "Character Portrait" && asset.name === "侦探"), true);
+  assert.equal(pack.assets.some((asset) => asset.type === "Scene Still" && asset.name.includes("档案室")), true);
+  assert.equal(pack.assets.some((asset) => asset.type === "Prop Detail" && asset.name === "钥匙"), true);
+  assert.match(pack.markdown, /Storyboard Frame/);
+  assert.match(pack.markdown, /cinematic visual reference/);
 });
 
 test("doctor actions persist on projects and can be checked off", () => {

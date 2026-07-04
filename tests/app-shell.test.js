@@ -20,6 +20,8 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "Frames",
     "Relations",
     "Assets",
+    "复制视觉包",
+    "下载视觉包",
     "project-list",
     "一键生成诊断",
     "doctor-report",

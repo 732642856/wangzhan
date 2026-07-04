@@ -108,6 +108,10 @@ function render() {
             </div>
             <span id="assetCount" class="badge"></span>
           </div>
+          <div class="button-grid tight">
+            <button id="copyVisualPack" class="button">复制视觉包</button>
+            <button id="downloadVisualPack" class="button">下载视觉包</button>
+          </div>
           <input id="assetFilter" class="input" placeholder="搜索：人物、剧本、skill、分镜" />
           <div id="assetList" class="asset-list"></div>
         </section>
@@ -247,6 +251,15 @@ function bindEvents() {
   document.querySelector("#assetFilter").addEventListener("input", (event) => {
     state.assetFilter = event.target.value;
     renderAssets();
+  });
+  document.querySelector("#copyVisualPack").addEventListener("click", async () => {
+    const pack = studio.buildVisualDevelopmentPack();
+    await navigator.clipboard?.writeText(pack.markdown);
+    flash("视觉开发包已复制");
+  });
+  document.querySelector("#downloadVisualPack").addEventListener("click", () => {
+    const pack = studio.buildVisualDevelopmentPack();
+    download(`${studio.getState().project.title}-visual-pack.md`, pack.markdown, "text/markdown");
   });
 
   document.querySelectorAll(".tab").forEach((button) => {

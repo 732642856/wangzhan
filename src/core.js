@@ -946,6 +946,26 @@ export function buildDeliveryPacket(project) {
   };
 }
 
+export function buildVisualDevelopmentPack(project) {
+  const current = createProject(project);
+  const catalog = buildProjectCatalog(current);
+  const board = buildBreakdownBoard(current);
+  const shots = generateShotPlan(current).shotPlan.shots.slice(0, 6);
+  const assets = [
+    ...catalog.Characters.map((item) => visualAsset("Character Portrait", item.name, `${item.role || ""} ${item.goal || item.notes || ""}`)),
+    ...catalog.Locations.map((item) => visualAsset("Scene Still", item.name, item.notes || "cinematic location reference")),
+    ...catalog.Props.map((item) => visualAsset("Prop Detail", item.name, item.notes || "hero prop close-up")),
+    ...board.scenes.slice(0, 6).map((scene) => visualAsset("Scene Keyframe", scene.heading, `${scene.location || ""} ${scene.characters.join("、")}`)),
+    ...shots.map((shot) => visualAsset("Storyboard Frame", `${shot.shotNumber}. ${shot.sceneHeading}`, `${shot.shotSize} ${shot.camera} ${shot.action}`)),
+  ].filter((asset) => asset.name);
+  const markdown = [
+    `# ${current.title} · Visual Development Pack`,
+    "",
+    ...assets.map((asset) => `## ${asset.type} · ${asset.name}\n${asset.prompt}`),
+  ].join("\n\n");
+  return { title: `${current.title} · Visual Development Pack`, assets, markdown };
+}
+
 export function buildStoryExplorer(project) {
   const current = createProject(project);
   const scenes = current.parsed.scenes.length
@@ -1560,6 +1580,14 @@ function groupBlocksByScene(blocks = []) {
     grouped.set(sceneId, [...(grouped.get(sceneId) || []), block]);
   }
   return grouped;
+}
+
+function visualAsset(type, name, notes = "") {
+  return {
+    type,
+    name,
+    prompt: `${type}: ${name}. ${notes} cinematic visual reference, consistent production design, script-grounded details.`,
+  };
 }
 
 function blockToFdxType(type) {
