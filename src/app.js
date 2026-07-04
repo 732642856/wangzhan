@@ -48,6 +48,7 @@ const state = {
   projectFilter: "",
   aiTask: defaultWorkbench.aiTask,
   doctorReport: null,
+  rewriteDraft: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
@@ -357,6 +358,7 @@ function renderDoctorReport(report) {
           <label class="doctor-action ${action.done ? "done" : ""}" data-action-id="${escapeHtml(action.id)}">
             <input type="checkbox" ${action.done ? "checked" : ""} />
             <span>${escapeHtml(action.text)}</span>
+            <button type="button" class="button draft-action">生成草案</button>
             <button type="button" class="button send-action">发送到任务</button>
           </label>
         `).join("")}
@@ -463,6 +465,22 @@ function renderTab() {
       <div id="doctorReport" class="doctor-report">
         ${report ? renderDoctorReport(report) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
       </div>
+      ${
+        state.rewriteDraft
+          ? `
+            <div class="rewrite-draft">
+              <div class="section-head">
+                <div>
+                  <small>Rewrite draft</small>
+                  <strong>${escapeHtml(state.rewriteDraft.title)}</strong>
+                </div>
+                <button id="sendDraft" class="button">发送草案任务</button>
+              </div>
+              <textarea class="prompt-output" readonly>${escapeHtml(state.rewriteDraft.prompt)}</textarea>
+            </div>
+          `
+          : ""
+      }
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
@@ -491,6 +509,19 @@ function renderTab() {
         flash("已发送到 AI 任务");
         renderTab();
       });
+      row.querySelector(".draft-action")?.addEventListener("click", () => {
+        const action = (report?.actions || []).find((item) => item.id === row.dataset.actionId);
+        if (!action) return;
+        state.rewriteDraft = studio.generateRewriteDraft(action);
+        flash("已生成改写草案");
+        renderTab();
+      });
+    });
+    document.querySelector("#sendDraft")?.addEventListener("click", () => {
+      if (!state.rewriteDraft) return;
+      state.aiTask = state.rewriteDraft.prompt;
+      flash("草案任务已发送");
+      renderTab();
     });
     document.querySelector("#aiTask").addEventListener("input", (event) => {
       state.aiTask = event.target.value;

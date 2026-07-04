@@ -886,6 +886,37 @@ export function updateDoctorAction(project, actionId, patch = {}) {
   });
 }
 
+export function generateRewriteDraft(project, action = {}) {
+  const current = createProject(project);
+  const board = buildBreakdownBoard(current);
+  const scene = board.scenes[0] || { heading: current.title, characters: [], id: "" };
+  const passage = buildStoryExplorer(current).passages.find((item) => item.id === scene.id) || { text: current.fountain || "" };
+  const assets = [...board.catalog.Props, ...board.catalog.Locations]
+    .map((item) => item.name)
+    .filter(Boolean)
+    .slice(0, 8);
+  const goal = action.text || generateScriptDoctorReport(current).nextActions[0];
+  const prompt = [
+    `请改写《${current.title}》中的场景：${scene.heading}`,
+    `诊断任务：${goal}`,
+    scene.characters.length ? `保留人物：${scene.characters.join("、")}` : "",
+    assets.length ? `保留/强化对象：${assets.join("、")}` : "",
+    "要求：只输出改写后的 Fountain 场景，保留可拍动作，用对白推动关系变化。",
+    "",
+    "原场景：",
+    passage.text,
+  ].filter(Boolean).join("\n");
+
+  return {
+    title: `${current.title} · 改写草案`,
+    scene,
+    characters: scene.characters,
+    assets,
+    action: goal,
+    prompt,
+  };
+}
+
 export function buildStoryExplorer(project) {
   const current = createProject(project);
   const scenes = current.parsed.scenes.length

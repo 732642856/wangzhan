@@ -16,6 +16,7 @@ import {
   exportFountain,
   extractAssetSeeds,
   generateShotPlan,
+  generateRewriteDraft,
   updateDoctorAction,
   getAiTaskPresets,
   getWritingWorkbenchDefaults,
@@ -885,6 +886,34 @@ EXT. 天台 - DAWN
   assert.match(report.actions[0].prompt, /请处理这个剧本诊断任务/);
   assert.match(report.markdown, /Script Doctor/);
   assert.match(report.markdown, /下一步/);
+});
+
+test("rewrite draft turns a doctor action into a scene-level prompt", () => {
+  const project = createProject({
+    title: "改写稿",
+    fountain: `Title: 改写稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？
+
+助手
+门后面。`,
+    bible: {
+      characters: [{ name: "侦探", goal: "找到出口" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+    },
+  });
+  const report = generateScriptDoctorReport(project);
+  const draft = generateRewriteDraft(project, report.actions[0]);
+
+  assert.equal(draft.title.includes("改写稿"), true);
+  assert.equal(draft.scene.heading, "INT. 档案室 - NIGHT");
+  assert.equal(draft.characters.includes("侦探"), true);
+  assert.equal(draft.assets.includes("钥匙"), true);
+  assert.match(draft.prompt, /请改写/);
+  assert.match(draft.prompt, /钥匙在哪里/);
 });
 
 test("doctor actions persist on projects and can be checked off", () => {

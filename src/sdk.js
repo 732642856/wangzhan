@@ -12,6 +12,7 @@ import {
   deleteShotPlanShot,
   exportFdx,
   exportFountain,
+  generateRewriteDraft,
   generateShotPlan,
   generateScriptDoctorReport,
   getAiTaskPresets,
@@ -56,6 +57,9 @@ export function createPersonalScreenwriter(options = {}) {
     createProjectLibrary,
     generateScriptDoctorReport(project = getState().project) {
       return generateScriptDoctorReport(project);
+    },
+    generateRewriteDraft(action) {
+      return generateRewriteDraft(project, action);
     },
     updateDoctorAction(actionId, patch) {
       project = updateDoctorAction(project, actionId, patch);

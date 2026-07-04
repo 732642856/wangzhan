@@ -713,7 +713,7 @@ h1 {
 
 .doctor-action {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   gap: 8px;
   align-items: center;
   padding: 8px;
@@ -724,6 +724,16 @@ h1 {
 .doctor-action.done span {
   color: var(--muted);
   text-decoration: line-through;
+}
+
+.rewrite-draft {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 10px;
+  border: 1px solid rgba(168, 67, 42, 0.18);
+  background: #fff7ed;
+  border-radius: 6px;
 }
 
 .mini-editor,
