@@ -4,6 +4,7 @@ import { Compiler } from "inkjs/compiler/Compiler";
 
 import {
   buildAiPacket,
+  buildBreakdownBoard,
   buildProjectCatalog,
   createProjectLibrary,
   compareVersions,
@@ -926,6 +927,38 @@ EXT. 天台 - DAWN
   assert.equal(summary.beatCount, 4);
   assert.equal(summary.frameCount, 1);
   assert.equal(summary.relationCount >= 2, true);
+});
+
+test("breakdown board links scenes, objects and relationship wall data", () => {
+  const project = createProject({
+    title: "关系稿",
+    fountain: `Title: 关系稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？
+
+助手
+门后面。
+
+EXT. 天台 - DAWN
+
+侦探
+我们找到出口了。`,
+    bible: {
+      props: [{ name: "钥匙", notes: "打开门" }],
+      locations: [{ name: "天台", notes: "结尾地点" }],
+    },
+  });
+
+  const board = buildBreakdownBoard(project);
+
+  assert.equal(board.scenes.length, 2);
+  assert.equal(board.scenes[0].characters.includes("侦探"), true);
+  assert.equal(board.catalog.Props.some((item) => item.name === "钥匙"), true);
+  assert.equal(board.relationships.nodes.some((node) => node.type === "character"), true);
+  assert.equal(board.relationships.edges.some((edge) => edge.source === "character:侦探"), true);
 });
 
 test("literary-screenplay config exposes adaptation workbench signals", () => {

@@ -760,6 +760,36 @@ export function buildProjectCatalog(project) {
   };
 }
 
+export function buildBreakdownBoard(project) {
+  const current = createProject(project);
+  const blocksByScene = groupBlocksByScene(current.parsed.blocks);
+  const charactersByScene = current.parsed.characters.reduce((map, character) => {
+    for (const sceneId of character.scenes) {
+      map.set(sceneId, [...(map.get(sceneId) || []), character.name]);
+    }
+    return map;
+  }, new Map());
+  const catalog = buildProjectCatalog(current);
+  const relationships = buildStoryExplorer(current).relationships;
+
+  return {
+    catalog,
+    relationships,
+    scenes: current.parsed.scenes.map((scene, index) => {
+      const blocks = blocksByScene.get(scene.id) || [];
+      return {
+        id: scene.id,
+        index: index + 1,
+        heading: scene.heading,
+        location: scene.location,
+        time: scene.time,
+        characters: charactersByScene.get(scene.id) || [],
+        beatCount: blocks.filter((block) => block.type === "dialogue" || block.type === "action").length,
+      };
+    }),
+  };
+}
+
 export function createProjectLibrary(input = {}) {
   const projects = (Array.isArray(input.projects) ? input.projects : [])
     .map((project) => createProject(project))

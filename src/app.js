@@ -540,9 +540,37 @@ function renderTab() {
   }
 
   if (state.activeTab === "explore") {
+    const board = studio.buildBreakdownBoard();
     const explorer = studio.buildStoryExplorer();
     content.innerHTML = `
       <div class="explorer">
+        <section class="breakdown-board">
+          <div class="section-head">
+            <div>
+              <small>关系墙 / Breakdown board</small>
+              <strong>按场景拆人物、地点、节拍和对象</strong>
+            </div>
+            <span class="badge soft">${board.relationships.edges.length} links</span>
+          </div>
+          <div class="breakdown-grid">
+            ${board.scenes
+              .map(
+                (scene) => `
+                  <article class="breakdown-card">
+                    <small>${scene.index} · ${escapeHtml(scene.location || "未标地点")} ${scene.time ? "· " + escapeHtml(scene.time) : ""}</small>
+                    <strong>${escapeHtml(scene.heading)}</strong>
+                    <div class="relation-pills">
+                      ${(scene.characters.length ? scene.characters : ["待标人物"])
+                        .map((name) => `<span>${escapeHtml(name)}</span>`)
+                        .join("")}
+                    </div>
+                    <em>${scene.beatCount} beats</em>
+                  </article>
+                `,
+              )
+              .join("")}
+          </div>
+        </section>
         <div class="explorer-passages">
           ${explorer.passages
             .map(
