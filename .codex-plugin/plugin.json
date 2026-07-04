@@ -1,0 +1,38 @@
+{
+  "name": "personal-screenwriter",
+  "version": "0.1.0+codex.20260703121538",
+  "description": "Local-first screenwriting workspace for screenplay and literary-screenplay work inside Codex.",
+  "author": {
+    "name": "Wuyongnaren"
+  },
+  "homepage": "http://127.0.0.1:5174/",
+  "repository": "local",
+  "license": "Proprietary",
+  "keywords": [
+    "screenwriting",
+    "novel-adaptation",
+    "mcp",
+    "codex",
+    "writing"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Personal Screenwriter",
+    "shortDescription": "Use the local screenwriting workspace and writing MCP tools from Codex",
+    "longDescription": "Personal Screenwriter gives Codex a local screenplay and literary-screenplay workspace, plus MCP tools for opening the app, reading and writing project state, and building AI writing packets.",
+    "developerName": "Wuyongnaren",
+    "category": "Writing",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Open the screenwriting workspace and read the current project.",
+      "Update the project notes or writing type.",
+      "Build an AI packet for a scene rewrite pass."
+    ],
+    "brandColor": "#8b6f47"
+  }
+}

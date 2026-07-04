@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.codex/
+.DS_Store
+
+# Private local OCR outputs. Keep these files on disk for personal use, but do
+# not accidentally commit full copyrighted book text or local source paths.
+scripts/ocr_vision_bin
+knowledge/ocr/*/
+!knowledge/ocr/index.md

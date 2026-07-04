@@ -1,0 +1,12 @@
+knowledge://screenplay/scene-function
+knowledge://screenplay/dialogue-action
+knowledge://screenplay/character-arc
+knowledge://adaptation/structuralist-screenwriting
+knowledge://adaptation/film-perusal-method
+knowledge://adaptation/verbal-action-dialogue
+workflow://short-drama-mystery
+workflow://urban-romance
+workflow://novel-adaptation-film
+workspace://story-bible/characters
+workspace://story-bible/locations
+workspace://shot-plan

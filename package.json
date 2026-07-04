@@ -1,0 +1,33 @@
+{
+  "name": "personal-screenwriter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first AI screenwriting workspace for personal use.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "export:cloud": "bash ./scripts/export-cloud-repo.sh",
+    "codex:ensure-server": "node ./scripts/ensure-dev-server.mjs",
+    "codex:mcp": "node ./mcp/server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.4",
+    "@tiptap/core": "^2.27.2",
+    "@tiptap/extension-document": "^2.27.2",
+    "@tiptap/extension-history": "^2.27.2",
+    "@tiptap/extension-paragraph": "^2.27.2",
+    "@tiptap/extension-text": "^2.27.2",
+    "@tiptap/extension-text-style": "^2.27.2",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@xyflow/react": "^12.11.1",
+    "inkjs": "^2.4.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "zod": "^3.24.1"
+  }
+}
