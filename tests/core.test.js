@@ -17,6 +17,7 @@ import {
   exportFdx,
   exportFountain,
   extractAssetSeeds,
+  importProjectLibrary,
   generateShotPlan,
   generateRewriteDraft,
   updateDoctorAction,
@@ -30,6 +31,7 @@ import {
   addShotPlanShot,
   parseFountain,
   restoreVersion,
+  serializeProjectLibrary,
   summarizeProject,
   summarizeShotPlan,
   updateShotPlanShot,
@@ -860,6 +862,23 @@ test("project library stores, lists, selects and deletes local projects", () => 
   assert.equal(selected.project.title, "第二稿");
   assert.equal(deleted.activeProjectId, "p1");
   assert.equal(deleted.projects.length, 1);
+});
+
+test("project library can round-trip as a portable json bundle", () => {
+  const first = createProject({ id: "p1", title: "第一稿", fountain: "Title: 第一稿" });
+  const second = createProject({
+    id: "p2",
+    title: "第二稿",
+    fountain: "Title: 第二稿",
+    doctorActions: [{ id: "a1", text: "改场次", done: true }],
+  });
+  const library = createProjectLibrary({ activeProjectId: "p2", projects: [first, second] });
+  const restored = importProjectLibrary(serializeProjectLibrary(library));
+
+  assert.equal(restored.schema, "personal-screenwriter.library.v1");
+  assert.equal(restored.activeProjectId, "p2");
+  assert.deepEqual(restored.projects.map((project) => project.id).sort(), ["p1", "p2"]);
+  assert.equal(restored.select("p2").project.doctorActions[0].done, true);
 });
 
 test("script doctor report turns project data into actionable diagnosis", () => {

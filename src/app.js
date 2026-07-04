@@ -95,10 +95,13 @@ function render() {
             <button id="newProject" class="button">新建</button>
             <button id="importProject" class="button">导入</button>
             <button id="exportJson" class="button">JSON</button>
+            <button id="importLibrary" class="button">导入库</button>
+            <button id="exportLibrary" class="button">导出库</button>
           </div>
           <input id="projectFilter" class="input" placeholder="搜索项目" />
           <div id="projectList" class="project-list"></div>
           <input id="fileInput" type="file" accept=".fountain,.txt,.json,.fdx" hidden />
+          <input id="libraryFileInput" type="file" accept=".json" hidden />
         </section>
         <section class="panel asset-panel">
           <div class="panel-heading">
@@ -166,6 +169,7 @@ function render() {
 function bindEvents() {
   const title = document.querySelector("#projectTitle");
   const fileInput = document.querySelector("#fileInput");
+  const libraryFileInput = document.querySelector("#libraryFileInput");
 
   title.addEventListener("change", () => {
     const { project } = studio.getState();
@@ -215,6 +219,26 @@ function bindEvents() {
     fileInput.value = "";
   });
 
+  document.querySelector("#exportLibrary").addEventListener("click", () => {
+    projectLibrary = projectLibrary.save(studio.getState().project);
+    download("screenwriter-library.json", studio.serializeProjectLibrary(projectLibrary), "application/json");
+    persist();
+  });
+  document.querySelector("#importLibrary").addEventListener("click", () => libraryFileInput.click());
+  libraryFileInput.addEventListener("change", async () => {
+    const file = libraryFileInput.files?.[0];
+    if (!file) return;
+    projectLibrary = studio.importProjectLibrary(await file.text());
+    const next = projectLibrary.select(projectLibrary.activeProjectId);
+    projectLibrary = next.library;
+    studio.setProject(next.project);
+    applyWorkbenchDefaults(next.project.writingType || "screenplay");
+    state.doctorReport = null;
+    libraryFileInput.value = "";
+    persist();
+    render();
+    flash("项目库已导入");
+  });
   document.querySelector("#exportJson").addEventListener("click", () => download("screenwriter-project.json", studio.exportJson(), "application/json"));
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));

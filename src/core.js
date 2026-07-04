@@ -818,6 +818,23 @@ export function createProjectLibrary(input = {}) {
   };
 }
 
+export function serializeProjectLibrary(library) {
+  const current = createProjectLibrary(library);
+  return JSON.stringify({
+    schema: current.schema,
+    activeProjectId: current.activeProjectId,
+    projects: current.projects,
+  }, null, 2);
+}
+
+export function importProjectLibrary(text) {
+  const data = typeof text === "string" ? JSON.parse(text) : text;
+  if (data?.schema !== "personal-screenwriter.library.v1") {
+    throw new Error("Invalid project library file");
+  }
+  return createProjectLibrary(data);
+}
+
 export function generateScriptDoctorReport(project) {
   const current = createProject(project);
   const summary = summarizeProject(current);

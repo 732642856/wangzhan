@@ -23,9 +23,11 @@ import {
   getWritingWorkbenchDefaults,
   getWorkflowPresets,
   importProject,
+  importProjectLibrary,
   parseFountain,
   restoreVersion,
   serializeProject,
+  serializeProjectLibrary,
   summarizeShotPlan,
   summarizeProject,
   updateDoctorAction,
@@ -63,6 +65,8 @@ export function createPersonalScreenwriter(options = {}) {
       return buildVisualDevelopmentPack(project);
     },
     createProjectLibrary,
+    importProjectLibrary,
+    serializeProjectLibrary,
     generateScriptDoctorReport(project = getState().project) {
       return generateScriptDoctorReport(project);
     },
