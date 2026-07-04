@@ -162,9 +162,49 @@ small,
   border-color: var(--accent-dark);
 }
 
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .project-panel {
   display: grid;
   gap: 12px;
+}
+
+.project-list {
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  margin-top: 10px;
+  overflow: auto;
+}
+
+.project-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.project-row.active {
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.project-row strong,
+.project-row small {
+  display: block;
+}
+
+.delete-project {
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .type-switch {
@@ -629,6 +669,26 @@ h1 {
   color: var(--accent-dark);
   font-size: 12px;
   font-weight: 800;
+}
+
+.doctor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.doctor-report {
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.doctor-report ul,
+.doctor-report ol {
+  margin: 8px 0 0;
+  padding-left: 18px;
 }
 
 .mini-editor,

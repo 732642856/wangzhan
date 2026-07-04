@@ -4,6 +4,7 @@ import { Compiler } from "inkjs/compiler/Compiler";
 
 import {
   buildAiPacket,
+  createProjectLibrary,
   compareVersions,
   checkInVersion,
   createVersionSnapshot,
@@ -16,6 +17,7 @@ import {
   getAiTaskPresets,
   getWritingWorkbenchDefaults,
   getWritingTypeConfig,
+  generateScriptDoctorReport,
   getWorkflowPresets,
   getKnowledgeTemplates,
   buildStoryExplorer,
@@ -837,6 +839,46 @@ test("writing workbench defaults switch task, templates and workflows by writing
   assert.equal(screenplay.selectedTemplateIds.includes("scene-function"), true);
   assert.match(literary.aiTask, /文学剧本/);
   assert.match(screenplay.aiTask, /剧本医生/);
+});
+
+test("project library stores, lists, selects and deletes local projects", () => {
+  const first = createProject({ id: "p1", title: "第一稿", fountain: "INT. 房间 - NIGHT\n甲\n你好。" });
+  const second = createProject({ id: "p2", title: "第二稿", fountain: "EXT. 天台 - DAY\n乙\n走吧。" });
+  const library = createProjectLibrary({ projects: [first] });
+  const saved = createProjectLibrary(library).save(second);
+  const selected = createProjectLibrary(saved).select("p2");
+  const deleted = createProjectLibrary(selected.library).delete("p2");
+
+  assert.equal(saved.projects.length, 2);
+  assert.equal(saved.projects[0].id, "p2");
+  assert.equal(selected.project.title, "第二稿");
+  assert.equal(deleted.activeProjectId, "p1");
+  assert.equal(deleted.projects.length, 1);
+});
+
+test("script doctor report turns project data into actionable diagnosis", () => {
+  const project = createProject({
+    title: "诊断稿",
+    fountain: `INT. 档案室 - NIGHT
+侦探
+线索被藏在对白里。
+EXT. 天台 - DAWN
+导演
+我们必须让选择付出代价。`,
+    bible: {
+      characters: [{ name: "侦探", goal: "找出真相" }],
+      locations: [{ name: "档案室", notes: "线索集中地" }],
+    },
+  });
+  const report = generateScriptDoctorReport(project);
+
+  assert.equal(report.title, "诊断稿");
+  assert.equal(report.metrics.sceneCount, 2);
+  assert.match(report.summary, /2 场/);
+  assert.equal(report.findings.length >= 3, true);
+  assert.equal(report.nextActions.length >= 3, true);
+  assert.match(report.markdown, /Script Doctor/);
+  assert.match(report.markdown, /下一步/);
 });
 
 test("literary-screenplay config exposes adaptation workbench signals", () => {

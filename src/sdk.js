@@ -5,11 +5,13 @@ import {
   checkInVersion,
   compareVersions,
   createVersionSnapshot,
+  createProjectLibrary,
   createProject,
   deleteShotPlanShot,
   exportFdx,
   exportFountain,
   generateShotPlan,
+  generateScriptDoctorReport,
   getAiTaskPresets,
   getWritingTypeConfig,
   getKnowledgeTemplates,
@@ -42,6 +44,10 @@ export function createPersonalScreenwriter(options = {}) {
 
   return {
     getState,
+    createProjectLibrary,
+    generateScriptDoctorReport(project = getState().project) {
+      return generateScriptDoctorReport(project);
+    },
     parseFountain,
     setFountain(fountain) {
       project = createProject({ ...project, fountain });

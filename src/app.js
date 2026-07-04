@@ -5,6 +5,7 @@ import { createPersonalScreenwriter } from "./sdk.js";
 import "./styles.css";
 
 const STORAGE_KEY = "personal-screenwriter.project.v1";
+const LIBRARY_KEY = "personal-screenwriter.library.v1";
 
 const defaultProject = {
   title: "星轨试写",
@@ -34,13 +35,19 @@ EXT. 天台 - DAWN
 };
 
 const saved = loadProject();
-const studio = createPersonalScreenwriter({ project: saved || defaultProject });
-const defaultWorkbench = studio.getWritingWorkbenchDefaults((saved || defaultProject).writingType || "screenplay");
+const savedLibrary = loadLibrary();
+let projectLibrary = savedLibrary.projects.length ? savedLibrary : savedLibrary.save(saved || defaultProject);
+const activeLibraryItem = projectLibrary.select(projectLibrary.activeProjectId);
+projectLibrary = activeLibraryItem.library;
+const studio = createPersonalScreenwriter({ project: activeLibraryItem.project });
+const defaultWorkbench = studio.getWritingWorkbenchDefaults(activeLibraryItem.project.writingType || "screenplay");
 
 const state = {
   activeTab: "doctor",
   assetFilter: "",
+  projectFilter: "",
   aiTask: defaultWorkbench.aiTask,
+  doctorReport: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
@@ -88,6 +95,8 @@ function render() {
             <button id="importProject" class="button">导入</button>
             <button id="exportJson" class="button">JSON</button>
           </div>
+          <input id="projectFilter" class="input" placeholder="搜索项目" />
+          <div id="projectList" class="project-list"></div>
           <input id="fileInput" type="file" accept=".fountain,.txt,.json,.fdx" hidden />
         </section>
         <section class="panel asset-panel">
@@ -161,7 +170,7 @@ function bindEvents() {
 
   document.querySelector("#saveProject").addEventListener("click", () => {
     persist();
-    flash("已保存到浏览器本地存储");
+    flash("已保存到项目库");
   });
 
   document.querySelector("#snapshotProject").addEventListener("click", () => {
@@ -184,8 +193,9 @@ function bindEvents() {
   });
 
   document.querySelector("#newProject").addEventListener("click", () => {
-    studio.setProject(defaultProject);
+    studio.setProject({ ...defaultProject, id: `psw-${Date.now()}`, title: "未命名新剧本" });
     applyWorkbenchDefaults(defaultProject.writingType || "screenplay");
+    state.doctorReport = null;
     persist();
     render();
   });
@@ -196,6 +206,7 @@ function bindEvents() {
     if (!file) return;
     studio.importProject(await file.text());
     persist();
+    state.doctorReport = null;
     fileInput.value = "";
   });
 
@@ -203,6 +214,23 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelector("#projectFilter").addEventListener("input", (event) => {
+    state.projectFilter = event.target.value;
+    renderProjects();
+  });
+  document.querySelector("#projectList").addEventListener("click", (event) => {
+    const row = event.target.closest("[data-project-id]");
+    if (!row) return;
+    const projectId = row.dataset.projectId;
+    projectLibrary = event.target.closest(".delete-project") ? projectLibrary.delete(projectId) : projectLibrary.select(projectId).library;
+    const next = projectLibrary.select(projectLibrary.activeProjectId);
+    projectLibrary = next.library;
+    studio.setProject(next.project);
+    applyWorkbenchDefaults(next.project.writingType || "screenplay");
+    state.doctorReport = null;
+    persist();
+    render();
+  });
   document.querySelectorAll("[data-writing-type]").forEach((button) => {
     button.addEventListener("click", () => {
       const nextWritingType = button.dataset.writingType || "screenplay";
@@ -257,7 +285,28 @@ function renderDynamic() {
     .join("");
 
   renderAssets();
+  renderProjects();
   renderTab();
+}
+
+function renderProjects() {
+  const { project } = studio.getState();
+  const filter = state.projectFilter.trim().toLowerCase();
+  const projects = projectLibrary.projects.filter((item) => !filter || `${item.title} ${item.writingType}`.toLowerCase().includes(filter));
+  document.querySelector("#projectList").innerHTML = projects
+    .map((item) => {
+      const sceneCount = item.parsed?.scenes?.length || 0;
+      return `
+        <button class="project-row ${item.id === project.id ? "active" : ""}" data-project-id="${escapeHtml(item.id)}">
+          <span>
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.writingType || "screenplay")} · ${sceneCount} 场</small>
+          </span>
+          <span class="delete-project" title="删除">×</span>
+        </button>
+      `;
+    })
+    .join("");
 }
 
 function renderAssets() {
@@ -289,6 +338,17 @@ function renderAssets() {
       flash("已复制资料标识");
     });
   });
+}
+
+function renderDoctorReport(report) {
+  return `
+    <article>
+      <strong>${escapeHtml(report.summary)}</strong>
+      <ul>${report.findings.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      <div class="panel-title">下一步</div>
+      <ol>${report.nextActions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+    </article>
+  `;
 }
 
 function renderTab() {
@@ -381,9 +441,25 @@ function renderTab() {
           .join("")}
       </div>
       ${doctorMeta.footer}
+      <div class="doctor-actions">
+        <button id="runDoctor" class="button primary">一键生成诊断</button>
+        <button id="copyDoctor" class="button" ${state.doctorReport ? "" : "disabled"}>复制诊断</button>
+      </div>
+      <div id="doctorReport" class="doctor-report">
+        ${state.doctorReport ? renderDoctorReport(state.doctorReport) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
+      </div>
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
+    document.querySelector("#runDoctor").addEventListener("click", () => {
+      state.doctorReport = studio.generateScriptDoctorReport();
+      renderTab();
+    });
+    document.querySelector("#copyDoctor")?.addEventListener("click", async () => {
+      if (!state.doctorReport) return;
+      await navigator.clipboard?.writeText(state.doctorReport.markdown);
+      flash("诊断已复制");
+    });
     document.querySelector("#aiTask").addEventListener("input", (event) => {
       state.aiTask = event.target.value;
       renderTab();
@@ -817,7 +893,9 @@ function applyWorkbenchDefaults(writingType) {
 }
 
 function persist() {
+  projectLibrary = projectLibrary.save(studio.getState().project);
   localStorage.setItem(STORAGE_KEY, studio.exportJson());
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(projectLibrary));
 }
 
 function loadProject() {
@@ -826,6 +904,15 @@ function loadProject() {
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
+  }
+}
+
+function loadLibrary() {
+  try {
+    const raw = localStorage.getItem(LIBRARY_KEY);
+    return createPersonalScreenwriter().createProjectLibrary(raw ? JSON.parse(raw) : {});
+  } catch {
+    return createPersonalScreenwriter().createProjectLibrary();
   }
 }
 

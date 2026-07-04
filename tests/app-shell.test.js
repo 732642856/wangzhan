@@ -18,6 +18,9 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "Props",
     "Beats",
     "Assets",
+    "project-list",
+    "一键生成诊断",
+    "doctor-report",
   ]) {
     assert.match(`${appSource}\n${stylesSource}`, new RegExp(token));
   }

@@ -736,6 +736,85 @@ export function summarizeProject(project) {
   };
 }
 
+export function createProjectLibrary(input = {}) {
+  const projects = (Array.isArray(input.projects) ? input.projects : [])
+    .map((project) => createProject(project))
+    .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  const activeProjectId = input.activeProjectId || projects[0]?.id || "";
+
+  return {
+    schema: "personal-screenwriter.library.v1",
+    activeProjectId,
+    projects,
+    save(project) {
+      const nextProject = createProject(project);
+      return createProjectLibrary({
+        activeProjectId: nextProject.id,
+        projects: [nextProject, ...projects.filter((item) => item.id !== nextProject.id)],
+      });
+    },
+    select(projectId) {
+      const project = projects.find((item) => item.id === projectId) || projects[0] || createProject();
+      return { library: createProjectLibrary({ activeProjectId: project.id, projects }), project };
+    },
+    delete(projectId) {
+      const nextProjects = projects.filter((item) => item.id !== projectId);
+      return createProjectLibrary({ activeProjectId: nextProjects[0]?.id || "", projects: nextProjects });
+    },
+  };
+}
+
+export function generateScriptDoctorReport(project) {
+  const current = createProject(project);
+  const summary = summarizeProject(current);
+  const scenes = current.parsed.scenes;
+  const characterNames = [
+    ...new Set([
+      ...current.parsed.characters.map((item) => item.name),
+      ...(current.bible.characters || []).map((item) => item.name).filter(Boolean),
+    ]),
+  ];
+  const findings = [
+    scenes.length < 3
+      ? "结构偏短：当前场次数少，建议补出开场钩子、转折场和结尾选择。"
+      : `结构已成形：${scenes.length} 场可以先按开场、推进、转折、结尾标注功能。`,
+    characterNames.length < 2
+      ? "人物压力不足：至少补一个会阻碍主角目标的人物。"
+      : `人物线索可用：已识别 ${characterNames.length} 个角色，下一步检查每人目标和代价。`,
+    summary.locationCount < 2
+      ? "空间变化不足：地点单一时，要用人物关系或信息差制造段落变化。"
+      : `地点有变化：${summary.locationCount} 个地点可承担调查、对抗或转折功能。`,
+    current.parsed.blocks.filter((block) => block.type === "dialogue").length < scenes.length
+      ? "对白密度偏低：每场至少补一处人物用语言争取、试探或回避的动作。"
+      : "对白可诊断：优先删解释性台词，把信息改成冲突、动作或沉默。",
+  ];
+  const nextActions = [
+    "给每场写一句功能：这场改变了什么信息、关系或行动方向。",
+    "给主要人物补目标、恐惧、误信念、代价四项。",
+    "挑最弱一场重写：入场目标、阻碍、突转、离场变化必须清楚。",
+  ];
+  const markdown = [
+    `# Script Doctor · ${summary.title}`,
+    "",
+    `概览：${summary.sceneCount} 场 / ${summary.characterCount} 人物 / ${summary.locationCount} 地点 / ${summary.wordCount} 字`,
+    "",
+    "## 诊断",
+    ...findings.map((item) => `- ${item}`),
+    "",
+    "## 下一步",
+    ...nextActions.map((item) => `- ${item}`),
+  ].join("\n");
+
+  return {
+    title: summary.title,
+    summary: `${summary.sceneCount} 场，${summary.characterCount} 人物，${summary.locationCount} 地点，约 ${summary.estimatedMinutes} 分钟。`,
+    metrics: summary,
+    findings,
+    nextActions,
+    markdown,
+  };
+}
+
 export function buildStoryExplorer(project) {
   const current = createProject(project);
   const scenes = current.parsed.scenes.length
