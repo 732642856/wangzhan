@@ -4,6 +4,7 @@ import {
   buildBreakdownBoard,
   buildDeliveryPacket,
   buildProjectCatalog,
+  buildTextQualityReport,
   buildVisualDevelopmentPack,
   buildStoryExplorer,
   checkInVersion,
@@ -63,6 +64,9 @@ export function createPersonalScreenwriter(options = {}) {
     },
     buildVisualDevelopmentPack(project = getState().project) {
       return buildVisualDevelopmentPack(project);
+    },
+    buildTextQualityReport(project = getState().project) {
+      return buildTextQualityReport(project);
     },
     createProjectLibrary,
     importProjectLibrary,

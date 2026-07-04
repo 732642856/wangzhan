@@ -49,6 +49,7 @@ const state = {
   aiTask: defaultWorkbench.aiTask,
   doctorReport: null,
   rewriteDraft: null,
+  textQualityReport: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
@@ -498,6 +499,8 @@ function renderTab() {
       <div class="doctor-actions">
         <button id="runDoctor" class="button primary">一键生成诊断</button>
         <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
+        <button id="runQuality" class="button">生成质检</button>
+        <button id="copyQuality" class="button" ${state.textQualityReport ? "" : "disabled"}>复制质检</button>
         <button id="copyDelivery" class="button">复制交付包</button>
         <button id="downloadDelivery" class="button">下载交付包</button>
       </div>
@@ -520,6 +523,21 @@ function renderTab() {
           `
           : ""
       }
+      ${
+        state.textQualityReport
+          ? `
+            <div class="rewrite-draft text-quality-report">
+              <div class="section-head">
+                <div>
+                  <small>Text Quality Report</small>
+                  <strong>${escapeHtml(state.textQualityReport.title)}</strong>
+                </div>
+              </div>
+              <textarea class="prompt-output" readonly>${escapeHtml(state.textQualityReport.markdown)}</textarea>
+            </div>
+          `
+          : ""
+      }
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
@@ -533,6 +551,16 @@ function renderTab() {
       if (!report) return;
       await navigator.clipboard?.writeText(report.markdown);
       flash("诊断已复制");
+    });
+    document.querySelector("#runQuality")?.addEventListener("click", () => {
+      state.textQualityReport = studio.buildTextQualityReport();
+      flash("文本质检已生成");
+      renderTab();
+    });
+    document.querySelector("#copyQuality")?.addEventListener("click", async () => {
+      if (!state.textQualityReport) return;
+      await navigator.clipboard?.writeText(state.textQualityReport.markdown);
+      flash("质检已复制");
     });
     document.querySelector("#copyDelivery")?.addEventListener("click", async () => {
       const delivery = studio.buildDeliveryPacket();

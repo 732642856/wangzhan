@@ -7,6 +7,7 @@ import {
   buildBreakdownBoard,
   buildDeliveryPacket,
   buildProjectCatalog,
+  buildTextQualityReport,
   buildVisualDevelopmentPack,
   createProjectLibrary,
   compareVersions,
@@ -956,6 +957,28 @@ INT. 档案室 - NIGHT
   assert.match(packet.markdown, /## Rewrite Draft/);
   assert.match(packet.markdown, /## Relationship Board/);
   assert.match(packet.markdown, /钥匙在哪里/);
+});
+
+test("text quality report summarizes scene function arcs dialogue and priorities", () => {
+  const project = createProject({
+    title: "质检稿",
+    fountain: `Title: 质检稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: { characters: [{ name: "侦探", goal: "找到出口" }] },
+  });
+  const report = buildTextQualityReport(project);
+
+  assert.equal(report.title, "质检稿 · Text Quality Report");
+  assert.equal(report.sceneFunctions[0].heading, "INT. 档案室 - NIGHT");
+  assert.equal(report.characterArcs.some((item) => item.name === "侦探"), true);
+  assert.equal(report.dialogueIssues.length > 0, true);
+  assert.equal(report.rewritePriorities.length >= 3, true);
+  assert.match(report.markdown, /## 场景功能表/);
+  assert.match(report.markdown, /## 对白问题清单/);
 });
 
 test("visual development pack turns script objects into production prompts", () => {

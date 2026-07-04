@@ -893,6 +893,44 @@ export function generateScriptDoctorReport(project) {
   };
 }
 
+export function buildTextQualityReport(project) {
+  const current = createProject(project);
+  const board = buildBreakdownBoard(current);
+  const catalog = buildProjectCatalog(current);
+  const dialogueBlocks = current.parsed.blocks.filter((block) => block.type === "dialogue");
+  const sceneFunctions = board.scenes.map((scene) => ({
+    id: scene.id,
+    heading: scene.heading,
+    function: scene.characters.length ? "检查本场如何改变信息、关系或行动方向。" : "需补明确出场人物和行动压力。",
+  }));
+  const characterArcs = catalog.Characters.map((item) => ({
+    name: item.name,
+    arc: item.goal ? `目标：${item.goal}` : "需补目标、恐惧、误信念和代价。",
+  }));
+  const dialogueIssues = dialogueBlocks.map((block) => ({
+    character: block.character || "未标人物",
+    text: block.text,
+    issue: "检查这句对白是否在争取、试探、回避或反击。",
+  }));
+  const rewritePriorities = generateScriptDoctorReport(current).nextActions;
+  const markdown = [
+    `# ${current.title} · Text Quality Report`,
+    "",
+    "## 场景功能表",
+    ...sceneFunctions.map((item) => `- ${item.heading}：${item.function}`),
+    "",
+    "## 人物弧光",
+    ...characterArcs.map((item) => `- ${item.name}：${item.arc}`),
+    "",
+    "## 对白问题清单",
+    ...(dialogueIssues.length ? dialogueIssues.map((item) => `- ${item.character}：${item.text}｜${item.issue}`) : ["- 暂无对白，优先补行动性对白。"]),
+    "",
+    "## 改写优先级",
+    ...rewritePriorities.map((item) => `- ${item}`),
+  ].join("\n");
+  return { title: `${current.title} · Text Quality Report`, sceneFunctions, characterArcs, dialogueIssues, rewritePriorities, markdown };
+}
+
 export function updateDoctorAction(project, actionId, patch = {}) {
   const current = createProject(project);
   return createProject({
