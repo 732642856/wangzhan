@@ -595,7 +595,7 @@ export function createProject(input = {}) {
     id: input.id || `psw-${Date.now()}`,
     writingType,
     title,
-    updatedAt: new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
     fountain,
     screenplayDoc,
     parsed,
@@ -732,9 +732,31 @@ export function summarizeProject(project) {
     sceneCount: parsed.scenes.length,
     characterCount: new Set([...parsedCharacters, ...bibleCharacters]).size,
     locationCount: locations.size,
+    beatCount: parsed.blocks.filter((block) => block.type === "dialogue" || block.type === "action").length,
+    frameCount: project.shotPlan?.shots?.length || 0,
+    relationCount: parsed.characters.reduce((sum, character) => sum + character.scenes.length, 0) + bibleCharacters.length * Math.max(1, parsed.scenes.length),
     wordCount: words.length,
     estimatedMinutes: Math.max(1, Math.round(words.length / 180)),
     updatedAt: project.updatedAt || "",
+  };
+}
+
+export function buildProjectCatalog(project) {
+  const current = createProject(project);
+  const sceneLocations = current.parsed.scenes.map((scene) => scene.location).filter(Boolean);
+  const locations = [
+    ...current.bible.locations,
+    ...sceneLocations.map((name) => ({ name, notes: "剧本场景" })),
+  ].filter((item, index, list) => item.name && list.findIndex((next) => next.name === item.name) === index);
+  return {
+    Scenes: current.parsed.scenes.map((scene) => ({ id: scene.id, name: scene.heading, notes: scene.synopsis || scene.time || "" })),
+    Characters: [
+      ...current.parsed.characters.map((character) => ({ name: character.name, notes: `${character.scenes.length} 场` })),
+      ...current.bible.characters,
+    ].filter((item, index, list) => item.name && list.findIndex((next) => next.name === item.name) === index),
+    Props: current.bible.props,
+    Locations: locations,
+    Assets: current.assets,
   };
 }
 
@@ -749,7 +771,7 @@ export function createProjectLibrary(input = {}) {
     activeProjectId,
     projects,
     save(project) {
-      const nextProject = createProject(project);
+      const nextProject = createProject({ ...project, updatedAt: new Date().toISOString() });
       return createProjectLibrary({
         activeProjectId: nextProject.id,
         projects: [nextProject, ...projects.filter((item) => item.id !== nextProject.id)],

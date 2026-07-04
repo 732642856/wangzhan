@@ -1,6 +1,7 @@
 import {
   addShotPlanShot,
   buildAiPacket,
+  buildProjectCatalog,
   buildStoryExplorer,
   checkInVersion,
   compareVersions,
@@ -45,6 +46,9 @@ export function createPersonalScreenwriter(options = {}) {
 
   return {
     getState,
+    buildProjectCatalog(project = getState().project) {
+      return buildProjectCatalog(project);
+    },
     createProjectLibrary,
     generateScriptDoctorReport(project = getState().project) {
       return generateScriptDoctorReport(project);

@@ -275,11 +275,12 @@ function renderDynamic() {
   }
 
   document.querySelector("#statsGrid").innerHTML = [
-    ["场", summary.sceneCount],
-    ["人物", summary.characterCount],
-    ["地点", summary.locationCount],
-    ["字", summary.wordCount],
-    ["分钟", summary.estimatedMinutes],
+    ["Scenes", summary.sceneCount],
+    ["Characters", summary.characterCount],
+    ["Locations", summary.locationCount],
+    ["Beats", summary.beatCount],
+    ["Frames", summary.frameCount],
+    ["Relations", summary.relationCount],
   ]
     .map(([label, value]) => `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`)
     .join("");
@@ -312,24 +313,28 @@ function renderProjects() {
 function renderAssets() {
   const { project } = studio.getState();
   const filter = state.assetFilter.trim().toLowerCase();
-  const assets = [...(project.assets || []), ...localAssetSeeds]
+  const catalog = studio.buildProjectCatalog(project);
+  catalog.Assets = [...catalog.Assets, ...localAssetSeeds]
     .filter((asset, index, list) => list.findIndex((item) => item.path === asset.path) === index)
-    .filter((asset) => {
-      if (!filter) return true;
-      return `${asset.label} ${asset.path} ${asset.family} ${asset.category}`.toLowerCase().includes(filter);
+    .slice(0, 40);
+  const groups = ["Scenes", "Characters", "Props", "Locations", "Assets"];
+  const total = groups.reduce((sum, group) => sum + catalog[group].length, 0);
+  document.querySelector("#assetCount").textContent = `${total}`;
+  document.querySelector("#assetList").innerHTML = groups
+    .map((group) => {
+      const items = catalog[group].filter((item) => !filter || `${item.name || item.label} ${item.notes || ""} ${item.path || ""}`.toLowerCase().includes(filter)).slice(0, 18);
+      return `
+        <div class="asset-group">
+          <div class="asset-group-title">${group}<span>${items.length}</span></div>
+          ${items.map((item) => `
+            <button class="asset" data-path="${escapeHtml(item.path || item.name || item.label || "")}">
+              <span>${escapeHtml(item.name || item.label || "未命名")}</span>
+              <small>${escapeHtml(item.notes || item.path || item.category || group)}</small>
+            </button>
+          `).join("")}
+        </div>
+      `;
     })
-    .slice(0, 80);
-
-  document.querySelector("#assetCount").textContent = `${assets.length}`;
-  document.querySelector("#assetList").innerHTML = assets
-    .map(
-      (asset) => `
-        <button class="asset" data-path="${escapeHtml(asset.path)}">
-          <span>${escapeHtml(asset.label)}</span>
-          <small>${escapeHtml(asset.family)} · ${escapeHtml(asset.category)}</small>
-        </button>
-      `,
-    )
     .join("");
 
   document.querySelectorAll(".asset").forEach((button) => {

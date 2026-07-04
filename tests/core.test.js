@@ -4,6 +4,7 @@ import { Compiler } from "inkjs/compiler/Compiler";
 
 import {
   buildAiPacket,
+  buildProjectCatalog,
   createProjectLibrary,
   compareVersions,
   checkInVersion,
@@ -895,6 +896,36 @@ test("doctor actions persist on projects and can be checked off", () => {
   assert.equal(project.doctorActions.length, 1);
   assert.equal(updated.doctorActions[0].done, true);
   assert.equal(updated.doctorActions[0].text, "补人物代价");
+});
+
+test("project catalog exposes Laper-style object groups and richer script data", () => {
+  const project = createProject({
+    title: "对象稿",
+    fountain: `INT. 档案室 - NIGHT
+侦探
+线索被藏在钥匙里。
+EXT. 天台 - DAWN
+导演
+钥匙打开了门。`,
+    bible: {
+      characters: [{ name: "侦探", role: "主角" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+      locations: [{ name: "天台", notes: "结尾地点" }],
+    },
+    assets: [{ label: "参考图", path: "assets/ref.png", family: "Assets", category: "image" }],
+    shotPlan: { shots: [{ id: "s1", shotNumber: 1, shotSize: "MS" }] },
+  });
+  const catalog = buildProjectCatalog(project);
+  const summary = summarizeProject(project);
+
+  assert.equal(catalog.Scenes.length, 2);
+  assert.equal(catalog.Characters.some((item) => item.name === "侦探"), true);
+  assert.equal(catalog.Props.some((item) => item.name === "钥匙"), true);
+  assert.equal(catalog.Locations.some((item) => item.name === "天台"), true);
+  assert.equal(catalog.Assets.length, 1);
+  assert.equal(summary.beatCount, 4);
+  assert.equal(summary.frameCount, 1);
+  assert.equal(summary.relationCount >= 2, true);
 });
 
 test("literary-screenplay config exposes adaptation workbench signals", () => {
