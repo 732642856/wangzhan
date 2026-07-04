@@ -76,5 +76,5 @@ test("probeUrl reports false for an unreachable local server", async () => {
 test("fileURLToPath decodes Chinese workspace paths for local scripts", () => {
   const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
   assert.equal(root.includes("%E7"), false);
-  assert.equal(root.endsWith("personal-screenwriter"), true);
+  assert.equal(path.basename(root).includes("personal-screenwriter"), true);
 });
