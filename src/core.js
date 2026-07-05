@@ -588,13 +588,14 @@ export function createProject(input = {}) {
   const tagCategories = normalizeTagCategories(input.tagCategories);
   const tagFieldMappings = normalizeTagFieldMappings(input.tagFieldMappings);
   const tags = normalizeTags(input.tags);
+  const doctorActions = normalizeDoctorActions(input.doctorActions);
 
   return {
     schema: "personal-screenwriter.project.v1",
     id: input.id || `psw-${Date.now()}`,
     writingType,
     title,
-    updatedAt: new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
     fountain,
     screenplayDoc,
     parsed,
@@ -604,6 +605,7 @@ export function createProject(input = {}) {
     tagCategories,
     tagFieldMappings,
     tags,
+    doctorActions,
     assets: Array.isArray(input.assets) ? input.assets : [],
     versions: Array.isArray(input.versions) ? input.versions : [],
     shotPlan,
@@ -730,10 +732,317 @@ export function summarizeProject(project) {
     sceneCount: parsed.scenes.length,
     characterCount: new Set([...parsedCharacters, ...bibleCharacters]).size,
     locationCount: locations.size,
+    beatCount: parsed.blocks.filter((block) => block.type === "dialogue" || block.type === "action").length,
+    frameCount: project.shotPlan?.shots?.length || 0,
+    relationCount: parsed.characters.reduce((sum, character) => sum + character.scenes.length, 0) + bibleCharacters.length * Math.max(1, parsed.scenes.length),
     wordCount: words.length,
     estimatedMinutes: Math.max(1, Math.round(words.length / 180)),
     updatedAt: project.updatedAt || "",
   };
+}
+
+export function buildProjectCatalog(project) {
+  const current = createProject(project);
+  const sceneLocations = current.parsed.scenes.map((scene) => scene.location).filter(Boolean);
+  const locations = [
+    ...current.bible.locations,
+    ...sceneLocations.map((name) => ({ name, notes: "剧本场景" })),
+  ].filter((item, index, list) => item.name && list.findIndex((next) => next.name === item.name) === index);
+  return {
+    Scenes: current.parsed.scenes.map((scene) => ({ id: scene.id, name: scene.heading, notes: scene.synopsis || scene.time || "" })),
+    Characters: [
+      ...current.parsed.characters.map((character) => ({ name: character.name, notes: `${character.scenes.length} 场` })),
+      ...current.bible.characters,
+    ].filter((item, index, list) => item.name && list.findIndex((next) => next.name === item.name) === index),
+    Props: current.bible.props,
+    Locations: locations,
+    Assets: current.assets,
+  };
+}
+
+export function buildBreakdownBoard(project) {
+  const current = createProject(project);
+  const blocksByScene = groupBlocksByScene(current.parsed.blocks);
+  const charactersByScene = current.parsed.characters.reduce((map, character) => {
+    for (const sceneId of character.scenes) {
+      map.set(sceneId, [...(map.get(sceneId) || []), character.name]);
+    }
+    return map;
+  }, new Map());
+  const catalog = buildProjectCatalog(current);
+  const relationships = buildStoryExplorer(current).relationships;
+
+  return {
+    catalog,
+    relationships,
+    scenes: current.parsed.scenes.map((scene, index) => {
+      const blocks = blocksByScene.get(scene.id) || [];
+      return {
+        id: scene.id,
+        index: index + 1,
+        heading: scene.heading,
+        location: scene.location,
+        time: scene.time,
+        characters: charactersByScene.get(scene.id) || [],
+        beatCount: blocks.filter((block) => block.type === "dialogue" || block.type === "action").length,
+      };
+    }),
+  };
+}
+
+export function createProjectLibrary(input = {}) {
+  const projects = (Array.isArray(input.projects) ? input.projects : [])
+    .map((project) => createProject(project))
+    .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  const activeProjectId = input.activeProjectId || projects[0]?.id || "";
+
+  return {
+    schema: "personal-screenwriter.library.v1",
+    activeProjectId,
+    projects,
+    save(project) {
+      const nextProject = createProject({ ...project, updatedAt: new Date().toISOString() });
+      return createProjectLibrary({
+        activeProjectId: nextProject.id,
+        projects: [nextProject, ...projects.filter((item) => item.id !== nextProject.id)],
+      });
+    },
+    select(projectId) {
+      const project = projects.find((item) => item.id === projectId) || projects[0] || createProject();
+      return { library: createProjectLibrary({ activeProjectId: project.id, projects }), project };
+    },
+    delete(projectId) {
+      const nextProjects = projects.filter((item) => item.id !== projectId);
+      return createProjectLibrary({ activeProjectId: nextProjects[0]?.id || "", projects: nextProjects });
+    },
+  };
+}
+
+export function serializeProjectLibrary(library) {
+  const current = createProjectLibrary(library);
+  return JSON.stringify({
+    schema: current.schema,
+    activeProjectId: current.activeProjectId,
+    projects: current.projects,
+  }, null, 2);
+}
+
+export function importProjectLibrary(text) {
+  const data = typeof text === "string" ? JSON.parse(text) : text;
+  if (data?.schema !== "personal-screenwriter.library.v1") {
+    throw new Error("Invalid project library file");
+  }
+  return createProjectLibrary(data);
+}
+
+export function generateScriptDoctorReport(project) {
+  const current = createProject(project);
+  const summary = summarizeProject(current);
+  const scenes = current.parsed.scenes;
+  const characterNames = [
+    ...new Set([
+      ...current.parsed.characters.map((item) => item.name),
+      ...(current.bible.characters || []).map((item) => item.name).filter(Boolean),
+    ]),
+  ];
+  const findings = [
+    scenes.length < 3
+      ? "结构偏短：当前场次数少，建议补出开场钩子、转折场和结尾选择。"
+      : `结构已成形：${scenes.length} 场可以先按开场、推进、转折、结尾标注功能。`,
+    characterNames.length < 2
+      ? "人物压力不足：至少补一个会阻碍主角目标的人物。"
+      : `人物线索可用：已识别 ${characterNames.length} 个角色，下一步检查每人目标和代价。`,
+    summary.locationCount < 2
+      ? "空间变化不足：地点单一时，要用人物关系或信息差制造段落变化。"
+      : `地点有变化：${summary.locationCount} 个地点可承担调查、对抗或转折功能。`,
+    current.parsed.blocks.filter((block) => block.type === "dialogue").length < scenes.length
+      ? "对白密度偏低：每场至少补一处人物用语言争取、试探或回避的动作。"
+      : "对白可诊断：优先删解释性台词，把信息改成冲突、动作或沉默。",
+  ];
+  const nextActions = [
+    "给每场写一句功能：这场改变了什么信息、关系或行动方向。",
+    "给主要人物补目标、恐惧、误信念、代价四项。",
+    "挑最弱一场重写：入场目标、阻碍、突转、离场变化必须清楚。",
+  ];
+  const actions = nextActions.map((text, index) => ({
+    id: `doctor-action-${index + 1}`,
+    text,
+    prompt: `请处理这个剧本诊断任务：${text}\n\n项目：${summary.title}\n概览：${summary.sceneCount} 场 / ${summary.characterCount} 人物 / ${summary.locationCount} 地点。`,
+    done: false,
+  }));
+  const markdown = [
+    `# Script Doctor · ${summary.title}`,
+    "",
+    `概览：${summary.sceneCount} 场 / ${summary.characterCount} 人物 / ${summary.locationCount} 地点 / ${summary.wordCount} 字`,
+    "",
+    "## 诊断",
+    ...findings.map((item) => `- ${item}`),
+    "",
+    "## 下一步",
+    ...nextActions.map((item) => `- ${item}`),
+  ].join("\n");
+
+  return {
+    title: summary.title,
+    summary: `${summary.sceneCount} 场，${summary.characterCount} 人物，${summary.locationCount} 地点，约 ${summary.estimatedMinutes} 分钟。`,
+    metrics: summary,
+    findings,
+    nextActions,
+    actions,
+    markdown,
+  };
+}
+
+export function buildTextQualityReport(project) {
+  const current = createProject(project);
+  const board = buildBreakdownBoard(current);
+  const catalog = buildProjectCatalog(current);
+  const dialogueBlocks = current.parsed.blocks.filter((block) => block.type === "dialogue");
+  const sceneFunctions = board.scenes.map((scene) => ({
+    id: scene.id,
+    heading: scene.heading,
+    function: scene.characters.length ? "检查本场如何改变信息、关系或行动方向。" : "需补明确出场人物和行动压力。",
+  }));
+  const characterArcs = catalog.Characters.map((item) => ({
+    name: item.name,
+    arc: item.goal ? `目标：${item.goal}` : "需补目标、恐惧、误信念和代价。",
+  }));
+  const dialogueIssues = dialogueBlocks.map((block) => ({
+    character: block.character || "未标人物",
+    text: block.text,
+    issue: "检查这句对白是否在争取、试探、回避或反击。",
+  }));
+  const rewritePriorities = generateScriptDoctorReport(current).nextActions;
+  const markdown = [
+    `# ${current.title} · Text Quality Report`,
+    "",
+    "## 场景功能表",
+    ...sceneFunctions.map((item) => `- ${item.heading}：${item.function}`),
+    "",
+    "## 人物弧光",
+    ...characterArcs.map((item) => `- ${item.name}：${item.arc}`),
+    "",
+    "## 对白问题清单",
+    ...(dialogueIssues.length ? dialogueIssues.map((item) => `- ${item.character}：${item.text}｜${item.issue}`) : ["- 暂无对白，优先补行动性对白。"]),
+    "",
+    "## 改写优先级",
+    ...rewritePriorities.map((item) => `- ${item}`),
+  ].join("\n");
+  return { title: `${current.title} · Text Quality Report`, sceneFunctions, characterArcs, dialogueIssues, rewritePriorities, markdown };
+}
+
+export function buildWritingControlReport(project) {
+  const current = createProject(project);
+  const status = summarizeProject(current);
+  const doctor = generateScriptDoctorReport(current);
+  const quality = buildTextQualityReport(current);
+  const nextTask = doctor.actions[0]?.prompt || buildAiPacket(current).prompt;
+  const markdown = [
+    `# ${current.title} · Writing Control`,
+    "",
+    "## 当前状态",
+    `- ${status.sceneCount} 场 / ${status.characterCount} 人物 / ${status.locationCount} 地点 / ${status.wordCount} 字`,
+    "",
+    "## Script Doctor",
+    ...doctor.findings.map((item) => `- ${item}`),
+    "",
+    "## 文本质检",
+    ...quality.rewritePriorities.map((item) => `- ${item}`),
+    "",
+    "## 下一步任务",
+    nextTask,
+  ].join("\n");
+  return { title: `${current.title} · Writing Control`, status, doctor, quality, nextTask, markdown };
+}
+
+export function updateDoctorAction(project, actionId, patch = {}) {
+  const current = createProject(project);
+  return createProject({
+    ...current,
+    doctorActions: (current.doctorActions || []).map((action) => (
+      action.id === actionId ? { ...action, ...patch } : action
+    )),
+  });
+}
+
+export function generateRewriteDraft(project, action = {}) {
+  const current = createProject(project);
+  const board = buildBreakdownBoard(current);
+  const scene = board.scenes[0] || { heading: current.title, characters: [], id: "" };
+  const passage = buildStoryExplorer(current).passages.find((item) => item.id === scene.id) || { text: current.fountain || "" };
+  const assets = [...board.catalog.Props, ...board.catalog.Locations]
+    .map((item) => item.name)
+    .filter(Boolean)
+    .slice(0, 8);
+  const goal = action.text || generateScriptDoctorReport(current).nextActions[0];
+  const prompt = [
+    `请改写《${current.title}》中的场景：${scene.heading}`,
+    `诊断任务：${goal}`,
+    scene.characters.length ? `保留人物：${scene.characters.join("、")}` : "",
+    assets.length ? `保留/强化对象：${assets.join("、")}` : "",
+    "要求：只输出改写后的 Fountain 场景，保留可拍动作，用对白推动关系变化。",
+    "",
+    "原场景：",
+    passage.text,
+  ].filter(Boolean).join("\n");
+
+  return {
+    title: `${current.title} · 改写草案`,
+    scene,
+    characters: scene.characters,
+    assets,
+    action: goal,
+    prompt,
+  };
+}
+
+export function buildDeliveryPacket(project) {
+  const current = createProject(project);
+  const report = generateScriptDoctorReport(current);
+  const draft = generateRewriteDraft(current, report.actions[0]);
+  const board = buildBreakdownBoard(current);
+  const edges = board.relationships.edges.map((edge) => `- ${edge.source} -> ${edge.target}`).join("\n") || "- 暂无关系线";
+  const markdown = [
+    `# ${current.title} · Delivery Packet`,
+    "",
+    "## Script Doctor",
+    report.markdown,
+    "",
+    "## Rewrite Draft",
+    draft.prompt,
+    "",
+    "## Relationship Board",
+    edges,
+    "",
+    "## Script",
+    "```fountain",
+    current.fountain || exportFountain(current),
+    "```",
+  ].join("\n");
+  return {
+    filename: `${current.title || "screenwriter"}-delivery.md`,
+    markdown,
+  };
+}
+
+export function buildVisualDevelopmentPack(project) {
+  const current = createProject(project);
+  const catalog = buildProjectCatalog(current);
+  const board = buildBreakdownBoard(current);
+  const shots = generateShotPlan(current).shotPlan.shots.slice(0, 6);
+  const assets = [
+    ...catalog.Characters.map((item) => visualAsset("Character Portrait", item.name, `${item.role || ""} ${item.goal || item.notes || ""}`)),
+    ...catalog.Locations.map((item) => visualAsset("Scene Still", item.name, item.notes || "cinematic location reference")),
+    ...catalog.Props.map((item) => visualAsset("Prop Detail", item.name, item.notes || "hero prop close-up")),
+    ...board.scenes.slice(0, 6).map((scene) => visualAsset("Scene Keyframe", scene.heading, `${scene.location || ""} ${scene.characters.join("、")}`)),
+    ...shots.map((shot) => visualAsset("Storyboard Frame", `${shot.shotNumber}. ${shot.sceneHeading}`, `${shot.shotSize} ${shot.camera} ${shot.action}`)),
+  ].filter((asset) => asset.name);
+  const markdown = [
+    `# ${current.title} · Visual Development Pack`,
+    "",
+    ...assets.map((asset) => `## ${asset.type} · ${asset.name}\n${asset.prompt}`),
+  ].join("\n\n");
+  return { title: `${current.title} · Visual Development Pack`, assets, markdown };
 }
 
 export function buildStoryExplorer(project) {
@@ -1163,6 +1472,17 @@ function normalizeTags(tags = []) {
     : [];
 }
 
+function normalizeDoctorActions(actions = []) {
+  return Array.isArray(actions)
+    ? actions.map((action, index) => ({
+        id: action.id || `doctor-action-${index + 1}`,
+        text: action.text || "",
+        prompt: action.prompt || action.text || "",
+        done: Boolean(action.done),
+      }))
+    : [];
+}
+
 function createShotPlanRow(scene, index) {
   return {
     id: `shot-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -1339,6 +1659,14 @@ function groupBlocksByScene(blocks = []) {
     grouped.set(sceneId, [...(grouped.get(sceneId) || []), block]);
   }
   return grouped;
+}
+
+function visualAsset(type, name, notes = "") {
+  return {
+    type,
+    name,
+    prompt: `${type}: ${name}. ${notes} cinematic visual reference, consistent production design, script-grounded details.`,
+  };
 }
 
 function blockToFdxType(type) {

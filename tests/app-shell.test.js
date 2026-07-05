@@ -1,0 +1,61 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+const appSource = readFileSync(new URL("../src/app.js", import.meta.url), "utf8");
+const stylesSource = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
+const viteConfigSource = readFileSync(new URL("../vite.config.js", import.meta.url), "utf8");
+
+test("M1 shell exposes a Laper-style professional workbench", () => {
+  for (const token of [
+    "professional-shell",
+    "project-database",
+    "script-doctor",
+    "剧本数据库",
+    "Script Doctor",
+    "Characters",
+    "Locations",
+    "Props",
+    "Beats",
+    "Frames",
+    "Relations",
+    "Assets",
+    "复制视觉包",
+    "下载视觉包",
+    "project-list",
+    "导入库",
+    "导出库",
+    "一键生成诊断",
+    "生成质检",
+    "Text Quality Report",
+    "text-quality-report",
+    "生成总控",
+    "workspace-status",
+    "ux-command-bar",
+    "工作流总控",
+    "主线动作",
+    "screenplayHost.root !== root",
+    "Writing Control",
+    "writing-control-report",
+    "report-card-grid",
+    "control-next-task",
+    "copyable-report",
+    "doctor-report",
+    "doctor-action-list",
+    "发送到任务",
+    "生成草案",
+    "Rewrite draft",
+    "rewrite-draft",
+    "复制交付包",
+    "下载交付包",
+    "Breakdown board",
+    "关系墙",
+    "breakdown-card",
+  ]) {
+    assert.match(`${appSource}\n${stylesSource}`, new RegExp(token));
+  }
+});
+
+test("GitHub Pages build uses relative asset URLs", () => {
+  assert.match(viteConfigSource, /base:\s*["']\.\//);
+});

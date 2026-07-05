@@ -4,6 +4,13 @@ import { Compiler } from "inkjs/compiler/Compiler";
 
 import {
   buildAiPacket,
+  buildBreakdownBoard,
+  buildDeliveryPacket,
+  buildProjectCatalog,
+  buildTextQualityReport,
+  buildVisualDevelopmentPack,
+  buildWritingControlReport,
+  createProjectLibrary,
   compareVersions,
   checkInVersion,
   createVersionSnapshot,
@@ -12,16 +19,21 @@ import {
   exportFdx,
   exportFountain,
   extractAssetSeeds,
+  importProjectLibrary,
   generateShotPlan,
+  generateRewriteDraft,
+  updateDoctorAction,
   getAiTaskPresets,
   getWritingWorkbenchDefaults,
   getWritingTypeConfig,
+  generateScriptDoctorReport,
   getWorkflowPresets,
   getKnowledgeTemplates,
   buildStoryExplorer,
   addShotPlanShot,
   parseFountain,
   restoreVersion,
+  serializeProjectLibrary,
   summarizeProject,
   summarizeShotPlan,
   updateShotPlanShot,
@@ -837,6 +849,256 @@ test("writing workbench defaults switch task, templates and workflows by writing
   assert.equal(screenplay.selectedTemplateIds.includes("scene-function"), true);
   assert.match(literary.aiTask, /文学剧本/);
   assert.match(screenplay.aiTask, /剧本医生/);
+});
+
+test("project library stores, lists, selects and deletes local projects", () => {
+  const first = createProject({ id: "p1", title: "第一稿", fountain: "INT. 房间 - NIGHT\n甲\n你好。" });
+  const second = createProject({ id: "p2", title: "第二稿", fountain: "EXT. 天台 - DAY\n乙\n走吧。" });
+  const library = createProjectLibrary({ projects: [first] });
+  const saved = createProjectLibrary(library).save(second);
+  const selected = createProjectLibrary(saved).select("p2");
+  const deleted = createProjectLibrary(selected.library).delete("p2");
+
+  assert.equal(saved.projects.length, 2);
+  assert.equal(saved.projects[0].id, "p2");
+  assert.equal(selected.project.title, "第二稿");
+  assert.equal(deleted.activeProjectId, "p1");
+  assert.equal(deleted.projects.length, 1);
+});
+
+test("project library can round-trip as a portable json bundle", () => {
+  const first = createProject({ id: "p1", title: "第一稿", fountain: "Title: 第一稿" });
+  const second = createProject({
+    id: "p2",
+    title: "第二稿",
+    fountain: "Title: 第二稿",
+    doctorActions: [{ id: "a1", text: "改场次", done: true }],
+  });
+  const library = createProjectLibrary({ activeProjectId: "p2", projects: [first, second] });
+  const restored = importProjectLibrary(serializeProjectLibrary(library));
+
+  assert.equal(restored.schema, "personal-screenwriter.library.v1");
+  assert.equal(restored.activeProjectId, "p2");
+  assert.deepEqual(restored.projects.map((project) => project.id).sort(), ["p1", "p2"]);
+  assert.equal(restored.select("p2").project.doctorActions[0].done, true);
+});
+
+test("script doctor report turns project data into actionable diagnosis", () => {
+  const project = createProject({
+    title: "诊断稿",
+    fountain: `INT. 档案室 - NIGHT
+侦探
+线索被藏在对白里。
+EXT. 天台 - DAWN
+导演
+我们必须让选择付出代价。`,
+    bible: {
+      characters: [{ name: "侦探", goal: "找出真相" }],
+      locations: [{ name: "档案室", notes: "线索集中地" }],
+    },
+  });
+  const report = generateScriptDoctorReport(project);
+
+  assert.equal(report.title, "诊断稿");
+  assert.equal(report.metrics.sceneCount, 2);
+  assert.match(report.summary, /2 场/);
+  assert.equal(report.findings.length >= 3, true);
+  assert.equal(report.nextActions.length >= 3, true);
+  assert.equal(report.actions.length >= 3, true);
+  assert.equal(report.actions[0].done, false);
+  assert.match(report.actions[0].prompt, /请处理这个剧本诊断任务/);
+  assert.match(report.markdown, /Script Doctor/);
+  assert.match(report.markdown, /下一步/);
+});
+
+test("rewrite draft turns a doctor action into a scene-level prompt", () => {
+  const project = createProject({
+    title: "改写稿",
+    fountain: `Title: 改写稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？
+
+助手
+门后面。`,
+    bible: {
+      characters: [{ name: "侦探", goal: "找到出口" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+    },
+  });
+  const report = generateScriptDoctorReport(project);
+  const draft = generateRewriteDraft(project, report.actions[0]);
+
+  assert.equal(draft.title.includes("改写稿"), true);
+  assert.equal(draft.scene.heading, "INT. 档案室 - NIGHT");
+  assert.equal(draft.characters.includes("侦探"), true);
+  assert.equal(draft.assets.includes("钥匙"), true);
+  assert.match(draft.prompt, /请改写/);
+  assert.match(draft.prompt, /钥匙在哪里/);
+});
+
+test("delivery packet bundles diagnosis rewrite relations and script", () => {
+  const project = createProject({
+    title: "交付稿",
+    fountain: `Title: 交付稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: { props: [{ name: "钥匙", notes: "关键道具" }] },
+  });
+  const packet = buildDeliveryPacket(project);
+
+  assert.equal(packet.filename, "交付稿-delivery.md");
+  assert.match(packet.markdown, /# 交付稿 · Delivery Packet/);
+  assert.match(packet.markdown, /## Script Doctor/);
+  assert.match(packet.markdown, /## Rewrite Draft/);
+  assert.match(packet.markdown, /## Relationship Board/);
+  assert.match(packet.markdown, /钥匙在哪里/);
+});
+
+test("text quality report summarizes scene function arcs dialogue and priorities", () => {
+  const project = createProject({
+    title: "质检稿",
+    fountain: `Title: 质检稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: { characters: [{ name: "侦探", goal: "找到出口" }] },
+  });
+  const report = buildTextQualityReport(project);
+
+  assert.equal(report.title, "质检稿 · Text Quality Report");
+  assert.equal(report.sceneFunctions[0].heading, "INT. 档案室 - NIGHT");
+  assert.equal(report.characterArcs.some((item) => item.name === "侦探"), true);
+  assert.equal(report.dialogueIssues.length > 0, true);
+  assert.equal(report.rewritePriorities.length >= 3, true);
+  assert.match(report.markdown, /## 场景功能表/);
+  assert.match(report.markdown, /## 对白问题清单/);
+});
+
+test("writing control report aggregates status quality doctor and next task", () => {
+  const project = createProject({
+    title: "总控稿",
+    fountain: `Title: 总控稿
+
+INT. 房间 - NIGHT
+
+编剧
+先把下一步讲清楚。`,
+  });
+  const report = buildWritingControlReport(project);
+
+  assert.equal(report.title, "总控稿 · Writing Control");
+  assert.equal(report.status.sceneCount, 1);
+  assert.equal(report.nextTask.includes("请处理这个剧本诊断任务"), true);
+  assert.match(report.markdown, /## 当前状态/);
+  assert.match(report.markdown, /## 文本质检/);
+  assert.match(report.markdown, /## 下一步任务/);
+});
+
+test("visual development pack turns script objects into production prompts", () => {
+  const project = createProject({
+    title: "视觉稿",
+    fountain: `Title: 视觉稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？`,
+    bible: {
+      characters: [{ name: "侦探", role: "主角", goal: "找到出口" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+      locations: [{ name: "档案室", notes: "昏暗、拥挤" }],
+    },
+  });
+  const pack = buildVisualDevelopmentPack(project);
+
+  assert.equal(pack.title, "视觉稿 · Visual Development Pack");
+  assert.equal(pack.assets.some((asset) => asset.type === "Character Portrait" && asset.name === "侦探"), true);
+  assert.equal(pack.assets.some((asset) => asset.type === "Scene Still" && asset.name.includes("档案室")), true);
+  assert.equal(pack.assets.some((asset) => asset.type === "Prop Detail" && asset.name === "钥匙"), true);
+  assert.match(pack.markdown, /Storyboard Frame/);
+  assert.match(pack.markdown, /cinematic visual reference/);
+});
+
+test("doctor actions persist on projects and can be checked off", () => {
+  const project = createProject({
+    title: "行动稿",
+    doctorActions: [{ id: "a1", text: "补人物代价", prompt: "请补人物代价", done: false }],
+  });
+  const updated = updateDoctorAction(project, "a1", { done: true });
+
+  assert.equal(project.doctorActions.length, 1);
+  assert.equal(updated.doctorActions[0].done, true);
+  assert.equal(updated.doctorActions[0].text, "补人物代价");
+});
+
+test("project catalog exposes Laper-style object groups and richer script data", () => {
+  const project = createProject({
+    title: "对象稿",
+    fountain: `INT. 档案室 - NIGHT
+侦探
+线索被藏在钥匙里。
+EXT. 天台 - DAWN
+导演
+钥匙打开了门。`,
+    bible: {
+      characters: [{ name: "侦探", role: "主角" }],
+      props: [{ name: "钥匙", notes: "关键道具" }],
+      locations: [{ name: "天台", notes: "结尾地点" }],
+    },
+    assets: [{ label: "参考图", path: "assets/ref.png", family: "Assets", category: "image" }],
+    shotPlan: { shots: [{ id: "s1", shotNumber: 1, shotSize: "MS" }] },
+  });
+  const catalog = buildProjectCatalog(project);
+  const summary = summarizeProject(project);
+
+  assert.equal(catalog.Scenes.length, 2);
+  assert.equal(catalog.Characters.some((item) => item.name === "侦探"), true);
+  assert.equal(catalog.Props.some((item) => item.name === "钥匙"), true);
+  assert.equal(catalog.Locations.some((item) => item.name === "天台"), true);
+  assert.equal(catalog.Assets.length, 1);
+  assert.equal(summary.beatCount, 4);
+  assert.equal(summary.frameCount, 1);
+  assert.equal(summary.relationCount >= 2, true);
+});
+
+test("breakdown board links scenes, objects and relationship wall data", () => {
+  const project = createProject({
+    title: "关系稿",
+    fountain: `Title: 关系稿
+
+INT. 档案室 - NIGHT
+
+侦探
+钥匙在哪里？
+
+助手
+门后面。
+
+EXT. 天台 - DAWN
+
+侦探
+我们找到出口了。`,
+    bible: {
+      props: [{ name: "钥匙", notes: "打开门" }],
+      locations: [{ name: "天台", notes: "结尾地点" }],
+    },
+  });
+
+  const board = buildBreakdownBoard(project);
+
+  assert.equal(board.scenes.length, 2);
+  assert.equal(board.scenes[0].characters.includes("侦探"), true);
+  assert.equal(board.catalog.Props.some((item) => item.name === "钥匙"), true);
+  assert.equal(board.relationships.nodes.some((node) => node.type === "character"), true);
+  assert.equal(board.relationships.edges.some((edge) => edge.source === "character:侦探"), true);
 });
 
 test("literary-screenplay config exposes adaptation workbench signals", () => {

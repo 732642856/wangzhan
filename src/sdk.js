@@ -1,26 +1,38 @@
 import {
   addShotPlanShot,
   buildAiPacket,
+  buildBreakdownBoard,
+  buildDeliveryPacket,
+  buildProjectCatalog,
+  buildTextQualityReport,
+  buildVisualDevelopmentPack,
+  buildWritingControlReport,
   buildStoryExplorer,
   checkInVersion,
   compareVersions,
   createVersionSnapshot,
+  createProjectLibrary,
   createProject,
   deleteShotPlanShot,
   exportFdx,
   exportFountain,
+  generateRewriteDraft,
   generateShotPlan,
+  generateScriptDoctorReport,
   getAiTaskPresets,
   getWritingTypeConfig,
   getKnowledgeTemplates,
   getWritingWorkbenchDefaults,
   getWorkflowPresets,
   importProject,
+  importProjectLibrary,
   parseFountain,
   restoreVersion,
   serializeProject,
+  serializeProjectLibrary,
   summarizeShotPlan,
   summarizeProject,
+  updateDoctorAction,
   updateShotPlanShot,
 } from "./core.js";
 
@@ -42,6 +54,38 @@ export function createPersonalScreenwriter(options = {}) {
 
   return {
     getState,
+    buildProjectCatalog(project = getState().project) {
+      return buildProjectCatalog(project);
+    },
+    buildBreakdownBoard(project = getState().project) {
+      return buildBreakdownBoard(project);
+    },
+    buildDeliveryPacket(project = getState().project) {
+      return buildDeliveryPacket(project);
+    },
+    buildVisualDevelopmentPack(project = getState().project) {
+      return buildVisualDevelopmentPack(project);
+    },
+    buildTextQualityReport(project = getState().project) {
+      return buildTextQualityReport(project);
+    },
+    buildWritingControlReport(project = getState().project) {
+      return buildWritingControlReport(project);
+    },
+    createProjectLibrary,
+    importProjectLibrary,
+    serializeProjectLibrary,
+    generateScriptDoctorReport(project = getState().project) {
+      return generateScriptDoctorReport(project);
+    },
+    generateRewriteDraft(action) {
+      return generateRewriteDraft(project, action);
+    },
+    updateDoctorAction(actionId, patch) {
+      project = updateDoctorAction(project, actionId, patch);
+      emit();
+      return getState();
+    },
     parseFountain,
     setFountain(fountain) {
       project = createProject({ ...project, fountain });

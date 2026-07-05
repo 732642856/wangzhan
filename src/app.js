@@ -5,6 +5,7 @@ import { createPersonalScreenwriter } from "./sdk.js";
 import "./styles.css";
 
 const STORAGE_KEY = "personal-screenwriter.project.v1";
+const LIBRARY_KEY = "personal-screenwriter.library.v1";
 
 const defaultProject = {
   title: "星轨试写",
@@ -34,13 +35,22 @@ EXT. 天台 - DAWN
 };
 
 const saved = loadProject();
-const studio = createPersonalScreenwriter({ project: saved || defaultProject });
-const defaultWorkbench = studio.getWritingWorkbenchDefaults((saved || defaultProject).writingType || "screenplay");
+const savedLibrary = loadLibrary();
+let projectLibrary = savedLibrary.projects.length ? savedLibrary : savedLibrary.save(saved || defaultProject);
+const activeLibraryItem = projectLibrary.select(projectLibrary.activeProjectId);
+projectLibrary = activeLibraryItem.library;
+const studio = createPersonalScreenwriter({ project: activeLibraryItem.project });
+const defaultWorkbench = studio.getWritingWorkbenchDefaults(activeLibraryItem.project.writingType || "screenplay");
 
 const state = {
   activeTab: "doctor",
   assetFilter: "",
+  projectFilter: "",
   aiTask: defaultWorkbench.aiTask,
+  doctorReport: null,
+  rewriteDraft: null,
+  textQualityReport: null,
+  writingControlReport: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
@@ -56,21 +66,21 @@ render();
 studio.subscribe(() => renderDynamic());
 
 function render() {
-  const { project } = studio.getState();
+  const { project, summary } = studio.getState();
   const writingType = project.writingType || "screenplay";
   const writingConfig = studio.getWritingTypeConfig(writingType);
   app.innerHTML = `
-    <main class="shell">
-      <aside class="rail">
+    <main class="shell professional-shell">
+      <aside class="rail project-database">
         <div class="brand">
           <span class="brand-mark">剧</span>
           <div>
-            <strong>个人编剧工作台</strong>
-            <small>浅色、暖灰、留白、安静工作台</small>
+            <strong>Screenwriter Studio</strong>
+            <small>剧本数据库 · AI 编剧室 · 制作预备</small>
           </div>
         </div>
         <section class="panel compact project-panel">
-          <div class="panel-title">项目</div>
+          <div class="panel-title">剧本数据库</div>
           <input id="projectTitle" class="input" aria-label="项目名" />
           <div class="type-switch" role="tablist" aria-label="写作类型">
             <button class="type-pill ${writingType === "screenplay" ? "active" : ""}" data-writing-type="screenplay">剧本</button>
@@ -87,16 +97,25 @@ function render() {
             <button id="newProject" class="button">新建</button>
             <button id="importProject" class="button">导入</button>
             <button id="exportJson" class="button">JSON</button>
+            <button id="importLibrary" class="button">导入库</button>
+            <button id="exportLibrary" class="button">导出库</button>
           </div>
+          <input id="projectFilter" class="input" placeholder="搜索项目" />
+          <div id="projectList" class="project-list"></div>
           <input id="fileInput" type="file" accept=".fountain,.txt,.json,.fdx" hidden />
+          <input id="libraryFileInput" type="file" accept=".json" hidden />
         </section>
         <section class="panel asset-panel">
           <div class="panel-heading">
             <div>
-              <div class="panel-title">资料卡片</div>
-              <small>模板 / 工作流 / 角色 / 分镜预备</small>
+              <div class="panel-title">对象库</div>
+              <small>Characters / Locations / Props / Beats / Assets</small>
             </div>
             <span id="assetCount" class="badge"></span>
+          </div>
+          <div class="button-grid tight">
+            <button id="copyVisualPack" class="button">复制视觉包</button>
+            <button id="downloadVisualPack" class="button">下载视觉包</button>
           </div>
           <input id="assetFilter" class="input" placeholder="搜索：人物、剧本、skill、分镜" />
           <div id="assetList" class="asset-list"></div>
@@ -107,14 +126,25 @@ function render() {
         <div class="writer-head">
           <div class="toolbar">
             <div>
-              <div class="eyebrow">Writing core layer</div>
+              <div class="eyebrow">Writing room</div>
               <h1>${escapeHtml(writingConfig.editorTitle)}</h1>
-              <small>只保留写作核心层，可独立使用，后续再接入任意应用。</small>
+              <small>项目库、剧本页、诊断总控共用同一份上下文。</small>
             </div>
-            <div class="toolbar-actions">
+            <div class="toolbar-actions ux-command-bar">
               <button id="exportFountain" class="icon-button" title="导出 Fountain">Fountain</button>
               <button id="exportFdx" class="icon-button" title="导出 Final Draft XML">FDX</button>
               <button id="copyPrompt" class="icon-button" title="复制 AI 任务包">复制 AI 包</button>
+            </div>
+          </div>
+          <div class="workspace-status">
+            <div>
+              <span>当前项目</span>
+              <strong>${escapeHtml(project.title)}</strong>
+              <small>${summary.sceneCount} 场 · ${summary.characterCount} 人物 · ${summary.locationCount} 地点</small>
+            </div>
+            <div class="quick-command-row">
+              <button id="openControl" class="quick-command primary">工作流总控</button>
+              <button id="openDoctor" class="quick-command">Script Doctor</button>
             </div>
           </div>
           <div class="focus-strip">
@@ -124,9 +154,9 @@ function render() {
         <div id="screenplayHost" class="screenplay-host-shell"></div>
       </section>
 
-      <aside class="inspector">
+      <aside class="inspector script-doctor">
         <section class="panel stats">
-          <div class="panel-title">Script data</div>
+          <div class="panel-title">Script Doctor</div>
           <div id="statsGrid" class="stats-grid"></div>
         </section>
         <section class="panel">
@@ -152,6 +182,7 @@ function render() {
 function bindEvents() {
   const title = document.querySelector("#projectTitle");
   const fileInput = document.querySelector("#fileInput");
+  const libraryFileInput = document.querySelector("#libraryFileInput");
 
   title.addEventListener("change", () => {
     const { project } = studio.getState();
@@ -161,7 +192,7 @@ function bindEvents() {
 
   document.querySelector("#saveProject").addEventListener("click", () => {
     persist();
-    flash("已保存到浏览器本地存储");
+    flash("已保存到项目库");
   });
 
   document.querySelector("#snapshotProject").addEventListener("click", () => {
@@ -184,8 +215,9 @@ function bindEvents() {
   });
 
   document.querySelector("#newProject").addEventListener("click", () => {
-    studio.setProject(defaultProject);
+    studio.setProject({ ...defaultProject, id: `psw-${Date.now()}`, title: "未命名新剧本" });
     applyWorkbenchDefaults(defaultProject.writingType || "screenplay");
+    state.doctorReport = null;
     persist();
     render();
   });
@@ -196,13 +228,65 @@ function bindEvents() {
     if (!file) return;
     studio.importProject(await file.text());
     persist();
+    state.doctorReport = null;
     fileInput.value = "";
   });
 
+  document.querySelector("#exportLibrary").addEventListener("click", () => {
+    projectLibrary = projectLibrary.save(studio.getState().project);
+    download("screenwriter-library.json", studio.serializeProjectLibrary(projectLibrary), "application/json");
+    persist();
+  });
+  document.querySelector("#importLibrary").addEventListener("click", () => libraryFileInput.click());
+  libraryFileInput.addEventListener("change", async () => {
+    const file = libraryFileInput.files?.[0];
+    if (!file) return;
+    projectLibrary = studio.importProjectLibrary(await file.text());
+    const next = projectLibrary.select(projectLibrary.activeProjectId);
+    projectLibrary = next.library;
+    studio.setProject(next.project);
+    applyWorkbenchDefaults(next.project.writingType || "screenplay");
+    state.doctorReport = null;
+    libraryFileInput.value = "";
+    persist();
+    render();
+    flash("项目库已导入");
+  });
   document.querySelector("#exportJson").addEventListener("click", () => download("screenwriter-project.json", studio.exportJson(), "application/json"));
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelector("#openControl").addEventListener("click", () => {
+    state.activeTab = "doctor";
+    state.writingControlReport = studio.buildWritingControlReport();
+    render();
+    flash("文字总控已生成");
+  });
+  document.querySelector("#openDoctor").addEventListener("click", () => {
+    state.activeTab = "doctor";
+    state.doctorReport = studio.generateScriptDoctorReport();
+    studio.setProject({ ...studio.getState().project, doctorActions: state.doctorReport.actions });
+    persist();
+    render();
+    flash("诊断已生成");
+  });
+  document.querySelector("#projectFilter").addEventListener("input", (event) => {
+    state.projectFilter = event.target.value;
+    renderProjects();
+  });
+  document.querySelector("#projectList").addEventListener("click", (event) => {
+    const row = event.target.closest("[data-project-id]");
+    if (!row) return;
+    const projectId = row.dataset.projectId;
+    projectLibrary = event.target.closest(".delete-project") ? projectLibrary.delete(projectId) : projectLibrary.select(projectId).library;
+    const next = projectLibrary.select(projectLibrary.activeProjectId);
+    projectLibrary = next.library;
+    studio.setProject(next.project);
+    applyWorkbenchDefaults(next.project.writingType || "screenplay");
+    state.doctorReport = null;
+    persist();
+    render();
+  });
   document.querySelectorAll("[data-writing-type]").forEach((button) => {
     button.addEventListener("click", () => {
       const nextWritingType = button.dataset.writingType || "screenplay";
@@ -218,6 +302,15 @@ function bindEvents() {
   document.querySelector("#assetFilter").addEventListener("input", (event) => {
     state.assetFilter = event.target.value;
     renderAssets();
+  });
+  document.querySelector("#copyVisualPack").addEventListener("click", async () => {
+    const pack = studio.buildVisualDevelopmentPack();
+    await navigator.clipboard?.writeText(pack.markdown);
+    flash("视觉开发包已复制");
+  });
+  document.querySelector("#downloadVisualPack").addEventListener("click", () => {
+    const pack = studio.buildVisualDevelopmentPack();
+    download(`${studio.getState().project.title}-visual-pack.md`, pack.markdown, "text/markdown");
   });
 
   document.querySelectorAll(".tab").forEach((button) => {
@@ -247,40 +340,66 @@ function renderDynamic() {
   }
 
   document.querySelector("#statsGrid").innerHTML = [
-    ["场", summary.sceneCount],
-    ["人物", summary.characterCount],
-    ["地点", summary.locationCount],
-    ["字", summary.wordCount],
-    ["分钟", summary.estimatedMinutes],
+    ["Scenes", summary.sceneCount],
+    ["Characters", summary.characterCount],
+    ["Locations", summary.locationCount],
+    ["Beats", summary.beatCount],
+    ["Frames", summary.frameCount],
+    ["Relations", summary.relationCount],
   ]
     .map(([label, value]) => `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`)
     .join("");
 
   renderAssets();
+  renderProjects();
   renderTab();
+}
+
+function renderProjects() {
+  const { project } = studio.getState();
+  const filter = state.projectFilter.trim().toLowerCase();
+  const projects = projectLibrary.projects.filter((item) => !filter || `${item.title} ${item.writingType}`.toLowerCase().includes(filter));
+  document.querySelector("#projectList").innerHTML = projects
+    .map((item) => {
+      const sceneCount = item.parsed?.scenes?.length || 0;
+      return `
+        <button class="project-row ${item.id === project.id ? "active" : ""}" data-project-id="${escapeHtml(item.id)}">
+          <span>
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.writingType || "screenplay")} · ${sceneCount} 场</small>
+          </span>
+          <span class="delete-project" title="删除">×</span>
+        </button>
+      `;
+    })
+    .join("");
 }
 
 function renderAssets() {
   const { project } = studio.getState();
   const filter = state.assetFilter.trim().toLowerCase();
-  const assets = [...(project.assets || []), ...localAssetSeeds]
+  const catalog = studio.buildProjectCatalog(project);
+  catalog.Assets = [...catalog.Assets, ...localAssetSeeds]
     .filter((asset, index, list) => list.findIndex((item) => item.path === asset.path) === index)
-    .filter((asset) => {
-      if (!filter) return true;
-      return `${asset.label} ${asset.path} ${asset.family} ${asset.category}`.toLowerCase().includes(filter);
+    .slice(0, 40);
+  const groups = ["Scenes", "Characters", "Props", "Locations", "Assets"];
+  const total = groups.reduce((sum, group) => sum + catalog[group].length, 0);
+  document.querySelector("#assetCount").textContent = `${total}`;
+  document.querySelector("#assetList").innerHTML = groups
+    .map((group) => {
+      const items = catalog[group].filter((item) => !filter || `${item.name || item.label} ${item.notes || ""} ${item.path || ""}`.toLowerCase().includes(filter)).slice(0, 18);
+      return `
+        <div class="asset-group">
+          <div class="asset-group-title">${group}<span>${items.length}</span></div>
+          ${items.map((item) => `
+            <button class="asset" data-path="${escapeHtml(item.path || item.name || item.label || "")}">
+              <span>${escapeHtml(item.name || item.label || "未命名")}</span>
+              <small>${escapeHtml(item.notes || item.path || item.category || group)}</small>
+            </button>
+          `).join("")}
+        </div>
+      `;
     })
-    .slice(0, 80);
-
-  document.querySelector("#assetCount").textContent = `${assets.length}`;
-  document.querySelector("#assetList").innerHTML = assets
-    .map(
-      (asset) => `
-        <button class="asset" data-path="${escapeHtml(asset.path)}">
-          <span>${escapeHtml(asset.label)}</span>
-          <small>${escapeHtml(asset.family)} · ${escapeHtml(asset.category)}</small>
-        </button>
-      `,
-    )
     .join("");
 
   document.querySelectorAll(".asset").forEach((button) => {
@@ -289,6 +408,70 @@ function renderAssets() {
       flash("已复制资料标识");
     });
   });
+}
+
+function renderDoctorReport(report) {
+  const actions = report.actions || [];
+  return `
+    <article>
+      <strong>${escapeHtml(report.summary)}</strong>
+      <ul>${report.findings.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      <div class="panel-title">下一步</div>
+      <div class="doctor-action-list">
+        ${actions.map((action) => `
+          <label class="doctor-action ${action.done ? "done" : ""}" data-action-id="${escapeHtml(action.id)}">
+            <input type="checkbox" ${action.done ? "checked" : ""} />
+            <span>${escapeHtml(action.text)}</span>
+            <button type="button" class="button draft-action">生成草案</button>
+            <button type="button" class="button send-action">发送到任务</button>
+          </label>
+        `).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderTextQualitySummary(report) {
+  return `
+    <div class="report-card-grid">
+      <section class="report-summary-item">
+        <small>场景功能</small>
+        ${report.sceneFunctions.slice(0, 3).map((item) => `<p>${escapeHtml(item.heading)}：${escapeHtml(item.function)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>人物弧光</small>
+        ${report.characterArcs.slice(0, 3).map((item) => `<p>${escapeHtml(item.name)}：${escapeHtml(item.arc)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>改写优先级</small>
+        ${report.rewritePriorities.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+    </div>
+  `;
+}
+
+function renderWritingControlSummary(report) {
+  return `
+    <div class="report-card-grid control-status-grid">
+      <section class="report-summary-item">
+        <small>当前状态</small>
+        <strong>${report.status.sceneCount} 场 / ${report.status.characterCount} 人物 / ${report.status.locationCount} 地点</strong>
+        <p>${report.status.wordCount} 字 · 约 ${report.status.estimatedMinutes} 分钟</p>
+      </section>
+      <section class="report-summary-item">
+        <small>Script Doctor</small>
+        ${report.doctor.findings.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>文本质检</small>
+        ${report.quality.rewritePriorities.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+    </div>
+    <section class="control-next-task">
+      <small>下一步任务</small>
+      <p>${escapeHtml(report.nextTask)}</p>
+    </section>
+  `;
 }
 
 function renderTab() {
@@ -301,6 +484,7 @@ function renderTab() {
     const templates = studio.getKnowledgeTemplates();
     const presets = studio.getAiTaskPresets();
     const workflows = studio.getWorkflowPresets();
+    const report = state.doctorReport || (project.doctorActions?.length ? { ...studio.generateScriptDoctorReport(), actions: project.doctorActions } : null);
     const activeWorkflow = workflows.find((workflow) => workflow.id === state.selectedWorkflowId) || workflows[0];
     const doctorMeta = getDoctorWorkbenchMeta(project.writingType || "screenplay", activeWorkflow, state.selectedTemplateIds, templates);
     const packet = studio.buildAiPacket({
@@ -381,9 +565,146 @@ function renderTab() {
           .join("")}
       </div>
       ${doctorMeta.footer}
+      <label class="field-label">主线动作</label>
+      <div class="doctor-actions">
+        <button id="runControl" class="button primary">生成总控</button>
+        <button id="copyControl" class="button" ${state.writingControlReport ? "" : "disabled"}>复制总控</button>
+        <button id="runDoctor" class="button">一键生成诊断</button>
+        <button id="copyDoctor" class="button" ${report ? "" : "disabled"}>复制诊断</button>
+        <button id="runQuality" class="button">生成质检</button>
+        <button id="copyQuality" class="button" ${state.textQualityReport ? "" : "disabled"}>复制质检</button>
+        <button id="copyDelivery" class="button">复制交付包</button>
+        <button id="downloadDelivery" class="button">下载交付包</button>
+      </div>
+      <div id="doctorReport" class="doctor-report">
+        ${report ? renderDoctorReport(report) : `<p class="empty">点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。</p>`}
+      </div>
+      ${
+        state.rewriteDraft
+          ? `
+            <div class="rewrite-draft">
+              <div class="section-head">
+                <div>
+                  <small>Rewrite draft</small>
+                  <strong>${escapeHtml(state.rewriteDraft.title)}</strong>
+                </div>
+                <button id="sendDraft" class="button">发送草案任务</button>
+              </div>
+              <textarea class="prompt-output" readonly>${escapeHtml(state.rewriteDraft.prompt)}</textarea>
+            </div>
+          `
+          : ""
+      }
+      ${
+        state.textQualityReport
+          ? `
+            <div class="rewrite-draft text-quality-report">
+              <div class="section-head">
+                <div>
+                  <small>Text Quality Report</small>
+                  <strong>${escapeHtml(state.textQualityReport.title)}</strong>
+                </div>
+              </div>
+              ${renderTextQualitySummary(state.textQualityReport)}
+              <textarea class="prompt-output copyable-report" readonly>${escapeHtml(state.textQualityReport.markdown)}</textarea>
+            </div>
+          `
+          : ""
+      }
+      ${
+        state.writingControlReport
+          ? `
+            <div class="rewrite-draft writing-control-report">
+              <div class="section-head">
+                <div>
+                  <small>Writing Control</small>
+                  <strong>${escapeHtml(state.writingControlReport.title)}</strong>
+                </div>
+                <button id="sendControlTask" class="button">发送下一步</button>
+              </div>
+              ${renderWritingControlSummary(state.writingControlReport)}
+              <textarea class="prompt-output copyable-report" readonly>${escapeHtml(state.writingControlReport.markdown)}</textarea>
+            </div>
+          `
+          : ""
+      }
       <label class="field-label">可复制任务包</label>
       <textarea class="prompt-output" readonly>${escapeHtml(packet.prompt)}</textarea>
     `;
+    document.querySelector("#runDoctor").addEventListener("click", () => {
+      state.doctorReport = studio.generateScriptDoctorReport();
+      studio.setProject({ ...studio.getState().project, doctorActions: state.doctorReport.actions });
+      persist();
+      renderTab();
+    });
+    document.querySelector("#copyDoctor")?.addEventListener("click", async () => {
+      if (!report) return;
+      await navigator.clipboard?.writeText(report.markdown);
+      flash("诊断已复制");
+    });
+    document.querySelector("#runQuality")?.addEventListener("click", () => {
+      state.textQualityReport = studio.buildTextQualityReport();
+      flash("文本质检已生成");
+      renderTab();
+    });
+    document.querySelector("#copyQuality")?.addEventListener("click", async () => {
+      if (!state.textQualityReport) return;
+      await navigator.clipboard?.writeText(state.textQualityReport.markdown);
+      flash("质检已复制");
+    });
+    document.querySelector("#runControl")?.addEventListener("click", () => {
+      state.writingControlReport = studio.buildWritingControlReport();
+      flash("文字总控已生成");
+      renderTab();
+    });
+    document.querySelector("#copyControl")?.addEventListener("click", async () => {
+      if (!state.writingControlReport) return;
+      await navigator.clipboard?.writeText(state.writingControlReport.markdown);
+      flash("总控已复制");
+    });
+    document.querySelector("#sendControlTask")?.addEventListener("click", () => {
+      if (!state.writingControlReport) return;
+      state.aiTask = state.writingControlReport.nextTask;
+      flash("下一步任务已发送");
+      renderTab();
+    });
+    document.querySelector("#copyDelivery")?.addEventListener("click", async () => {
+      const delivery = studio.buildDeliveryPacket();
+      await navigator.clipboard?.writeText(delivery.markdown);
+      flash("交付包已复制");
+    });
+    document.querySelector("#downloadDelivery")?.addEventListener("click", () => {
+      const delivery = studio.buildDeliveryPacket();
+      download(delivery.filename, delivery.markdown, "text/markdown");
+    });
+    document.querySelectorAll(".doctor-action").forEach((row) => {
+      row.querySelector("input")?.addEventListener("change", (event) => {
+        studio.updateDoctorAction(row.dataset.actionId, { done: event.target.checked });
+        state.doctorReport = null;
+        persist();
+        renderTab();
+      });
+      row.querySelector(".send-action")?.addEventListener("click", () => {
+        const action = (report?.actions || []).find((item) => item.id === row.dataset.actionId);
+        if (!action) return;
+        state.aiTask = action.prompt;
+        flash("已发送到 AI 任务");
+        renderTab();
+      });
+      row.querySelector(".draft-action")?.addEventListener("click", () => {
+        const action = (report?.actions || []).find((item) => item.id === row.dataset.actionId);
+        if (!action) return;
+        state.rewriteDraft = studio.generateRewriteDraft(action);
+        flash("已生成改写草案");
+        renderTab();
+      });
+    });
+    document.querySelector("#sendDraft")?.addEventListener("click", () => {
+      if (!state.rewriteDraft) return;
+      state.aiTask = state.rewriteDraft.prompt;
+      flash("草案任务已发送");
+      renderTab();
+    });
     document.querySelector("#aiTask").addEventListener("input", (event) => {
       state.aiTask = event.target.value;
       renderTab();
@@ -432,9 +753,37 @@ function renderTab() {
   }
 
   if (state.activeTab === "explore") {
+    const board = studio.buildBreakdownBoard();
     const explorer = studio.buildStoryExplorer();
     content.innerHTML = `
       <div class="explorer">
+        <section class="breakdown-board">
+          <div class="section-head">
+            <div>
+              <small>关系墙 / Breakdown board</small>
+              <strong>按场景拆人物、地点、节拍和对象</strong>
+            </div>
+            <span class="badge soft">${board.relationships.edges.length} links</span>
+          </div>
+          <div class="breakdown-grid">
+            ${board.scenes
+              .map(
+                (scene) => `
+                  <article class="breakdown-card">
+                    <small>${scene.index} · ${escapeHtml(scene.location || "未标地点")} ${scene.time ? "· " + escapeHtml(scene.time) : ""}</small>
+                    <strong>${escapeHtml(scene.heading)}</strong>
+                    <div class="relation-pills">
+                      ${(scene.characters.length ? scene.characters : ["待标人物"])
+                        .map((name) => `<span>${escapeHtml(name)}</span>`)
+                        .join("")}
+                    </div>
+                    <em>${scene.beatCount} beats</em>
+                  </article>
+                `,
+              )
+              .join("")}
+          </div>
+        </section>
         <div class="explorer-passages">
           ${explorer.passages
             .map(
@@ -774,6 +1123,11 @@ function mountOrUpdateScreenplayHost(project) {
   const root = document.querySelector("#screenplayHost");
   if (!root) return;
 
+  if (screenplayHost && screenplayHost.root !== root) {
+    screenplayHost.destroy();
+    screenplayHost = null;
+  }
+
   if (!screenplayHost) {
     screenplayHost = mountScreenplayEditorHost(root, {
       writingType: project.writingType,
@@ -817,7 +1171,9 @@ function applyWorkbenchDefaults(writingType) {
 }
 
 function persist() {
+  projectLibrary = projectLibrary.save(studio.getState().project);
   localStorage.setItem(STORAGE_KEY, studio.exportJson());
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(projectLibrary));
 }
 
 function loadProject() {
@@ -826,6 +1182,15 @@ function loadProject() {
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
+  }
+}
+
+function loadLibrary() {
+  try {
+    const raw = localStorage.getItem(LIBRARY_KEY);
+    return createPersonalScreenwriter().createProjectLibrary(raw ? JSON.parse(raw) : {});
+  } catch {
+    return createPersonalScreenwriter().createProjectLibrary();
   }
 }
 
