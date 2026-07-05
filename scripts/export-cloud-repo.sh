@@ -11,7 +11,8 @@ rm -rf \
   "$TARGET_DIR/node_modules" \
   "$TARGET_DIR/dist" \
   "$TARGET_DIR/.codex" \
-  "$TARGET_DIR/.serena"
+  "$TARGET_DIR/.serena" \
+  "$TARGET_DIR/.playwright-cli"
 
 rsync -av --delete \
   --exclude .git \
@@ -19,6 +20,7 @@ rsync -av --delete \
   --exclude dist \
   --exclude .codex \
   --exclude .serena \
+  --exclude .playwright-cli \
   "$SOURCE_DIR/" \
   "$TARGET_DIR/"
 
