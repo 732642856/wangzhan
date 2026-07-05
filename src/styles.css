@@ -1618,3 +1618,70 @@ body {
 .copyable-report {
   min-height: 180px;
 }
+
+.ai-copilot-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.copilot-command-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.copilot-steps {
+  display: grid;
+  gap: 6px;
+}
+
+.copilot-step {
+  display: block;
+  padding: 7px 9px;
+  color: var(--muted);
+  background: #eef2f1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.copilot-step.done {
+  color: var(--accent-dark);
+  background: #fff;
+}
+
+.copilot-step.active {
+  color: #fff;
+  background: var(--mark);
+  border-color: var(--mark);
+}
+
+.copilot-task-list {
+  display: grid;
+  gap: 8px;
+  max-height: 188px;
+  overflow: auto;
+}
+
+.copilot-task-card {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 9px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.copilot-task-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 111, 109, 0.12);
+}
+
+.copilot-task-card span,
+.copilot-task-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
