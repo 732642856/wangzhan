@@ -11,6 +11,7 @@ rsync -av --delete \
   --exclude node_modules \
   --exclude dist \
   --exclude .codex \
+  --exclude .serena \
   "$SOURCE_DIR/" \
   "$TARGET_DIR/"
 

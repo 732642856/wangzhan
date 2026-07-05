@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .codex/
+.serena/
 .DS_Store
 
 # Private local OCR outputs. Keep these files on disk for personal use, but do
