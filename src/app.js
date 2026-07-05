@@ -58,6 +58,7 @@ const state = {
   selectedVersionId: "",
   compareTargetVersionId: "",
   sceneNavigation: [],
+  laperObjectView: "Script",
   copilotJobs: savedCopilotJobs,
   activeCopilotJobId: savedCopilotJobs[0]?.id || "",
 };
@@ -84,8 +85,9 @@ function render() {
     ["Locations", `${summary.locationCount} locations`],
     ["Assets", `${project.assets?.length || 0} assets`],
   ];
+  const laperScenes = (project.parsed?.scenes || []).slice(0, 6);
   app.innerHTML = `
-    <main class="shell professional-shell laper-shell m3-laper-workspace laper-reference-workbench">
+    <main class="shell professional-shell laper-shell m3-laper-workspace laper-reference-workbench ${state.laperObjectView === "Script" ? "" : "object-mode"}">
       <aside class="rail project-database laper-object-nav">
         <div class="brand">
           <span class="brand-mark">剧</span>
@@ -96,12 +98,33 @@ function render() {
         </div>
         <nav class="m3-object-menu" aria-label="Story object navigation">
           ${objectNavItems.map(([item, meta]) => `
-            <button class="m3-object-item ${item === "Script" ? "active" : ""}" type="button">
+            <button class="m3-object-item ${state.laperObjectView === item ? "active" : ""}" type="button" data-object-view="${escapeHtml(item)}">
               <span>${escapeHtml(item)}</span>
               <small>${escapeHtml(meta)}</small>
             </button>
           `).join("")}
         </nav>
+        <section class="laper-project-menu">
+          <button type="button"><span>Episodes</span><b>+</b></button>
+          <button class="active" type="button">Feature Draft</button>
+          <button type="button">Deleted Scenes</button>
+        </section>
+        <section class="laper-scene-list">
+          <div class="laper-mini-heading"><span>Scenes</span><b>${summary.sceneCount}</b></div>
+          ${laperScenes.map((scene, index) => `
+            <button class="${index === 0 ? "active" : ""}" type="button">
+              <span>${index + 1}. ${escapeHtml(scene.heading)}</span>
+              <small>${escapeHtml(scene.time || scene.location || "Scene")}</small>
+            </button>
+          `).join("")}
+        </section>
+        <section class="laper-user-card">
+          <span>Q</span>
+          <div>
+            <strong>Quentin</strong>
+            <small>Writer · ${summary.wordCount.toLocaleString("en-US")}</small>
+          </div>
+        </section>
         <section class="panel compact project-panel">
           <div class="panel-title">剧本数据库</div>
           <input id="projectTitle" class="input" aria-label="项目名" />
@@ -150,7 +173,7 @@ function render() {
           <div class="toolbar">
             <div>
               <div class="eyebrow">Writing room</div>
-              <h1>${escapeHtml(writingConfig.editorTitle)}</h1>
+              <h1>Script</h1>
               <small>项目库、剧本页、诊断总控共用同一份上下文。</small>
             </div>
             <div class="toolbar-actions ux-command-bar">
@@ -185,10 +208,15 @@ function render() {
           </div>
           <div class="revision-margin">AI notes</div>
           <div id="screenplayHost" class="screenplay-host-shell script-page-surface"></div>
+          ${renderLaperObjectView(project, summary)}
         </div>
       </section>
 
       <aside class="inspector script-doctor laper-writing-panel">
+        <div class="laper-right-actions">
+          <button type="button">Feature request</button>
+          <button type="button">Share</button>
+        </div>
         <div class="copilot-tabs">
           <span class="active">Writing</span>
           <span>Info</span>
@@ -206,6 +234,17 @@ function render() {
           </div>
           <small>No API key · paste results back into the script</small>
         </section>
+        <section class="m3-right-card laper-private-stack">
+          <span>AI tools</span>
+          <button type="button">Beat Sheet</button>
+          <button type="button">Dialogue Enhancement</button>
+          <button type="button">Character Arc</button>
+          <button type="button">Pacing</button>
+          <span>Collab</span>
+          <div class="laper-pill-row"><button type="button">Comments</button><button type="button">Permissions</button></div>
+          <span>Export</span>
+          <div class="laper-pill-row"><button type="button">PDF</button><button type="button">FDX</button><button type="button">Fountain</button></div>
+        </section>
         <section class="m3-right-card script-data">
           <span>Script data</span>
           <div class="m3-data-grid">
@@ -216,6 +255,22 @@ function render() {
           </div>
         </section>
         <button id="snapshotProject" class="m3-save-version">Save version</button>
+        <section class="m3-right-card laper-script-settings">
+          <span>Script navigation</span>
+          <div class="laper-segmented"><button type="button">Scroll</button><button class="active" type="button">Paged</button></div>
+          <span>Script format</span>
+          <div class="laper-format-row"><button type="button">INT.</button><button type="button">Action</button><button type="button">Dialogue</button></div>
+        </section>
+        <section class="m3-right-card laper-ai-task-card">
+          <div class="laper-task-title"><span>Opening rhythm...</span><b>↗</b></div>
+          <button type="button">Check the first four scenes.</button>
+          <button type="button">Organizing script structure</button>
+          <small>The shape works. Scene two delays pressure.</small>
+          <button type="button">Mark the character pressure.</button>
+          <button type="button">Locating character goals</button>
+          <label>Ask Laper to check structure or character pressure...</label>
+          <div><button type="button">＋</button><button type="button">Script Doctor</button><button type="button">●</button></div>
+        </section>
         <div class="doctor-status-stack">
           <div class="doctor-status-card active">
             <span>Context ready</span>
@@ -254,10 +309,69 @@ function render() {
   renderDynamic();
 }
 
+function renderLaperObjectView(project, summary) {
+  if (state.laperObjectView === "Script") return "";
+  const parsed = project.parsed || { scenes: [], blocks: [], characters: [] };
+  const bible = project.bible || {};
+  const viewMap = {
+    Projects: projectLibrary.projects.map((item) => ({
+      title: item.title,
+      meta: `${item.writingType || "screenplay"} · ${item.parsed?.scenes?.length || 0} scenes`,
+    })),
+    Beats: parsed.blocks
+      .filter((block) => block.type === "action" || block.type === "dialogue")
+      .slice(0, 18)
+      .map((block, index) => ({ title: `${index + 1}. ${block.type}`, meta: block.text })),
+    Storyboard: (project.shotPlan?.shots?.length ? project.shotPlan.shots : parsed.scenes).map((item, index) => ({
+      title: `Frame ${index + 1}`,
+      meta: item.heading || item.sceneId || item.description || "Storyboard frame",
+    })),
+    Scenes: parsed.scenes.map((scene, index) => ({
+      title: `${index + 1}. ${scene.heading}`,
+      meta: scene.synopsis || scene.time || scene.location || "Scene",
+    })),
+    Characters: [
+      ...parsed.characters.map((item) => ({ title: item.name, meta: `${item.scenes.length} scenes` })),
+      ...(bible.characters || []).map((item) => ({ title: item.name, meta: item.role || item.goal || "Character" })),
+    ],
+    Props: (bible.props || []).map((item) => ({ title: item.name, meta: item.notes || "Prop" })),
+    Locations: [
+      ...(bible.locations || []).map((item) => ({ title: item.name, meta: item.notes || "Location" })),
+      ...parsed.scenes.map((scene) => ({ title: scene.location, meta: scene.heading })).filter((item) => item.title),
+    ],
+    Assets: (project.assets || []).map((item) => ({ title: item.title || item.name || item.path, meta: item.type || item.path || "Asset" })),
+  };
+  const rows = (viewMap[state.laperObjectView] || []).slice(0, 24);
+  return `
+    <section class="laper-object-view-panel">
+      <div class="laper-object-view-head">
+        <span>${escapeHtml(state.laperObjectView)}</span>
+        <strong>${rows.length}</strong>
+        <small>${summary.sceneCount} scenes · ${summary.characterCount} characters · ${summary.beatCount} beats</small>
+      </div>
+      <div class="laper-object-grid">
+        ${rows.map((item) => `
+          <article>
+            <strong>${escapeHtml(item.title || "Untitled")}</strong>
+            <small>${escapeHtml(item.meta || "")}</small>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function bindEvents() {
   const title = document.querySelector("#projectTitle");
   const fileInput = document.querySelector("#fileInput");
   const libraryFileInput = document.querySelector("#libraryFileInput");
+
+  document.querySelector(".m3-object-menu").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-object-view]");
+    if (!button) return;
+    state.laperObjectView = button.dataset.objectView || "Script";
+    render();
+  });
 
   title.addEventListener("change", () => {
     const { project } = studio.getState();

@@ -2433,6 +2433,231 @@ body {
   }
 }
 
+/* M4: visible Laper product-workbench parity. */
+.laper-reference-workbench .project-panel,
+.laper-reference-workbench .asset-panel,
+.laper-reference-workbench .doctor-status-stack,
+.laper-reference-workbench .stats,
+.laper-reference-workbench .ai-copilot-panel {
+  display: none;
+}
+
+.laper-project-menu,
+.laper-scene-list,
+.laper-user-card {
+  display: grid;
+  gap: 4px;
+}
+
+.laper-project-menu {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e1e9e4;
+}
+
+.laper-project-menu button,
+.laper-scene-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #2f3934;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+}
+
+.laper-project-menu button,
+.laper-project-menu b,
+.laper-scene-list b {
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.laper-project-menu button.active,
+.laper-scene-list button.active {
+  background: #e8f0ea;
+}
+
+.laper-mini-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0 2px;
+  color: #6f7c75;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.laper-scene-list button {
+  display: grid;
+  justify-items: start;
+  min-height: 30px;
+  background: #f7faf7;
+  border: 1px solid #e3ebe6;
+}
+
+.laper-scene-list span {
+  max-width: 100%;
+  overflow: hidden;
+  color: #26312b;
+  font-size: 9px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.laper-scene-list small {
+  max-width: 100%;
+  overflow: hidden;
+  color: #8a9690;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.laper-user-card {
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  margin-top: auto;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #e2ebe5;
+  border-radius: 9px;
+}
+
+.laper-user-card > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  color: #2d5d43;
+  font-size: 10px;
+  font-weight: 800;
+  background: #eff6f1;
+  border-radius: 999px;
+}
+
+.laper-user-card strong,
+.laper-user-card small {
+  display: block;
+}
+
+.laper-user-card strong {
+  color: #26312b;
+  font-size: 10px;
+}
+
+.laper-user-card small {
+  color: #8a9690;
+  font-size: 8px;
+}
+
+.laper-reference-workbench .screenplay-tools {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 0 4px;
+}
+
+.laper-reference-workbench .screenplay-toolbar {
+  justify-content: center;
+  gap: 5px;
+}
+
+.laper-reference-workbench .screenplay-toolbar.secondary {
+  display: none;
+}
+
+.laper-reference-workbench .focus-chip {
+  display: none;
+}
+
+.laper-reference-workbench .screenplay-tool {
+  min-height: 22px;
+  padding: 4px 8px;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .toolbar-actions #copyPrompt {
+  display: none;
+}
+
+.laper-right-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-right-actions button,
+.laper-segmented button,
+.laper-format-row button,
+.laper-ai-task-card button {
+  min-height: 22px;
+  color: #38433e;
+  font-size: 9px;
+  font-weight: 720;
+  background: #ffffff;
+  border: 1px solid #e0e8e3;
+  border-radius: 6px;
+}
+
+.laper-script-settings {
+  gap: 6px;
+}
+
+.laper-segmented {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  background: #f3f7f4;
+  border: 1px solid #e2ebe5;
+  border-radius: 7px;
+}
+
+.laper-segmented button {
+  border: 0;
+}
+
+.laper-segmented .active {
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(44, 68, 55, 0.08);
+}
+
+.laper-format-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-ai-task-card {
+  gap: 6px;
+}
+
+.laper-task-title {
+  display: flex;
+  justify-content: space-between;
+  color: #28332d;
+  font-size: 10px;
+  font-weight: 780;
+}
+
+.laper-ai-task-card small,
+.laper-ai-task-card label {
+  color: #7f8b85;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.laper-ai-task-card div:last-child {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  gap: 4px;
+}
+
 /* Laper reference pass: match the public product mockup, not just a dark three-column app. */
 body {
   min-width: 0;
@@ -2738,6 +2963,83 @@ body {
   display: none;
 }
 
+.laper-object-view-panel {
+  margin: 0;
+  padding: 18px;
+  background: #f7faf7;
+  border-top: 1px solid #e5ece7;
+}
+
+.laper-reference-workbench.object-mode .script-page-surface {
+  display: none;
+}
+
+.laper-reference-workbench.object-mode .laper-object-view-panel {
+  min-height: calc(100vh - 160px);
+}
+
+.laper-object-view-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  max-width: 620px;
+  margin: 0 auto 10px;
+}
+
+.laper-object-view-head span {
+  color: #202923;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.laper-object-view-head strong {
+  color: #2f8f61;
+  font-size: 13px;
+}
+
+.laper-object-view-head small {
+  grid-column: 1 / -1;
+  color: #7d8983;
+  font-size: 10px;
+}
+
+.laper-object-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.laper-object-grid article {
+  display: grid;
+  gap: 4px;
+  min-height: 58px;
+  padding: 10px;
+  background: #fffefa;
+  border: 1px solid #e2ebe5;
+  border-radius: 9px;
+  box-shadow: 0 8px 20px rgba(42, 75, 58, 0.06);
+}
+
+.laper-object-grid strong {
+  overflow: hidden;
+  color: #26312b;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.laper-object-grid small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #7f8b85;
+  font-size: 10px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .laper-reference-workbench .script-page-surface .screenplay-editor {
   max-width: 420px;
   min-height: 480px;
@@ -2824,6 +3126,28 @@ body {
 .laper-reference-workbench .m3-data-grid b {
   color: #202823;
   font-size: 15px;
+}
+
+.laper-private-stack button,
+.laper-pill-row button {
+  min-height: 26px;
+  color: #24583d;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: left;
+  background: #f5faf5;
+  border: 1px solid #dfe9e3;
+  border-radius: 7px;
+}
+
+.laper-pill-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-pill-row:last-child {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .laper-reference-workbench .m3-save-version {
