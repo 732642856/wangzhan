@@ -86,6 +86,16 @@ function render() {
     ["Assets", `${project.assets?.length || 0} assets`],
   ];
   const laperScenes = (project.parsed?.scenes || []).slice(0, 6);
+  const laperChatMessages = state.doctorReport?.findings?.length
+    ? state.doctorReport.findings.slice(0, 3).map((text, index) => ({
+      label: ["Structure check", "Pacing note", "Character pressure"][index] || "Script Doctor",
+      text,
+    }))
+    : [
+      { label: "Opening rhythm...", text: "Check the first four scenes." },
+      { label: "Organizing script structure", text: "The shape works. Scene two delays pressure." },
+      { label: "Locating character goals", text: "Mark the character pressure." },
+    ];
   app.innerHTML = `
     <main class="shell professional-shell laper-shell m3-laper-workspace laper-reference-workbench ${state.laperObjectView === "Script" ? "" : "object-mode"}">
       <aside class="rail project-database laper-object-nav">
@@ -230,24 +240,18 @@ function render() {
         <section class="m3-right-card laper-ai-task-card laper-chat-card">
           <div class="laper-chat-title"><span>Script Doctor</span><button type="button">↗</button></div>
           <div class="laper-chat-thread">
-            <article class="laper-chat-message assistant">
-              <small>Opening rhythm...</small>
-              <p>Check the first four scenes.</p>
-            </article>
-            <article class="laper-chat-message task">
-              <small>Organizing script structure</small>
-              <p>The shape works. Scene two delays pressure.</p>
-            </article>
-            <article class="laper-chat-message assistant">
-              <small>Locating character goals</small>
-              <p>Mark the character pressure.</p>
-            </article>
+            ${laperChatMessages.map((message, index) => `
+              <article class="laper-chat-message ${index === 1 ? "task" : "assistant"}">
+                <small>${escapeHtml(message.label)}</small>
+                <p>${escapeHtml(message.text)}</p>
+              </article>
+            `).join("")}
           </div>
-          <label>Ask Laper to check structure or character pressure...</label>
+          <textarea id="laperChatInput" class="laper-chat-input" rows="3" placeholder="Ask Laper to check structure or character pressure...">${escapeHtml(state.aiTask)}</textarea>
           <div class="laper-chat-composer">
             <button type="button">＋</button>
-            <button type="button">Script Doctor</button>
-            <button type="button">●</button>
+            <button id="laperChatRun" type="button">Run</button>
+            <button id="laperChatCopy" type="button">Copy</button>
           </div>
         </section>
         <section class="m3-right-card ai-usage">
@@ -458,6 +462,21 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelector("#laperChatInput")?.addEventListener("input", (event) => {
+    state.aiTask = event.target.value;
+  });
+  document.querySelector("#laperChatRun")?.addEventListener("click", () => {
+    state.aiTask = document.querySelector("#laperChatInput")?.value.trim() || state.aiTask;
+    state.doctorReport = studio.generateScriptDoctorReport();
+    studio.setProject({ ...studio.getState().project, doctorActions: state.doctorReport.actions });
+    persist();
+    render();
+    flash("诊断已生成");
+  });
+  document.querySelector("#laperChatCopy")?.addEventListener("click", async () => {
+    state.aiTask = document.querySelector("#laperChatInput")?.value.trim() || state.aiTask;
+    await copyAiPacket();
+  });
   document.querySelector("#generateCopilotTask").addEventListener("click", () => {
     const job = createCopilotTask();
     flash(`已生成任务：${job.title}`);
