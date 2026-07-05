@@ -6,6 +6,7 @@ import "./styles.css";
 
 const STORAGE_KEY = "personal-screenwriter.project.v1";
 const LIBRARY_KEY = "personal-screenwriter.library.v1";
+const COPILOT_KEY = "personal-screenwriter.copilot.v1";
 
 const defaultProject = {
   title: "星轨试写",
@@ -41,6 +42,7 @@ const activeLibraryItem = projectLibrary.select(projectLibrary.activeProjectId);
 projectLibrary = activeLibraryItem.library;
 const studio = createPersonalScreenwriter({ project: activeLibraryItem.project });
 const defaultWorkbench = studio.getWritingWorkbenchDefaults(activeLibraryItem.project.writingType || "screenplay");
+const savedCopilotJobs = loadCopilotJobs();
 
 const state = {
   activeTab: "doctor",
@@ -56,6 +58,8 @@ const state = {
   selectedVersionId: "",
   compareTargetVersionId: "",
   sceneNavigation: [],
+  copilotJobs: savedCopilotJobs,
+  activeCopilotJobId: savedCopilotJobs[0]?.id || "",
 };
 
 let screenplayHost = null;
@@ -159,6 +163,7 @@ function render() {
           <div class="panel-title">Script Doctor</div>
           <div id="statsGrid" class="stats-grid"></div>
         </section>
+        ${renderCopilotPanel()}
         <section class="panel">
           <div class="tabs">
             <button class="tab ${state.activeTab === "doctor" ? "active" : ""}" data-tab="doctor">诊断</button>
@@ -256,6 +261,44 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelector("#generateCopilotTask").addEventListener("click", () => {
+    const job = createCopilotTask();
+    flash(`已生成任务：${job.title}`);
+    render();
+  });
+  document.querySelector("#copyCopilotTask").addEventListener("click", async () => {
+    const job = getActiveCopilotJob();
+    if (!job) return;
+    await navigator.clipboard?.writeText(job.prompt);
+    flash("已复制给 Codex");
+  });
+  document.querySelector("#saveCopilotAnswer").addEventListener("click", () => {
+    const job = getActiveCopilotJob();
+    const answer = document.querySelector("#copilotAnswer")?.value.trim();
+    if (!job || !answer) return;
+    job.answer = answer;
+    job.status = "answered";
+    persistCopilotJobs();
+    flash("AI 回答已导入");
+    render();
+  });
+  document.querySelector("#applyCopilotAnswer").addEventListener("click", () => {
+    const job = getActiveCopilotJob();
+    if (!job?.answer) return;
+    studio.createVersionSnapshot(`AI Copilot · ${job.title}`);
+    job.status = "applied";
+    persist();
+    persistCopilotJobs();
+    state.activeTab = "versions";
+    flash("已保存为版本");
+    render();
+  });
+  document.querySelector("#copilotTaskList")?.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-copilot-id]");
+    if (!row) return;
+    state.activeCopilotJobId = row.dataset.copilotId;
+    render();
+  });
   document.querySelector("#openControl").addEventListener("click", () => {
     state.activeTab = "doctor";
     state.writingControlReport = studio.buildWritingControlReport();
@@ -429,6 +472,83 @@ function renderDoctorReport(report) {
       </div>
     </article>
   `;
+}
+
+function renderCopilotPanel() {
+  const activeJob = getActiveCopilotJob();
+  return `
+    <section class="panel ai-copilot-panel">
+      <div class="panel-heading">
+        <div>
+          <div class="panel-title">AI Copilot</div>
+          <small>Codex 执行层 · 无 API key</small>
+        </div>
+        <span class="badge soft">${state.copilotJobs.length}</span>
+      </div>
+      <div class="copilot-command-row">
+        <button id="generateCopilotTask" class="button primary">运行诊断</button>
+        <button id="copyCopilotTask" class="button" ${activeJob ? "" : "disabled"}>复制给 Codex</button>
+      </div>
+      <div class="copilot-steps">
+        ${renderCopilotStep("收集剧本上下文", true)}
+        ${renderCopilotStep("生成任务包", Boolean(activeJob))}
+        ${renderCopilotStep("等待 Codex 执行", Boolean(activeJob), activeJob && !activeJob.answer)}
+        ${renderCopilotStep("粘贴/导入 AI 回答", Boolean(activeJob?.answer))}
+        ${renderCopilotStep("保存为版本", activeJob?.status === "applied")}
+      </div>
+      <div id="copilotTaskList" class="copilot-task-list">
+        ${
+          state.copilotJobs.length
+            ? state.copilotJobs
+                .map(
+                  (job) => `
+                    <button class="copilot-task-card ${job.id === state.activeCopilotJobId ? "active" : ""}" data-copilot-id="${escapeHtml(job.id)}">
+                      <strong>${escapeHtml(job.title)}</strong>
+                      <span>${escapeHtml(job.status === "applied" ? "已应用" : job.answer ? "已导入回答" : "等待 Codex")}</span>
+                      <small>${escapeHtml(job.createdAt)}</small>
+                    </button>
+                  `,
+                )
+                .join("")
+            : `<p class="empty">点击“运行诊断”生成可复制给 Codex 的任务卡。</p>`
+        }
+      </div>
+      <label class="field-label" for="copilotAnswer">AI 回答</label>
+      <textarea id="copilotAnswer" class="mini-editor" placeholder="把 Codex 生成的诊断/改写结果粘贴到这里">${escapeHtml(activeJob?.answer || "")}</textarea>
+      <div class="copilot-command-row">
+        <button id="saveCopilotAnswer" class="button" ${activeJob ? "" : "disabled"}>导入 AI 回答</button>
+        <button id="applyCopilotAnswer" class="button" ${activeJob?.answer ? "" : "disabled"}>保存为版本</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderCopilotStep(label, done, active = false) {
+  return `<span class="copilot-step ${done ? "done" : ""} ${active ? "active" : ""}">${escapeHtml(label)}</span>`;
+}
+
+function createCopilotTask() {
+  const packet = studio.buildAiPacket({
+    task: state.aiTask,
+    templateIds: state.selectedTemplateIds,
+  });
+  const title = (state.aiTask.split(/[：\n]/)[0] || "Script Doctor").slice(0, 28);
+  const job = {
+    id: `copilot-${Date.now()}`,
+    title,
+    prompt: packet.prompt,
+    answer: "",
+    status: "waiting",
+    createdAt: new Date().toLocaleString("zh-CN", { hour12: false }),
+  };
+  state.copilotJobs = [job, ...state.copilotJobs].slice(0, 8);
+  state.activeCopilotJobId = job.id;
+  persistCopilotJobs();
+  return job;
+}
+
+function getActiveCopilotJob() {
+  return state.copilotJobs.find((job) => job.id === state.activeCopilotJobId) || state.copilotJobs[0] || null;
 }
 
 function renderTextQualitySummary(report) {
@@ -1176,6 +1296,10 @@ function persist() {
   localStorage.setItem(LIBRARY_KEY, JSON.stringify(projectLibrary));
 }
 
+function persistCopilotJobs() {
+  localStorage.setItem(COPILOT_KEY, JSON.stringify(state.copilotJobs));
+}
+
 function loadProject() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -1191,6 +1315,15 @@ function loadLibrary() {
     return createPersonalScreenwriter().createProjectLibrary(raw ? JSON.parse(raw) : {});
   } catch {
     return createPersonalScreenwriter().createProjectLibrary();
+  }
+}
+
+function loadCopilotJobs() {
+  try {
+    const jobs = JSON.parse(localStorage.getItem(COPILOT_KEY) || "[]");
+    return Array.isArray(jobs) ? jobs.slice(0, 8) : [];
+  } catch {
+    return [];
   }
 }
 
