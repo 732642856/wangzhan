@@ -227,6 +227,29 @@ function render() {
           <strong>Writing Copilot</strong>
           <small>Script Doctor · full context</small>
         </div>
+        <section class="m3-right-card laper-ai-task-card laper-chat-card">
+          <div class="laper-chat-title"><span>Script Doctor</span><button type="button">↗</button></div>
+          <div class="laper-chat-thread">
+            <article class="laper-chat-message assistant">
+              <small>Opening rhythm...</small>
+              <p>Check the first four scenes.</p>
+            </article>
+            <article class="laper-chat-message task">
+              <small>Organizing script structure</small>
+              <p>The shape works. Scene two delays pressure.</p>
+            </article>
+            <article class="laper-chat-message assistant">
+              <small>Locating character goals</small>
+              <p>Mark the character pressure.</p>
+            </article>
+          </div>
+          <label>Ask Laper to check structure or character pressure...</label>
+          <div class="laper-chat-composer">
+            <button type="button">＋</button>
+            <button type="button">Script Doctor</button>
+            <button type="button">●</button>
+          </div>
+        </section>
         <section class="m3-right-card ai-usage">
           <div>
             <span>AI usage</span>
@@ -260,16 +283,6 @@ function render() {
           <div class="laper-segmented"><button type="button">Scroll</button><button class="active" type="button">Paged</button></div>
           <span>Script format</span>
           <div class="laper-format-row"><button type="button">INT.</button><button type="button">Action</button><button type="button">Dialogue</button></div>
-        </section>
-        <section class="m3-right-card laper-ai-task-card">
-          <div class="laper-task-title"><span>Opening rhythm...</span><b>↗</b></div>
-          <button type="button">Check the first four scenes.</button>
-          <button type="button">Organizing script structure</button>
-          <small>The shape works. Scene two delays pressure.</small>
-          <button type="button">Mark the character pressure.</button>
-          <button type="button">Locating character goals</button>
-          <label>Ask Laper to check structure or character pressure...</label>
-          <div><button type="button">＋</button><button type="button">Script Doctor</button><button type="button">●</button></div>
         </section>
         <div class="doctor-status-stack">
           <div class="doctor-status-card active">
