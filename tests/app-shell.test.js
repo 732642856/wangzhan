@@ -57,6 +57,16 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "Breakdown board",
     "关系墙",
     "breakdown-card",
+    "laper-shell",
+    "script-page-surface",
+    "Script",
+    "Outline",
+    "Cover",
+    "Writing",
+    "Info",
+    "Version history",
+    "Story objects",
+    "Writing Copilot",
   ]) {
     assert.match(`${appSource}\n${stylesSource}`, new RegExp(token));
   }

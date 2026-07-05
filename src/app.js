@@ -74,7 +74,7 @@ function render() {
   const writingType = project.writingType || "screenplay";
   const writingConfig = studio.getWritingTypeConfig(writingType);
   app.innerHTML = `
-    <main class="shell professional-shell">
+    <main class="shell professional-shell laper-shell">
       <aside class="rail project-database">
         <div class="brand">
           <span class="brand-mark">剧</span>
@@ -112,8 +112,8 @@ function render() {
         <section class="panel asset-panel">
           <div class="panel-heading">
             <div>
-              <div class="panel-title">对象库</div>
-              <small>Characters / Locations / Props / Beats / Assets</small>
+              <div class="panel-title">Story objects</div>
+              <small>Projects / Script / Scenes / Characters / Props / Locations / Assets</small>
             </div>
             <span id="assetCount" class="badge"></span>
           </div>
@@ -152,13 +152,25 @@ function render() {
             </div>
           </div>
           <div class="focus-strip">
+            <span class="script-mode-chip active">Script</span>
+            <span class="script-mode-chip">Outline</span>
+            <span class="script-mode-chip">Cover</span>
             ${writingConfig.aiFocus.map((item) => `<span class="focus-chip">${escapeHtml(item)}</span>`).join("")}
           </div>
         </div>
-        <div id="screenplayHost" class="screenplay-host-shell"></div>
+        <div id="screenplayHost" class="screenplay-host-shell script-page-surface"></div>
       </section>
 
       <aside class="inspector script-doctor">
+        <div class="copilot-tabs">
+          <span class="active">Writing</span>
+          <span>Info</span>
+          <span>Version history</span>
+        </div>
+        <div class="copilot-heading">
+          <strong>Writing Copilot</strong>
+          <small>Script Doctor · full context</small>
+        </div>
         <section class="panel stats">
           <div class="panel-title">Script Doctor</div>
           <div id="statsGrid" class="stats-grid"></div>
