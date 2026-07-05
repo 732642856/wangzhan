@@ -6,6 +6,13 @@ TARGET_DIR="${1:-$HOME/Documents/personal-screenwriter-cloud}"
 
 mkdir -p "$TARGET_DIR"
 
+# Excluded dirs are protected from rsync --delete, so clear stale runtime copies.
+rm -rf \
+  "$TARGET_DIR/node_modules" \
+  "$TARGET_DIR/dist" \
+  "$TARGET_DIR/.codex" \
+  "$TARGET_DIR/.serena"
+
 rsync -av --delete \
   --exclude .git \
   --exclude node_modules \
