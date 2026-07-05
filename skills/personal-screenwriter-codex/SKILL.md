@@ -16,6 +16,13 @@ Use this skill when the user wants to work with the local Personal Screenwriter 
 - `personal-screenwriter_build_ai_packet` to build an AI prompt packet
 - `personal-screenwriter_export_project` to export full project json
 
+## Codex-Only Commands
+
+- If the user says "打开编剧助手" or "打开工作台", call `open_app` and give the returned local URL.
+- If the user says "运行诊断" without pasting a task, call `build_ai_packet` with a script-doctor task, then answer the packet directly in chat.
+- If the user pastes a Copilot task card or says "执行这个任务", treat the pasted task as the AI packet and return a structured diagnosis or rewrite for pasting back into the app.
+- If the user asks to save or update project data from chat, use `get_project` first, then `set_project` with the smallest partial project update.
+
 ## Rules
 
 - Prefer MCP tools for project reads/writes over editing `.codex/project.json` by hand.

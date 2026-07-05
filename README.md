@@ -84,6 +84,13 @@ Tools:
 - `build_ai_packet`
 - `export_project`
 
+Codex-only commands:
+
+- `打开编剧助手`: opens the local workbench URL inside Codex.
+- `运行诊断`: builds a Script Doctor packet from the bridge project and answers in chat.
+- `执行这个任务: ...`: runs a pasted Copilot task card and returns text to paste back into the app.
+- `保存这个项目更新: ...`: reads the bridge project first, then writes the smallest project update.
+
 ### Local Codex Plugin
 
 ```bash
