@@ -2432,3 +2432,451 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Laper reference pass: match the public product mockup, not just a dark three-column app. */
+body {
+  min-width: 0;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(49, 132, 94, 0.11) 1px, transparent 0),
+    linear-gradient(180deg, #fbfcfb 0%, #f3f7f4 100%);
+  background-size: 10px 10px, auto;
+}
+
+.laper-reference-workbench {
+  grid-template-columns: 132px minmax(0, 1fr) 176px;
+  width: calc(100vw - 24px);
+  min-width: 0;
+  min-height: calc(100vh - 24px);
+  margin: 12px auto;
+  overflow: hidden;
+  background: rgba(250, 252, 250, 0.96);
+  border: 1px solid #dfe9e4;
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(42, 75, 58, 0.13);
+}
+
+.laper-reference-workbench .laper-object-nav {
+  padding: 10px 8px;
+  color: #29312d;
+  background: #f7faf7;
+  border-right: 1px solid #e2ebe5;
+}
+
+.laper-reference-light-nav .noop,
+.laper-reference-workbench .laper-object-nav {
+  --laper-reference-light-nav: #f7faf7;
+}
+
+.laper-reference-workbench .brand {
+  margin-bottom: 8px;
+  padding: 0 2px 8px;
+  border-bottom: 1px solid #e1e9e4;
+}
+
+.laper-reference-workbench .brand-mark {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+  font-size: 12px;
+  background: #2f8f61;
+  border-radius: 5px;
+}
+
+.laper-reference-workbench .brand strong {
+  color: #1e2722;
+  font-size: 12px;
+}
+
+.laper-reference-workbench .brand small,
+.laper-reference-workbench .rail small {
+  color: #78847e;
+  font-size: 10px;
+}
+
+.laper-reference-workbench .m3-object-menu {
+  gap: 2px;
+}
+
+.laper-reference-workbench .m3-object-item {
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #2d3832;
+  background: transparent;
+  border-radius: 5px;
+}
+
+.laper-reference-workbench .m3-object-item span {
+  font-size: 10px;
+  font-weight: 720;
+}
+
+.laper-reference-workbench .m3-object-item small {
+  max-width: 58px;
+  color: #87938d;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .m3-object-item.active {
+  color: #1d2b23;
+  background: #e6eee8;
+}
+
+.laper-reference-workbench .project-panel {
+  margin-top: 8px;
+  padding: 6px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .rail .panel {
+  background: #ffffff;
+  border-color: #e2ebe5;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .project-list,
+.laper-reference-workbench .asset-list {
+  color: #29312d;
+}
+
+.laper-reference-workbench .rail .project-row,
+.laper-reference-workbench .rail .project-row.active,
+.laper-reference-workbench .rail .asset,
+.laper-reference-workbench .rail .asset.active {
+  color: #29312d;
+  background: #f4f7f4;
+  border-color: #e1e9e4;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .rail .project-row span,
+.laper-reference-workbench .rail .project-row strong,
+.laper-reference-workbench .rail .asset span,
+.laper-reference-workbench .rail .asset strong {
+  color: #1f2a24;
+}
+
+.laper-reference-workbench .rail .project-row small,
+.laper-reference-workbench .rail .asset small {
+  color: #78847e;
+}
+
+.laper-reference-workbench .project-panel .panel-title,
+.laper-reference-workbench .asset-panel .panel-title {
+  color: #526058;
+  font-size: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.laper-reference-workbench .project-panel .input,
+.laper-reference-workbench .asset-panel .input {
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #24312a;
+  font-size: 10px;
+  background: #f4f7f4;
+  border-color: #e1e9e4;
+}
+
+.laper-reference-workbench .project-panel .button-grid,
+.laper-reference-workbench .asset-panel .panel-heading,
+.laper-reference-workbench .asset-panel #assetFilter {
+  display: none;
+}
+
+.laper-reference-workbench .asset-panel {
+  flex: 1;
+  min-height: 0;
+  margin: 8px 0 0;
+  padding: 6px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .asset-list {
+  margin-top: 0;
+}
+
+.laper-reference-workbench .asset-group-title {
+  color: #2e3a34;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.laper-reference-workbench .asset {
+  padding: 4px 5px;
+  color: #2e3a34;
+  background: #f4f7f4;
+  border-color: #e4ebe6;
+}
+
+.laper-reference-workbench .asset span {
+  font-size: 10px;
+}
+
+.laper-reference-workbench .asset small {
+  font-size: 9px;
+}
+
+.laper-reference-workbench .laper-script-canvas {
+  padding: 0;
+  background: #ffffff;
+  border-right: 1px solid #e2ebe5;
+}
+
+.laper-reference-workbench .writer-head {
+  margin: 0;
+  padding: 10px 12px 8px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #e5ece7;
+}
+
+.laper-reference-workbench .toolbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 8px;
+}
+
+.laper-reference-workbench .eyebrow,
+.laper-reference-workbench .toolbar small {
+  display: none;
+}
+
+.laper-reference-workbench .toolbar h1 {
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.laper-reference-workbench .toolbar-actions {
+  gap: 4px;
+}
+
+.laper-reference-workbench .icon-button,
+.laper-reference-workbench .focus-chip,
+.laper-reference-workbench .script-mode-chip {
+  min-height: 22px;
+  padding: 4px 7px;
+  color: #39423d;
+  font-size: 10px;
+  background: #ffffff;
+  border: 1px solid #dfe7e2;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(31, 49, 39, 0.04);
+}
+
+.laper-reference-workbench .script-mode-chip.active {
+  color: #ffffff;
+  background: #222925;
+  border-color: #222925;
+}
+
+.laper-reference-workbench .focus-strip {
+  gap: 4px;
+  padding: 6px 12px 0;
+  border-top: 1px solid #eef3ef;
+}
+
+.laper-reference-workbench .script-page-frame {
+  max-width: none;
+  margin: 0;
+  background: #f7faf7;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .script-page-header {
+  padding: 8px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5ece7;
+  border-radius: 0;
+}
+
+.laper-reference-workbench .script-page-header span,
+.laper-reference-workbench .script-page-header small,
+.laper-reference-workbench .revision-margin {
+  color: #7a8580;
+  font-size: 10px;
+}
+
+.laper-reference-workbench .script-page-header strong {
+  font-size: 11px;
+}
+
+.laper-reference-workbench .revision-margin {
+  justify-self: end;
+  padding: 3px 6px;
+  background: #f4f7f4;
+  border: 1px solid #e0e8e3;
+  border-radius: 999px;
+}
+
+.laper-reference-workbench .script-page-surface {
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-workbench {
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-layout {
+  grid-template-columns: 1fr;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-nav {
+  display: none;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-stage {
+  padding: 14px 18px 28px;
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-inspector {
+  display: none;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-editor {
+  max-width: 420px;
+  min-height: 480px;
+  margin: 0 auto;
+  padding: 28px 36px;
+  background: #fffdf8;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 16px 40px rgba(63, 80, 70, 0.13);
+}
+
+.laper-reference-workbench .laper-writing-panel {
+  padding: 8px;
+  background: #f8fbf8;
+  border-left: 0;
+}
+
+.laper-reference-ai-card,
+.laper-reference-workbench .laper-writing-panel {
+  --laper-reference-ai-card: #ffffff;
+}
+
+.laper-reference-workbench .copilot-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .copilot-tabs span {
+  padding: 5px 4px;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .copilot-heading,
+.laper-reference-workbench .m3-right-card,
+.laper-reference-workbench .m3-save-version,
+.laper-reference-workbench .doctor-status-card,
+.laper-reference-workbench .context-freshness,
+.laper-reference-workbench .panel {
+  border-color: #e2ebe5;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(42, 75, 58, 0.08);
+}
+
+.laper-reference-workbench .copilot-heading {
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #e2ebe5;
+}
+
+.laper-reference-workbench .copilot-heading strong,
+.laper-reference-workbench .m3-right-card strong,
+.laper-reference-workbench .doctor-status-card strong {
+  font-size: 11px;
+}
+
+.laper-reference-workbench .m3-right-card {
+  gap: 5px;
+  padding: 8px;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .m3-right-card span,
+.laper-reference-workbench .m3-right-card small,
+.laper-reference-workbench .doctor-status-card span,
+.laper-reference-workbench .doctor-status-card small {
+  font-size: 9px;
+}
+
+.laper-reference-workbench .m3-data-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-reference-workbench .m3-data-grid strong {
+  padding: 5px;
+  background: #f4f8f4;
+  border-color: #e2ebe5;
+}
+
+.laper-reference-workbench .m3-data-grid b {
+  color: #202823;
+  font-size: 15px;
+}
+
+.laper-reference-workbench .m3-save-version {
+  min-height: 30px;
+  color: #1d4f36;
+  font-size: 10px;
+  background: #ffffff;
+  border: 1px solid #dfe8e2;
+}
+
+.laper-reference-workbench .m3-save-version::before {
+  content: "↻ ";
+}
+
+.laper-reference-workbench .doctor-status-stack {
+  gap: 6px;
+}
+
+.laper-reference-workbench .doctor-status-card {
+  padding: 7px;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .context-freshness,
+.laper-reference-workbench .stats {
+  display: none;
+}
+
+.laper-reference-workbench .ai-copilot-panel {
+  max-height: 238px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .tabs {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .laper-reference-workbench {
+    grid-template-columns: 122px minmax(0, 1fr) 170px;
+    width: calc(100vw - 12px);
+    min-height: calc(100vh - 12px);
+    margin: 6px auto;
+    border-radius: 14px;
+  }
+
+  .laper-reference-workbench .script-page-surface .screenplay-stage {
+    padding: 12px;
+  }
+
+  .laper-reference-workbench .script-page-surface .screenplay-editor {
+    max-width: 360px;
+    padding: 24px 26px;
+  }
+}

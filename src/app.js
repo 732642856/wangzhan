@@ -85,7 +85,7 @@ function render() {
     ["Assets", `${project.assets?.length || 0} assets`],
   ];
   app.innerHTML = `
-    <main class="shell professional-shell laper-shell m3-laper-workspace">
+    <main class="shell professional-shell laper-shell m3-laper-workspace laper-reference-workbench">
       <aside class="rail project-database laper-object-nav">
         <div class="brand">
           <span class="brand-mark">剧</span>
