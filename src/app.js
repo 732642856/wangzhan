@@ -158,7 +158,15 @@ function render() {
             ${writingConfig.aiFocus.map((item) => `<span class="focus-chip">${escapeHtml(item)}</span>`).join("")}
           </div>
         </div>
-        <div id="screenplayHost" class="screenplay-host-shell script-page-surface"></div>
+        <div class="script-page-frame">
+          <div class="script-page-header">
+            <span>Script page</span>
+            <strong>${escapeHtml(project.title)}</strong>
+            <small>Revision margin · Page 1</small>
+          </div>
+          <div class="revision-margin">AI notes</div>
+          <div id="screenplayHost" class="screenplay-host-shell script-page-surface"></div>
+        </div>
       </section>
 
       <aside class="inspector script-doctor">
@@ -170,6 +178,19 @@ function render() {
         <div class="copilot-heading">
           <strong>Writing Copilot</strong>
           <small>Script Doctor · full context</small>
+        </div>
+        <div class="doctor-status-stack">
+          <div class="doctor-status-card active">
+            <span>Context ready</span>
+            <strong>${summary.sceneCount} scenes loaded</strong>
+            <small>Full-script context synced</small>
+          </div>
+          <div class="doctor-status-card">
+            <span>Draft health</span>
+            <strong>${summary.characterCount} characters · ${summary.beatCount} beats</strong>
+            <small>Run Script Doctor for next actions</small>
+          </div>
+          <div class="context-freshness">Full-script context synced · Codex is the AI layer</div>
         </div>
         <section class="panel stats">
           <div class="panel-title">Script Doctor</div>
