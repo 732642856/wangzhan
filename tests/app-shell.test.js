@@ -75,9 +75,25 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "revision-margin",
     "Context ready",
     "Full-script context synced",
+    "m3-laper-workspace",
+    "laper-object-nav",
+    "laper-script-canvas",
+    "laper-writing-panel",
+    "AI usage",
+    "Script data",
+    "Save version",
+    "Collab",
+    "Storyboard",
+    "Beats",
   ]) {
     assert.match(`${appSource}\n${stylesSource}`, new RegExp(token));
   }
+});
+
+test("M3 Save version is the only snapshot action id", () => {
+  const matches = appSource.match(/id="snapshotProject"/g) || [];
+  assert.equal(matches.length, 1);
+  assert.match(appSource, /class="m3-save-version"/);
 });
 
 test("GitHub Pages build uses relative asset URLs", () => {

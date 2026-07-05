@@ -73,16 +73,35 @@ function render() {
   const { project, summary } = studio.getState();
   const writingType = project.writingType || "screenplay";
   const writingConfig = studio.getWritingTypeConfig(writingType);
+  const objectNavItems = [
+    ["Projects", `${projectLibrary.projects.length} projects`],
+    ["Script", `${summary.sceneCount} scenes`],
+    ["Beats", `${summary.beatCount} beats`],
+    ["Storyboard", `${summary.frameCount} frames`],
+    ["Scenes", `${summary.sceneCount} scenes`],
+    ["Characters", `${summary.characterCount} characters`],
+    ["Props", `${project.bible?.props?.length || 0} props`],
+    ["Locations", `${summary.locationCount} locations`],
+    ["Assets", `${project.assets?.length || 0} assets`],
+  ];
   app.innerHTML = `
-    <main class="shell professional-shell laper-shell">
-      <aside class="rail project-database">
+    <main class="shell professional-shell laper-shell m3-laper-workspace">
+      <aside class="rail project-database laper-object-nav">
         <div class="brand">
           <span class="brand-mark">剧</span>
           <div>
-            <strong>Screenwriter Studio</strong>
-            <small>剧本数据库 · AI 编剧室 · 制作预备</small>
+            <strong>${escapeHtml(project.title)}</strong>
+            <small>Full-script AI workspace</small>
           </div>
         </div>
+        <nav class="m3-object-menu" aria-label="Story object navigation">
+          ${objectNavItems.map(([item, meta]) => `
+            <button class="m3-object-item ${item === "Script" ? "active" : ""}" type="button">
+              <span>${escapeHtml(item)}</span>
+              <small>${escapeHtml(meta)}</small>
+            </button>
+          `).join("")}
+        </nav>
         <section class="panel compact project-panel">
           <div class="panel-title">剧本数据库</div>
           <input id="projectTitle" class="input" aria-label="项目名" />
@@ -96,7 +115,7 @@ function render() {
           </div>
           <div class="button-grid">
             <button id="saveProject" class="button primary">保存</button>
-            <button id="snapshotProject" class="button">快照</button>
+            <button class="button" data-secondary-snapshot type="button">快照</button>
             <button id="checkinProject" class="button">Check-in</button>
             <button id="newProject" class="button">新建</button>
             <button id="importProject" class="button">导入</button>
@@ -126,7 +145,7 @@ function render() {
         </section>
       </aside>
 
-      <section class="writer">
+      <section class="writer laper-script-canvas">
         <div class="writer-head">
           <div class="toolbar">
             <div>
@@ -169,16 +188,34 @@ function render() {
         </div>
       </section>
 
-      <aside class="inspector script-doctor">
+      <aside class="inspector script-doctor laper-writing-panel">
         <div class="copilot-tabs">
           <span class="active">Writing</span>
           <span>Info</span>
+          <span>Collab</span>
           <span>Version history</span>
         </div>
         <div class="copilot-heading">
           <strong>Writing Copilot</strong>
           <small>Script Doctor · full context</small>
         </div>
+        <section class="m3-right-card ai-usage">
+          <div>
+            <span>AI usage</span>
+            <strong>Codex window</strong>
+          </div>
+          <small>No API key · paste results back into the script</small>
+        </section>
+        <section class="m3-right-card script-data">
+          <span>Script data</span>
+          <div class="m3-data-grid">
+            <strong><b>${summary.sceneCount}</b><small>Scenes</small></strong>
+            <strong><b>${summary.characterCount}</b><small>Characters</small></strong>
+            <strong><b>${summary.frameCount}</b><small>Frames</small></strong>
+            <strong><b>${summary.relationCount}</b><small>Relations</small></strong>
+          </div>
+        </section>
+        <button id="snapshotProject" class="m3-save-version">Save version</button>
         <div class="doctor-status-stack">
           <div class="doctor-status-card active">
             <span>Context ready</span>
