@@ -28,7 +28,7 @@ Hosted mode does **not** require:
 
 ### GitHub Pages
 
-Push the `personal-screenwriter` branch. The `pages` workflow builds `dist/` and deploys it with GitHub Pages.
+Enable GitHub Pages with GitHub Actions in the repo settings, then run the `pages` workflow manually. It builds `dist/` and deploys it with GitHub Pages.
 
 ### Vercel
 

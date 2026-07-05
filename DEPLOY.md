@@ -33,7 +33,11 @@ git push -u origin main
 
 ## 3a. Deploy on GitHub Pages
 
-Push the `personal-screenwriter` branch. The included `pages` workflow builds `dist/` and deploys it through GitHub Pages.
+1. Open GitHub repo settings
+2. Enable Pages with GitHub Actions
+3. Run the `pages` workflow manually
+
+The workflow builds `dist/` and deploys it through GitHub Pages.
 
 This repo already includes:
 
