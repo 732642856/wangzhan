@@ -431,6 +431,49 @@ function renderDoctorReport(report) {
   `;
 }
 
+function renderTextQualitySummary(report) {
+  return `
+    <div class="report-card-grid">
+      <section class="report-summary-item">
+        <small>场景功能</small>
+        ${report.sceneFunctions.slice(0, 3).map((item) => `<p>${escapeHtml(item.heading)}：${escapeHtml(item.function)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>人物弧光</small>
+        ${report.characterArcs.slice(0, 3).map((item) => `<p>${escapeHtml(item.name)}：${escapeHtml(item.arc)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>改写优先级</small>
+        ${report.rewritePriorities.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+    </div>
+  `;
+}
+
+function renderWritingControlSummary(report) {
+  return `
+    <div class="report-card-grid control-status-grid">
+      <section class="report-summary-item">
+        <small>当前状态</small>
+        <strong>${report.status.sceneCount} 场 / ${report.status.characterCount} 人物 / ${report.status.locationCount} 地点</strong>
+        <p>${report.status.wordCount} 字 · 约 ${report.status.estimatedMinutes} 分钟</p>
+      </section>
+      <section class="report-summary-item">
+        <small>Script Doctor</small>
+        ${report.doctor.findings.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+      <section class="report-summary-item">
+        <small>文本质检</small>
+        ${report.quality.rewritePriorities.slice(0, 3).map((item) => `<p>${escapeHtml(item)}</p>`).join("")}
+      </section>
+    </div>
+    <section class="control-next-task">
+      <small>下一步任务</small>
+      <p>${escapeHtml(report.nextTask)}</p>
+    </section>
+  `;
+}
+
 function renderTab() {
   relationWallUnmount?.();
   relationWallUnmount = null;
@@ -562,7 +605,8 @@ function renderTab() {
                   <strong>${escapeHtml(state.textQualityReport.title)}</strong>
                 </div>
               </div>
-              <textarea class="prompt-output" readonly>${escapeHtml(state.textQualityReport.markdown)}</textarea>
+              ${renderTextQualitySummary(state.textQualityReport)}
+              <textarea class="prompt-output copyable-report" readonly>${escapeHtml(state.textQualityReport.markdown)}</textarea>
             </div>
           `
           : ""
@@ -578,7 +622,8 @@ function renderTab() {
                 </div>
                 <button id="sendControlTask" class="button">发送下一步</button>
               </div>
-              <textarea class="prompt-output" readonly>${escapeHtml(state.writingControlReport.markdown)}</textarea>
+              ${renderWritingControlSummary(state.writingControlReport)}
+              <textarea class="prompt-output copyable-report" readonly>${escapeHtml(state.writingControlReport.markdown)}</textarea>
             </div>
           `
           : ""
