@@ -1685,3 +1685,1574 @@ body {
   color: var(--muted);
   font-size: 12px;
 }
+
+/* M2.5: Laper-style script-first shell. */
+.laper-shell {
+  grid-template-columns: 230px minmax(520px, 1fr) 320px;
+  min-width: 1070px;
+  background: #eef1f0;
+  border-top: 0;
+}
+
+.laper-shell .rail,
+.laper-shell .inspector {
+  height: 100vh;
+  overflow: auto;
+}
+
+.laper-shell .rail {
+  padding: 16px 12px;
+}
+
+.laper-shell .rail {
+  color: #eef4f2;
+  background: #171b22;
+  border-right: 1px solid #0f1217;
+}
+
+.laper-shell .brand-mark {
+  color: #141820;
+  background: #e8f2ed;
+  border-radius: 8px;
+}
+
+.laper-shell .brand small,
+.laper-shell .rail small,
+.laper-shell .rail .eyebrow {
+  color: #aab2ba;
+}
+
+.laper-shell .rail .panel {
+  padding: 12px;
+  background: #20252d;
+  border-color: #353b45;
+  box-shadow: none;
+}
+
+.laper-shell .project-panel {
+  max-height: 352px;
+  overflow: auto;
+}
+
+.laper-shell .rail .panel-title,
+.laper-shell .asset-group-title {
+  color: #f4f7f5;
+}
+
+.laper-shell .rail .input,
+.laper-shell .rail .project-row,
+.laper-shell .rail .asset,
+.laper-shell .rail .button {
+  color: #eff4f2;
+  background: #282e37;
+  border-color: #3b424d;
+}
+
+.laper-shell .rail .input::placeholder {
+  color: #8e98a4;
+}
+
+.laper-shell .rail .button.primary,
+.laper-shell .rail .type-pill.active,
+.laper-shell .rail .project-row.active {
+  color: #11151b;
+  background: #dcebe4;
+  border-color: #dcebe4;
+  box-shadow: none;
+}
+
+.laper-shell .writer {
+  height: 100vh;
+  overflow: auto;
+  padding: 22px 24px 48px;
+  background: #eef1f0;
+}
+
+.laper-shell .asset-panel {
+  height: calc(100vh - 430px);
+  min-height: 220px;
+}
+
+.laper-shell .writer-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: -22px -24px 18px;
+  padding: 18px 24px 14px;
+  background: rgba(238, 241, 240, 0.95);
+  border-bottom: 1px solid #d7dddc;
+  backdrop-filter: blur(14px);
+}
+
+.laper-shell .toolbar h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.laper-shell .workspace-status {
+  background: #fff;
+  border-color: #d8dddd;
+  box-shadow: none;
+}
+
+.script-page-frame {
+  position: relative;
+  display: grid;
+  gap: 10px;
+}
+
+.script-page-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
+  color: #69717b;
+  background: #fff;
+  border: 1px solid #d7dddc;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.script-page-header strong {
+  color: #171b22;
+  font-size: 13px;
+}
+
+.revision-margin {
+  position: absolute;
+  right: 12px;
+  top: 58px;
+  z-index: 2;
+  padding: 5px 7px;
+  color: #7b838c;
+  background: #f5f7f6;
+  border: 1px solid #dce1df;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.script-mode-chip,
+.laper-shell .focus-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  color: #1d242b;
+  background: #fff;
+  border: 1px solid #d7dddc;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.script-mode-chip.active {
+  color: #fff;
+  background: #171b22;
+  border-color: #171b22;
+}
+
+.script-page-surface .screenplay-workbench {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.script-page-surface .screenplay-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.script-page-surface .screenplay-stage,
+.script-page-surface .screenplay-editor,
+.script-page-surface .screenplay-prosemirror {
+  background: #fff;
+}
+
+.script-page-surface .screenplay-editor {
+  min-height: 780px;
+  padding: 44px 52px;
+  border: 1px solid #d9dddd;
+  box-shadow: 0 18px 48px rgba(31, 36, 43, 0.08);
+}
+
+.script-page-surface .screenplay-nav {
+  position: sticky;
+  top: 126px;
+  height: calc(100vh - 154px);
+  background: transparent;
+  border: 0;
+}
+
+.laper-shell .inspector {
+  background: #f8f9f8;
+  border-left: 1px solid #d7dddc;
+}
+
+.copilot-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.35fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.copilot-tabs span {
+  min-height: 30px;
+  padding: 7px 8px;
+  text-align: center;
+  color: #69717b;
+  background: #fff;
+  border: 1px solid #d9dddd;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.copilot-tabs .active {
+  color: #fff;
+  background: #171b22;
+  border-color: #171b22;
+}
+
+.copilot-heading {
+  display: grid;
+  gap: 3px;
+  margin: 0 0 12px;
+}
+
+.copilot-heading strong {
+  font-size: 18px;
+}
+
+.doctor-status-stack {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.doctor-status-card {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #d9dddd;
+  border-radius: 8px;
+}
+
+.doctor-status-card.active {
+  border-color: #171b22;
+  box-shadow: inset 3px 0 0 #171b22;
+}
+
+.doctor-status-card span,
+.context-freshness {
+  color: #69717b;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.doctor-status-card strong {
+  font-size: 14px;
+}
+
+.doctor-status-card small {
+  color: #69717b;
+}
+
+.context-freshness {
+  padding: 8px 10px;
+  background: #eef1f0;
+  border: 1px solid #d9dddd;
+  border-radius: 999px;
+  text-transform: none;
+}
+
+.laper-shell .inspector .panel {
+  background: #fff;
+  box-shadow: none;
+}
+
+.laper-shell .ai-copilot-panel {
+  border-color: #cfd8d6;
+}
+
+@media (max-width: 1100px) {
+  body {
+    min-width: 840px;
+  }
+
+  .laper-shell {
+    grid-template-columns: 210px minmax(360px, 1fr) 270px;
+    min-width: 840px;
+  }
+
+  .laper-shell .rail,
+  .laper-shell .inspector {
+    padding: 14px 10px;
+  }
+
+  .laper-shell .writer {
+    padding: 18px 16px 36px;
+  }
+
+  .laper-shell .writer-head {
+    margin: -18px -16px 14px;
+    padding: 16px;
+  }
+
+  .laper-shell .toolbar h1 {
+    font-size: 30px;
+  }
+
+  .script-page-surface .screenplay-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .script-page-surface .screenplay-nav {
+    position: static;
+    height: auto;
+  }
+
+  .script-page-surface .screenplay-editor {
+    min-height: 620px;
+    padding: 28px;
+  }
+
+  .script-page-header {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .revision-margin {
+    position: static;
+    justify-self: start;
+  }
+
+  .copilot-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* M3: Laper-style object workspace. */
+.m3-laper-workspace {
+  grid-template-columns: 216px minmax(620px, 1fr) 336px;
+  min-width: 1172px;
+  background: #f3f4f2;
+}
+
+.m3-laper-workspace .laper-object-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 10px;
+  background: #11161d;
+}
+
+.laper-object-nav .brand {
+  margin-bottom: 0;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid #29313a;
+}
+
+.laper-object-nav .brand strong {
+  color: #f8faf7;
+}
+
+.m3-object-menu {
+  display: grid;
+  gap: 4px;
+}
+
+.m3-object-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 8px;
+  color: #cdd6dc;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+
+.m3-object-item span {
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.m3-object-item small {
+  max-width: 84px;
+  overflow: hidden;
+  color: #7f8a96;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-object-item:hover,
+.m3-object-item:focus-visible {
+  color: #f8faf7;
+  background: #202832;
+  outline: none;
+}
+
+.m3-object-item.active {
+  color: #11161d;
+  background: #e7f1eb;
+}
+
+.m3-object-item.active small {
+  color: #4b5c5b;
+}
+
+.laper-object-nav .project-panel {
+  max-height: none;
+  margin-bottom: 0;
+  padding: 9px;
+  background: #171d25;
+  border-color: #2b333d;
+}
+
+.laper-object-nav .project-panel .panel-title {
+  margin-bottom: 7px;
+  color: #f5f8f5;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.laper-object-nav .project-panel .type-switch,
+.laper-object-nav .project-panel .project-meta,
+.laper-object-nav .project-panel [data-secondary-snapshot],
+.laper-object-nav .project-panel #checkinProject,
+.laper-object-nav .project-panel #importLibrary,
+.laper-object-nav .project-panel #exportLibrary {
+  display: none;
+}
+
+.laper-object-nav .project-panel .button-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.laper-object-nav .project-panel .button {
+  min-height: 28px;
+  padding: 5px 4px;
+  font-size: 10px;
+}
+
+.laper-object-nav .project-list {
+  max-height: 128px;
+}
+
+.laper-object-nav .asset-panel {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  margin-bottom: 0;
+}
+
+.laper-object-nav .asset-panel .button-grid {
+  display: none;
+}
+
+.laper-script-canvas {
+  padding: 0 28px 44px;
+  background: #f6f6f3;
+}
+
+.laper-script-canvas .writer-head {
+  margin: 0 -28px 18px;
+  padding: 14px 28px 12px;
+  background: rgba(246, 246, 243, 0.96);
+}
+
+.laper-script-canvas .toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.laper-script-canvas .toolbar h1 {
+  font-size: 28px;
+}
+
+.laper-script-canvas .toolbar small,
+.laper-script-canvas .workspace-status {
+  display: none;
+}
+
+.laper-script-canvas .focus-strip {
+  padding: 8px 0 0;
+  border-top: 1px solid #d9ddda;
+}
+
+.laper-script-canvas .script-page-frame {
+  max-width: 960px;
+  margin: 16px auto 0;
+  background: #ffffff;
+  border: 1px solid #d8ddda;
+  border-radius: 8px;
+  box-shadow: 0 18px 40px rgba(36, 42, 48, 0.1);
+}
+
+.laper-script-canvas .script-page-surface {
+  background: #ffffff;
+  border: 0;
+  box-shadow: none;
+}
+
+.laper-writing-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #fbfbf8;
+  border-left: 1px solid #d6dbd8;
+}
+
+.laper-writing-panel .copilot-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  margin-bottom: 2px;
+  padding: 3px;
+  background: #ecefec;
+  border: 1px solid #d6dbd8;
+  border-radius: 8px;
+}
+
+.laper-writing-panel .copilot-tabs span {
+  min-width: 0;
+  padding: 7px 5px;
+  overflow: hidden;
+  color: #69716f;
+  font-size: 11px;
+  font-weight: 760;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 6px;
+}
+
+.laper-writing-panel .copilot-tabs .active {
+  color: #11161d;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(29, 34, 39, 0.08);
+}
+
+.laper-writing-panel .copilot-heading {
+  padding: 3px 2px 0;
+}
+
+.m3-right-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #d9dfdc;
+  border-radius: 8px;
+}
+
+.m3-right-card > div,
+.m3-right-card span {
+  min-width: 0;
+}
+
+.m3-right-card span {
+  color: #6c7471;
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.m3-right-card strong {
+  color: #151a1f;
+  font-size: 13px;
+}
+
+.m3-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.m3-data-grid strong {
+  display: grid;
+  gap: 1px;
+  padding: 7px;
+  background: #f3f5f2;
+  border: 1px solid #e0e4e0;
+  border-radius: 6px;
+}
+
+.m3-data-grid b {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.m3-data-grid small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-save-version {
+  min-height: 40px;
+  width: 100%;
+  color: #ffffff;
+  font-weight: 800;
+  background: #254f65;
+  border: 1px solid #254f65;
+  border-radius: 7px;
+}
+
+.m3-save-version:hover,
+.m3-save-version:focus-visible {
+  background: #1d4053;
+  outline: none;
+}
+
+.laper-writing-panel .doctor-status-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.laper-writing-panel .doctor-status-card {
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #d9dfdc;
+  border-radius: 8px;
+}
+
+.laper-writing-panel .doctor-status-card.active {
+  border-color: #9cb8ad;
+}
+
+.laper-writing-panel .context-freshness {
+  padding: 8px 10px;
+  color: #4b5c5b;
+  background: #edf4ef;
+  border-radius: 7px;
+}
+
+.laper-writing-panel .panel {
+  margin-bottom: 0;
+  box-shadow: none;
+}
+
+.laper-writing-panel .tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1180px) {
+  body {
+    min-width: 0;
+  }
+
+  .m3-laper-workspace {
+    grid-template-columns: 184px minmax(360px, 1fr) 292px;
+    min-width: 0;
+    width: 100vw;
+  }
+
+  .m3-laper-workspace .laper-object-nav {
+    padding: 12px 8px;
+  }
+
+  .laper-object-nav .project-panel .button-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .laper-object-nav .project-list {
+    max-height: 96px;
+  }
+
+  .laper-script-canvas {
+    padding: 0 14px 36px;
+  }
+
+  .laper-script-canvas .writer-head {
+    margin: 0 -14px 14px;
+    padding: 12px 14px;
+  }
+
+  .laper-script-canvas .toolbar {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .laper-script-canvas .toolbar-actions {
+    justify-content: start;
+  }
+
+  .laper-script-canvas .script-page-frame {
+    max-width: none;
+  }
+
+  .laper-writing-panel {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .m3-laper-workspace {
+    grid-template-columns: 158px minmax(300px, 1fr) 270px;
+  }
+
+  .m3-object-item {
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: 42px;
+  }
+
+  .m3-object-item small {
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .laper-object-nav .asset-panel .panel-heading small,
+  .laper-object-nav .asset-panel .button-grid {
+    display: none;
+  }
+
+  .laper-writing-panel .copilot-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* M4: visible Laper product-workbench parity. */
+.laper-reference-workbench .project-panel,
+.laper-reference-workbench .asset-panel,
+.laper-reference-workbench .doctor-status-stack,
+.laper-reference-workbench .stats,
+.laper-reference-workbench .ai-copilot-panel {
+  display: none;
+}
+
+.laper-project-menu,
+.laper-scene-list,
+.laper-user-card {
+  display: grid;
+  gap: 4px;
+}
+
+.laper-project-menu {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e1e9e4;
+}
+
+.laper-project-menu button,
+.laper-scene-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #2f3934;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+}
+
+.laper-project-menu button,
+.laper-project-menu b,
+.laper-scene-list b {
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.laper-project-menu button.active,
+.laper-scene-list button.active {
+  background: #e8f0ea;
+}
+
+.laper-mini-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0 2px;
+  color: #6f7c75;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.laper-scene-list button {
+  display: grid;
+  justify-items: start;
+  min-height: 30px;
+  background: #f7faf7;
+  border: 1px solid #e3ebe6;
+}
+
+.laper-scene-list span {
+  max-width: 100%;
+  overflow: hidden;
+  color: #26312b;
+  font-size: 9px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.laper-scene-list small {
+  max-width: 100%;
+  overflow: hidden;
+  color: #8a9690;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.laper-user-card {
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  margin-top: auto;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #e2ebe5;
+  border-radius: 9px;
+}
+
+.laper-user-card > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  color: #2d5d43;
+  font-size: 10px;
+  font-weight: 800;
+  background: #eff6f1;
+  border-radius: 999px;
+}
+
+.laper-user-card strong,
+.laper-user-card small {
+  display: block;
+}
+
+.laper-user-card strong {
+  color: #26312b;
+  font-size: 10px;
+}
+
+.laper-user-card small {
+  color: #8a9690;
+  font-size: 8px;
+}
+
+.laper-reference-workbench .screenplay-tools {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 0 4px;
+}
+
+.laper-reference-workbench .screenplay-toolbar {
+  justify-content: center;
+  gap: 5px;
+}
+
+.laper-reference-workbench .screenplay-toolbar.secondary {
+  display: none;
+}
+
+.laper-reference-workbench .focus-chip {
+  display: none;
+}
+
+.laper-reference-workbench .screenplay-tool {
+  min-height: 22px;
+  padding: 4px 8px;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .toolbar-actions #copyPrompt {
+  display: none;
+}
+
+.laper-right-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-right-actions button,
+.laper-segmented button,
+.laper-format-row button,
+.laper-ai-task-card button {
+  min-height: 22px;
+  color: #38433e;
+  font-size: 9px;
+  font-weight: 720;
+  background: #ffffff;
+  border: 1px solid #e0e8e3;
+  border-radius: 6px;
+}
+
+.laper-script-settings {
+  gap: 6px;
+}
+
+.laper-segmented {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  background: #f3f7f4;
+  border: 1px solid #e2ebe5;
+  border-radius: 7px;
+}
+
+.laper-segmented button {
+  border: 0;
+}
+
+.laper-segmented .active {
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(44, 68, 55, 0.08);
+}
+
+.laper-format-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-ai-task-card {
+  gap: 6px;
+}
+
+.laper-chat-card {
+  gap: 7px;
+  background: #ffffff;
+}
+
+.laper-chat-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #25312b;
+  font-size: 10px;
+  font-weight: 820;
+}
+
+.laper-chat-title button {
+  width: 24px;
+  min-height: 22px;
+  padding: 0;
+}
+
+.laper-chat-thread {
+  display: grid;
+  gap: 5px;
+}
+
+.laper-chat-message {
+  display: grid;
+  gap: 3px;
+  padding: 7px;
+  background: #f6faf6;
+  border: 1px solid #e0e9e3;
+  border-radius: 8px;
+}
+
+.laper-chat-message.task {
+  background: #fffefa;
+}
+
+.laper-chat-message p {
+  margin: 0;
+  color: #26332d;
+  font-size: 10px;
+  font-weight: 720;
+  line-height: 1.32;
+}
+
+.laper-chat-composer {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  gap: 4px;
+}
+
+.laper-task-title {
+  display: flex;
+  justify-content: space-between;
+  color: #28332d;
+  font-size: 10px;
+  font-weight: 780;
+}
+
+.laper-ai-task-card small,
+.laper-ai-task-card label {
+  color: #7f8b85;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.laper-ai-task-card div:last-child {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  gap: 4px;
+}
+
+/* Laper reference pass: match the public product mockup, not just a dark three-column app. */
+body {
+  min-width: 0;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(49, 132, 94, 0.11) 1px, transparent 0),
+    linear-gradient(180deg, #fbfcfb 0%, #f3f7f4 100%);
+  background-size: 10px 10px, auto;
+}
+
+.laper-reference-workbench {
+  grid-template-columns: 132px minmax(0, 1fr) 176px;
+  width: calc(100vw - 24px);
+  min-width: 0;
+  min-height: calc(100vh - 24px);
+  margin: 12px auto;
+  overflow: hidden;
+  background: rgba(250, 252, 250, 0.96);
+  border: 1px solid #dfe9e4;
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(42, 75, 58, 0.13);
+}
+
+.laper-reference-workbench .laper-object-nav {
+  padding: 10px 8px;
+  color: #29312d;
+  background: #f7faf7;
+  border-right: 1px solid #e2ebe5;
+}
+
+.laper-reference-light-nav .noop,
+.laper-reference-workbench .laper-object-nav {
+  --laper-reference-light-nav: #f7faf7;
+}
+
+.laper-reference-workbench .brand {
+  margin-bottom: 8px;
+  padding: 0 2px 8px;
+  border-bottom: 1px solid #e1e9e4;
+}
+
+.laper-reference-workbench .brand-mark {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+  font-size: 12px;
+  background: #2f8f61;
+  border-radius: 5px;
+}
+
+.laper-reference-workbench .brand strong {
+  color: #1e2722;
+  font-size: 12px;
+}
+
+.laper-reference-workbench .brand small,
+.laper-reference-workbench .rail small {
+  color: #78847e;
+  font-size: 10px;
+}
+
+.laper-reference-workbench .m3-object-menu {
+  gap: 2px;
+}
+
+.laper-reference-workbench .m3-object-item {
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #2d3832;
+  background: transparent;
+  border-radius: 5px;
+}
+
+.laper-reference-workbench .m3-object-item span {
+  font-size: 10px;
+  font-weight: 720;
+}
+
+.laper-reference-workbench .m3-object-item small {
+  max-width: 58px;
+  color: #87938d;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .m3-object-item.active {
+  color: #1d2b23;
+  background: #e6eee8;
+}
+
+.laper-reference-workbench .project-panel {
+  margin-top: 8px;
+  padding: 6px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .rail .panel {
+  background: #ffffff;
+  border-color: #e2ebe5;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .project-list,
+.laper-reference-workbench .asset-list {
+  color: #29312d;
+}
+
+.laper-reference-workbench .rail .project-row,
+.laper-reference-workbench .rail .project-row.active,
+.laper-reference-workbench .rail .asset,
+.laper-reference-workbench .rail .asset.active {
+  color: #29312d;
+  background: #f4f7f4;
+  border-color: #e1e9e4;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .rail .project-row span,
+.laper-reference-workbench .rail .project-row strong,
+.laper-reference-workbench .rail .asset span,
+.laper-reference-workbench .rail .asset strong {
+  color: #1f2a24;
+}
+
+.laper-reference-workbench .rail .project-row small,
+.laper-reference-workbench .rail .asset small {
+  color: #78847e;
+}
+
+.laper-reference-workbench .project-panel .panel-title,
+.laper-reference-workbench .asset-panel .panel-title {
+  color: #526058;
+  font-size: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.laper-reference-workbench .project-panel .input,
+.laper-reference-workbench .asset-panel .input {
+  min-height: 24px;
+  padding: 4px 6px;
+  color: #24312a;
+  font-size: 10px;
+  background: #f4f7f4;
+  border-color: #e1e9e4;
+}
+
+.laper-reference-workbench .project-panel .button-grid,
+.laper-reference-workbench .asset-panel .panel-heading,
+.laper-reference-workbench .asset-panel #assetFilter {
+  display: none;
+}
+
+.laper-reference-workbench .asset-panel {
+  flex: 1;
+  min-height: 0;
+  margin: 8px 0 0;
+  padding: 6px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .asset-list {
+  margin-top: 0;
+}
+
+.laper-reference-workbench .asset-group-title {
+  color: #2e3a34;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.laper-reference-workbench .asset {
+  padding: 4px 5px;
+  color: #2e3a34;
+  background: #f4f7f4;
+  border-color: #e4ebe6;
+}
+
+.laper-reference-workbench .asset span {
+  font-size: 10px;
+}
+
+.laper-reference-workbench .asset small {
+  font-size: 9px;
+}
+
+.laper-reference-workbench .laper-script-canvas {
+  padding: 0;
+  background: #ffffff;
+  border-right: 1px solid #e2ebe5;
+}
+
+.laper-reference-workbench .writer-head {
+  margin: 0;
+  padding: 10px 12px 8px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #e5ece7;
+}
+
+.laper-reference-workbench .toolbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 8px;
+}
+
+.laper-reference-workbench .eyebrow,
+.laper-reference-workbench .toolbar small {
+  display: none;
+}
+
+.laper-reference-workbench .toolbar h1 {
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.laper-reference-workbench .toolbar-actions {
+  gap: 4px;
+}
+
+.laper-reference-workbench .icon-button,
+.laper-reference-workbench .focus-chip,
+.laper-reference-workbench .script-mode-chip {
+  min-height: 22px;
+  padding: 4px 7px;
+  color: #39423d;
+  font-size: 10px;
+  background: #ffffff;
+  border: 1px solid #dfe7e2;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(31, 49, 39, 0.04);
+}
+
+.laper-reference-workbench .script-mode-chip.active {
+  color: #ffffff;
+  background: #222925;
+  border-color: #222925;
+}
+
+.laper-reference-workbench .focus-strip {
+  gap: 4px;
+  padding: 6px 12px 0;
+  border-top: 1px solid #eef3ef;
+}
+
+.laper-reference-workbench .script-page-frame {
+  max-width: none;
+  margin: 0;
+  background: #f7faf7;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.laper-reference-workbench .script-page-header {
+  padding: 8px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5ece7;
+  border-radius: 0;
+}
+
+.laper-reference-workbench .script-page-header span,
+.laper-reference-workbench .script-page-header small,
+.laper-reference-workbench .revision-margin {
+  color: #7a8580;
+  font-size: 10px;
+}
+
+.laper-reference-workbench .script-page-header strong {
+  font-size: 11px;
+}
+
+.laper-reference-workbench .revision-margin {
+  justify-self: end;
+  padding: 3px 6px;
+  background: #f4f7f4;
+  border: 1px solid #e0e8e3;
+  border-radius: 999px;
+}
+
+.laper-reference-workbench .script-page-surface {
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-workbench {
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-layout {
+  grid-template-columns: 1fr;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-nav {
+  display: none;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-stage {
+  padding: 14px 18px 28px;
+  background: #f7faf7;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-inspector {
+  display: none;
+}
+
+.laper-object-view-panel {
+  margin: 0;
+  padding: 18px;
+  background: #f7faf7;
+  border-top: 1px solid #e5ece7;
+}
+
+.laper-reference-workbench.object-mode .script-page-surface {
+  display: none;
+}
+
+.laper-reference-workbench.object-mode .laper-object-view-panel {
+  min-height: calc(100vh - 160px);
+}
+
+.laper-object-view-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  max-width: 620px;
+  margin: 0 auto 10px;
+}
+
+.laper-object-view-head span {
+  color: #202923;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.laper-object-view-head strong {
+  color: #2f8f61;
+  font-size: 13px;
+}
+
+.laper-object-view-head small {
+  grid-column: 1 / -1;
+  color: #7d8983;
+  font-size: 10px;
+}
+
+.laper-object-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.laper-object-grid article {
+  display: grid;
+  gap: 4px;
+  min-height: 58px;
+  padding: 10px;
+  background: #fffefa;
+  border: 1px solid #e2ebe5;
+  border-radius: 9px;
+  box-shadow: 0 8px 20px rgba(42, 75, 58, 0.06);
+}
+
+.laper-object-grid strong {
+  overflow: hidden;
+  color: #26312b;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.laper-object-grid small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #7f8b85;
+  font-size: 10px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.laper-reference-workbench .script-page-surface .screenplay-editor {
+  max-width: 420px;
+  min-height: 480px;
+  margin: 0 auto;
+  padding: 28px 36px;
+  background: #fffdf8;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 16px 40px rgba(63, 80, 70, 0.13);
+}
+
+.laper-reference-workbench .laper-writing-panel {
+  padding: 8px;
+  background: #f8fbf8;
+  border-left: 0;
+}
+
+.laper-reference-ai-card,
+.laper-reference-workbench .laper-writing-panel {
+  --laper-reference-ai-card: #ffffff;
+}
+
+.laper-reference-workbench .copilot-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  background: #ffffff;
+  border-color: #e2ebe5;
+  border-radius: 8px;
+}
+
+.laper-reference-workbench .copilot-tabs span {
+  padding: 5px 4px;
+  font-size: 9px;
+}
+
+.laper-reference-workbench .copilot-heading,
+.laper-reference-workbench .m3-right-card,
+.laper-reference-workbench .m3-save-version,
+.laper-reference-workbench .doctor-status-card,
+.laper-reference-workbench .context-freshness,
+.laper-reference-workbench .panel {
+  border-color: #e2ebe5;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(42, 75, 58, 0.08);
+}
+
+.laper-reference-workbench .copilot-heading {
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #e2ebe5;
+}
+
+.laper-reference-workbench .copilot-heading strong,
+.laper-reference-workbench .m3-right-card strong,
+.laper-reference-workbench .doctor-status-card strong {
+  font-size: 11px;
+}
+
+.laper-reference-workbench .m3-right-card {
+  gap: 5px;
+  padding: 8px;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .m3-right-card span,
+.laper-reference-workbench .m3-right-card small,
+.laper-reference-workbench .doctor-status-card span,
+.laper-reference-workbench .doctor-status-card small {
+  font-size: 9px;
+}
+
+.laper-reference-workbench .m3-data-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-reference-workbench .m3-data-grid strong {
+  padding: 5px;
+  background: #f4f8f4;
+  border-color: #e2ebe5;
+}
+
+.laper-reference-workbench .m3-data-grid b {
+  color: #202823;
+  font-size: 15px;
+}
+
+.laper-private-stack button,
+.laper-pill-row button {
+  min-height: 26px;
+  color: #24583d;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: left;
+  background: #f5faf5;
+  border: 1px solid #dfe9e3;
+  border-radius: 7px;
+}
+
+.laper-pill-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-pill-row:last-child {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.laper-reference-workbench .m3-save-version {
+  min-height: 30px;
+  color: #1d4f36;
+  font-size: 10px;
+  background: #ffffff;
+  border: 1px solid #dfe8e2;
+}
+
+.laper-reference-workbench .m3-save-version::before {
+  content: "↻ ";
+}
+
+.laper-reference-workbench .doctor-status-stack {
+  gap: 6px;
+}
+
+.laper-reference-workbench .doctor-status-card {
+  padding: 7px;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .context-freshness,
+.laper-reference-workbench .stats {
+  display: none;
+}
+
+.laper-reference-workbench .ai-copilot-panel {
+  max-height: 238px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.laper-reference-workbench .tabs {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .laper-reference-workbench {
+    grid-template-columns: 122px minmax(0, 1fr) 170px;
+    width: calc(100vw - 12px);
+    min-height: calc(100vh - 12px);
+    margin: 6px auto;
+    border-radius: 14px;
+  }
+
+  .laper-reference-workbench .script-page-surface .screenplay-stage {
+    padding: 12px;
+  }
+
+  .laper-reference-workbench .script-page-surface .screenplay-editor {
+    max-width: 360px;
+    padding: 24px 26px;
+  }
+}

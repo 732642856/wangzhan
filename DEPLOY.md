@@ -33,17 +33,18 @@ git push -u origin main
 
 ## 3a. Deploy on GitHub Pages
 
-1. Open GitHub repo settings
-2. Enable Pages with GitHub Actions
-3. Run the `pages` workflow manually
+Build `dist/`, publish it to the `gh-pages` branch, then set GitHub Pages to serve `gh-pages` from `/`.
 
-The workflow builds `dist/` and deploys it through GitHub Pages.
+Current published URL:
+
+```text
+https://732642856.github.io/wangzhan/
+```
 
 This repo already includes:
 
 - `vercel.json`
 - `.github/workflows/ci.yml`
-- `.github/workflows/pages.yml`
 
 ## 4. Verify hosted app
 

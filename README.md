@@ -28,7 +28,7 @@ Hosted mode does **not** require:
 
 ### GitHub Pages
 
-Enable GitHub Pages with GitHub Actions in the repo settings, then run the `pages` workflow manually. It builds `dist/` and deploys it with GitHub Pages.
+Build `dist/`, publish it to the `gh-pages` branch, and set GitHub Pages to serve `gh-pages` from `/`.
 
 ### Vercel
 
@@ -87,6 +87,13 @@ Tools:
 - `set_project`
 - `build_ai_packet`
 - `export_project`
+
+Codex-only commands:
+
+- `打开编剧助手`: opens the local workbench URL inside Codex.
+- `运行诊断`: builds a Script Doctor packet from the bridge project and answers in chat.
+- `执行这个任务: ...`: runs a pasted Copilot task card and returns text to paste back into the app.
+- `保存这个项目更新: ...`: reads the bridge project first, then writes the smallest project update.
 
 ### Local Codex Plugin
 

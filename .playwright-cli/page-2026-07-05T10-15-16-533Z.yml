@@ -1,0 +1,343 @@
+- main [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: 剧
+      - generic [ref=e7]:
+        - strong [ref=e8]: 星轨试写
+        - text: Full-script AI workspace
+    - navigation "Story object navigation" [ref=e9]:
+      - button "Projects 1 projects" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: Projects
+        - generic [ref=e12]: 1 projects
+      - button "Script 2 scenes" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: Script
+        - generic [ref=e15]: 2 scenes
+      - button "Beats 2 beats" [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]: Beats
+        - generic [ref=e18]: 2 beats
+      - button "Storyboard 0 frames" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: Storyboard
+        - generic [ref=e21]: 0 frames
+      - button "Scenes 2 scenes" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: Scenes
+        - generic [ref=e24]: 2 scenes
+      - button "Characters 2 characters" [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: Characters
+        - generic [ref=e27]: 2 characters
+      - button "Props 1 props" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: Props
+        - generic [ref=e30]: 1 props
+      - button "Locations 2 locations" [ref=e31] [cursor=pointer]:
+        - generic [ref=e32]: Locations
+        - generic [ref=e33]: 2 locations
+      - button "Assets 12 assets" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: Assets
+        - generic [ref=e36]: 12 assets
+    - generic [ref=e37]:
+      - button "Episodes +" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: Episodes
+        - generic [ref=e40]: +
+      - button "Feature Draft" [ref=e41] [cursor=pointer]
+      - button "Deleted Scenes" [ref=e42] [cursor=pointer]
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]: Scenes
+        - generic [ref=e46]: "2"
+      - button "1. INT. 作家房间 - NIGHT NIGHT" [ref=e47] [cursor=pointer]:
+        - generic [ref=e48]: 1. INT. 作家房间 - NIGHT
+        - generic [ref=e49]: NIGHT
+      - button "2. EXT. 天台 - DAWN DAWN" [ref=e50] [cursor=pointer]:
+        - generic [ref=e51]: 2. EXT. 天台 - DAWN
+        - generic [ref=e52]: DAWN
+    - generic [ref=e53]:
+      - generic [ref=e54]: Q
+      - generic [ref=e55]:
+        - strong [ref=e56]: Quentin
+        - generic [ref=e57]: Writer · 46
+  - generic [ref=e58]:
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - heading "Script" [level=1] [ref=e62]
+        - generic [ref=e63]:
+          - button "Fountain" [ref=e64] [cursor=pointer]
+          - button "FDX" [ref=e65] [cursor=pointer]
+      - generic [ref=e66]:
+        - generic [ref=e67]: Script
+        - generic [ref=e68]: Outline
+        - generic [ref=e69]: Cover
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - generic [ref=e72]: Script page
+        - strong [ref=e73]: 星轨试写
+        - generic [ref=e74]: Revision margin · Page 1
+      - generic [ref=e75]: AI notes
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - button "Scene" [ref=e80] [cursor=pointer]
+            - button "Action" [ref=e81] [cursor=pointer]
+            - button "Character" [ref=e82] [cursor=pointer]
+            - button "Dialogue" [ref=e83] [cursor=pointer]
+            - button "Paren" [ref=e84] [cursor=pointer]
+            - button "Transition" [ref=e85] [cursor=pointer]
+            - button "Shot" [ref=e86] [cursor=pointer]
+            - button "Note" [ref=e87] [cursor=pointer]
+            - button "Tag" [ref=e88] [cursor=pointer]
+          - generic [ref=e89]:
+            - button "Title" [ref=e90] [cursor=pointer]
+            - button "Acts" [ref=e91] [cursor=pointer]
+            - button "Notes" [ref=e92] [cursor=pointer]
+            - button "Tags" [ref=e93] [cursor=pointer]
+        - textbox [ref=e97]:
+          - generic [ref=e98]: 星轨试写
+          - generic [ref=e99]: INT. 作家房间 - NIGHT
+          - generic [ref=e100]: 编剧
+          - generic [ref=e101]: 我们不再从空白页开始。
+          - generic [ref=e102]: EXT. 天台 - DAWN
+          - generic [ref=e103]: 导演
+          - generic [ref=e104]: 让剧本自己长出场景、人物和镜头。
+  - complementary [ref=e105]:
+    - generic [ref=e106]:
+      - button "Feature request" [ref=e107] [cursor=pointer]
+      - button "Share" [ref=e108] [cursor=pointer]
+    - generic [ref=e109]:
+      - generic [ref=e110]: Writing
+      - generic [ref=e111]: Info
+      - generic [ref=e112]: Collab
+      - generic [ref=e113]: Version history
+    - generic [ref=e114]:
+      - strong [ref=e115]: Writing Copilot
+      - generic [ref=e116]: Script Doctor · full context
+    - generic [ref=e117]:
+      - generic [ref=e118]:
+        - text: AI usage
+        - strong [ref=e119]: Codex window
+      - generic [ref=e120]: No API key · paste results back into the script
+    - generic [ref=e121]:
+      - generic [ref=e122]: AI tools
+      - button "Beat Sheet" [ref=e123] [cursor=pointer]
+      - button "Dialogue Enhancement" [ref=e124] [cursor=pointer]
+      - button "Character Arc" [ref=e125] [cursor=pointer]
+      - button "Pacing" [ref=e126] [cursor=pointer]
+      - generic [ref=e127]: Collab
+      - generic [ref=e128]:
+        - button "Comments" [ref=e129] [cursor=pointer]
+        - button "Permissions" [ref=e130] [cursor=pointer]
+      - generic [ref=e131]: Export
+      - generic [ref=e132]:
+        - button "PDF" [ref=e133] [cursor=pointer]
+        - button "FDX" [ref=e134] [cursor=pointer]
+        - button "Fountain" [ref=e135] [cursor=pointer]
+    - generic [ref=e136]:
+      - generic [ref=e137]: Script data
+      - generic [ref=e138]:
+        - strong [ref=e139]:
+          - generic [ref=e140]: "2"
+          - generic [ref=e141]: Scenes
+        - strong [ref=e142]:
+          - generic [ref=e143]: "2"
+          - generic [ref=e144]: Characters
+        - strong [ref=e145]:
+          - generic [ref=e146]: "0"
+          - generic [ref=e147]: Frames
+        - strong [ref=e148]:
+          - generic [ref=e149]: "6"
+          - generic [ref=e150]: Relations
+    - button "↻ Save version" [ref=e151] [cursor=pointer]
+    - generic [ref=e152]:
+      - generic [ref=e153]: Script navigation
+      - generic [ref=e154]:
+        - button "Scroll" [ref=e155] [cursor=pointer]
+        - button "Paged" [ref=e156] [cursor=pointer]
+      - generic [ref=e157]: Script format
+      - generic [ref=e158]:
+        - button "INT." [ref=e159] [cursor=pointer]
+        - button "Action" [ref=e160] [cursor=pointer]
+        - button "Dialogue" [ref=e161] [cursor=pointer]
+    - generic [ref=e162]:
+      - generic [ref=e163]:
+        - generic [ref=e164]: Opening rhythm...
+        - generic [ref=e165]: ↗
+      - button "Check the first four scenes." [ref=e166] [cursor=pointer]
+      - button "Organizing script structure" [ref=e167] [cursor=pointer]
+      - generic [ref=e168]: The shape works. Scene two delays pressure.
+      - button "Mark the character pressure." [ref=e169] [cursor=pointer]
+      - button "Locating character goals" [ref=e170] [cursor=pointer]
+      - generic [ref=e171]: Ask Laper to check structure or character pressure...
+      - generic [ref=e172]:
+        - button "＋" [ref=e173] [cursor=pointer]
+        - button "Script Doctor" [ref=e174] [cursor=pointer]
+        - button "●" [ref=e175] [cursor=pointer]
+    - generic [ref=e177]:
+      - generic [ref=e178]: 成品工作流
+      - generic [ref=e179]:
+        - button "短剧悬疑 适合 8 到 20 集短剧、强钩子、高反转、信息控制明确的悬疑项目。" [ref=e180] [cursor=pointer]:
+          - strong [ref=e181]: 短剧悬疑
+          - generic [ref=e182]: 适合 8 到 20 集短剧、强钩子、高反转、信息控制明确的悬疑项目。
+        - button "都市情感 适合都市爱情、关系成长、亲密拉扯和潜文本表达为核心的项目。" [ref=e183] [cursor=pointer]:
+          - strong [ref=e184]: 都市情感
+          - generic [ref=e185]: 适合都市爱情、关系成长、亲密拉扯和潜文本表达为核心的项目。
+        - button "小说改编电影 适合长篇小说改编电影，优先处理主题立场、情境压缩、结构取舍和关键场面电影化。" [ref=e186] [cursor=pointer]:
+          - strong [ref=e187]: 小说改编电影
+          - generic [ref=e188]: 适合长篇小说改编电影，优先处理主题立场、情境压缩、结构取舍和关键场面电影化。
+      - generic [ref=e189]:
+        - generic [ref=e191]:
+          - generic [ref=e192]: 当前工作流
+          - strong [ref=e193]: 短剧悬疑
+          - text: 星轨故事 六壬探案 + AI剧本系统五步流程 + 三本书场景诊断卡
+        - generic [ref=e194]:
+          - button "Step 1 钩子与秘密设计 先确认开场钩子、核心秘密、观众/主角/嫌疑人三方信息差。" [ref=e195] [cursor=pointer]:
+            - emphasis [ref=e196]: Step 1
+            - strong [ref=e197]: 钩子与秘密设计
+            - generic [ref=e198]: 先确认开场钩子、核心秘密、观众/主角/嫌疑人三方信息差。
+          - button "Step 2 拆集与反转节拍 把主线拆成集纲，明确每集发现、误导、反转和尾钩。" [ref=e199] [cursor=pointer]:
+            - emphasis [ref=e200]: Step 2
+            - strong [ref=e201]: 拆集与反转节拍
+            - generic [ref=e202]: 把主线拆成集纲，明确每集发现、误导、反转和尾钩。
+          - button "Step 3 场景冲突校正 逐场检查目标、阻碍、破绽、突转和对白行动，确保悬疑不是解释出来的。" [ref=e203] [cursor=pointer]:
+            - emphasis [ref=e204]: Step 3
+            - strong [ref=e205]: 场景冲突校正
+            - generic [ref=e206]: 逐场检查目标、阻碍、破绽、突转和对白行动，确保悬疑不是解释出来的。
+          - button "Step 4 悬疑会诊 复核线索回收、反侦察合理性、高潮揭示和连续性风险。" [ref=e207] [cursor=pointer]:
+            - emphasis [ref=e208]: Step 4
+            - strong [ref=e209]: 悬疑会诊
+            - generic [ref=e210]: 复核线索回收、反侦察合理性、高潮揭示和连续性风险。
+          - button "Step 5 分镜生产 Brief 把定稿场景转成可交付的镜头 brief，方便进入分镜和画面生成。" [ref=e211] [cursor=pointer]:
+            - emphasis [ref=e212]: Step 5
+            - strong [ref=e213]: 分镜生产 Brief
+            - generic [ref=e214]: 把定稿场景转成可交付的镜头 brief，方便进入分镜和画面生成。
+      - generic [ref=e215]: 常用任务
+      - generic [ref=e216]:
+        - button "剧本医生" [ref=e217] [cursor=pointer]
+        - button "场次改写" [ref=e218] [cursor=pointer]
+        - button "人物小传" [ref=e219] [cursor=pointer]
+        - button "对白增强" [ref=e220] [cursor=pointer]
+        - button "短剧拆集" [ref=e221] [cursor=pointer]
+        - button "分镜提示词" [ref=e222] [cursor=pointer]
+        - button "节拍审查" [ref=e223] [cursor=pointer]
+        - button "多线审查" [ref=e224] [cursor=pointer]
+        - button "世界观施压" [ref=e225] [cursor=pointer]
+        - button "五步成片" [ref=e226] [cursor=pointer]
+        - button "角色审问" [ref=e227] [cursor=pointer]
+        - button "分镜生产 brief" [ref=e228] [cursor=pointer]
+        - button "悬疑会诊" [ref=e229] [cursor=pointer]
+        - button "民俗改编" [ref=e230] [cursor=pointer]
+        - button "情感戏打磨" [ref=e231] [cursor=pointer]
+        - button "导演会诊" [ref=e232] [cursor=pointer]
+        - button "结构主义会诊" [ref=e233] [cursor=pointer]
+        - button "拉片拆解" [ref=e234] [cursor=pointer]
+        - button "对白行动会诊" [ref=e235] [cursor=pointer]
+        - button "改编分形审查" [ref=e236] [cursor=pointer]
+        - button "场景冲突校正" [ref=e237] [cursor=pointer]
+        - button "悬疑场景包" [ref=e238] [cursor=pointer]
+        - button "情感场景包" [ref=e239] [cursor=pointer]
+        - button "改编场景包" [ref=e240] [cursor=pointer]
+      - generic [ref=e241]: AI 任务
+      - textbox "AI 任务" [ref=e242]: 做一次剧本医生诊断：结构、人物动机、场景功能、对白问题和下一步改写清单。
+      - generic [ref=e243]: 方法模板
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - checkbox "单场戏功能 WorkBuddy 北电编剧笔记 / 单场戏设计" [checked] [ref=e246]
+          - generic [ref=e247]: 单场戏功能
+          - generic [ref=e248]: WorkBuddy 北电编剧笔记 / 单场戏设计
+        - generic [ref=e249]:
+          - checkbox "人物弧光 星轨人生 / 人物小传 / 角色 20 问" [checked] [ref=e250]
+          - generic [ref=e251]: 人物弧光
+          - generic [ref=e252]: 星轨人生 / 人物小传 / 角色 20 问
+        - generic [ref=e253]:
+          - checkbox "对白行动 对白写作书目 / WorkBuddy 对白与场景笔记" [checked] [ref=e254]
+          - generic [ref=e255]: 对白行动
+          - generic [ref=e256]: 对白写作书目 / WorkBuddy 对白与场景笔记
+        - generic [ref=e257]:
+          - checkbox "故事引擎 星轨故事 / 故事引擎 skills" [ref=e258]
+          - generic [ref=e259]: 故事引擎
+          - generic [ref=e260]: 星轨故事 / 故事引擎 skills
+        - generic [ref=e261]:
+          - checkbox "协作审稿 Laper 对标 / WorkBuddy 协作碎片" [ref=e262]
+          - generic [ref=e263]: 协作审稿
+          - generic [ref=e264]: Laper 对标 / WorkBuddy 协作碎片
+        - generic [ref=e265]:
+          - checkbox "节拍循环 WorkBuddy 北电编剧笔记 / 单场戏设计原理" [ref=e266]
+          - generic [ref=e267]: 节拍循环
+          - generic [ref=e268]: WorkBuddy 北电编剧笔记 / 单场戏设计原理
+        - generic [ref=e269]:
+          - checkbox "多线叙事 WorkBuddy 北电编剧笔记 / 多主角与多线叙事" [ref=e270]
+          - generic [ref=e271]: 多线叙事
+          - generic [ref=e272]: WorkBuddy 北电编剧笔记 / 多主角与多线叙事
+        - generic [ref=e273]:
+          - checkbox "五步创作流水线 星轨故事 / AI 剧本写作系统方案" [ref=e274]
+          - generic [ref=e275]: 五步创作流水线
+          - generic [ref=e276]: 星轨故事 / AI 剧本写作系统方案
+        - generic [ref=e277]:
+          - checkbox "世界观压力 WorkBuddy worldview-integrator / 25 维世界观" [ref=e278]
+          - generic [ref=e279]: 世界观压力
+          - generic [ref=e280]: WorkBuddy worldview-integrator / 25 维世界观
+        - generic [ref=e281]:
+          - checkbox "角色 20 问 WorkBuddy character-20-questions.js / 星轨人生" [ref=e282]
+          - generic [ref=e283]: 角色 20 问
+          - generic [ref=e284]: WorkBuddy character-20-questions.js / 星轨人生
+        - generic [ref=e285]:
+          - checkbox "分镜连续性 WorkBuddy StarCanvas 分镜代码 / 星轨分镜撰写技法" [ref=e286]
+          - generic [ref=e287]: 分镜连续性
+          - generic [ref=e288]: WorkBuddy StarCanvas 分镜代码 / 星轨分镜撰写技法
+        - generic [ref=e289]:
+          - checkbox "悬疑信息控制 六壬探案-wyn / 悬疑场景模板库 / 反侦察技法库" [ref=e290]
+          - generic [ref=e291]: 悬疑信息控制
+          - generic [ref=e292]: 六壬探案-wyn / 悬疑场景模板库 / 反侦察技法库
+        - generic [ref=e293]:
+          - checkbox "民俗视听红线 民俗-wyn / 专业剧本创作模块" [ref=e294]
+          - generic [ref=e295]: 民俗视听红线
+          - generic [ref=e296]: 民俗-wyn / 专业剧本创作模块
+        - generic [ref=e297]:
+          - checkbox "情感潜文本 情感戏-wyn / 高级创作" [ref=e298]
+          - generic [ref=e299]: 情感潜文本
+          - generic [ref=e300]: 情感戏-wyn / 高级创作
+        - generic [ref=e301]:
+          - checkbox "导演模型审查 顶级编剧导演思维蒸馏-wyn / script-doctor / extraction-framework" [ref=e302]
+          - generic [ref=e303]: 导演模型审查
+          - generic [ref=e304]: 顶级编剧导演思维蒸馏-wyn / script-doctor / extraction-framework
+        - generic [ref=e305]:
+          - checkbox "黑色幽默 六壬探案-wyn / dark-humor-dialogue.md" [ref=e306]
+          - generic [ref=e307]: 黑色幽默
+          - generic [ref=e308]: 六壬探案-wyn / dark-humor-dialogue.md
+        - generic [ref=e309]:
+          - checkbox "结构主义编剧法 《拉片子 2：结构主义编剧法讲义》" [ref=e310]
+          - generic [ref=e311]: 结构主义编剧法
+          - generic [ref=e312]: 《拉片子 2：结构主义编剧法讲义》
+        - generic [ref=e313]:
+          - checkbox "拉片方法 《拉片子 1：电影电视编剧讲义》" [ref=e314]
+          - generic [ref=e315]: 拉片方法
+          - generic [ref=e316]: 《拉片子 1：电影电视编剧讲义》
+        - generic [ref=e317]:
+          - checkbox "对白行动进攻 《对白：文字、舞台、银幕的言语行为艺术》" [ref=e318]
+          - generic [ref=e319]: 对白行动进攻
+          - generic [ref=e320]: 《对白：文字、舞台、银幕的言语行为艺术》
+        - generic [ref=e321]:
+          - checkbox "开场场景诊断 《拉片子 1》+《拉片子 2》" [ref=e322]
+          - generic [ref=e323]: 开场场景诊断
+          - generic [ref=e324]: 《拉片子 1》+《拉片子 2》
+        - generic [ref=e325]:
+          - checkbox "转折场景诊断 《对白》+《拉片子 1》" [ref=e326]
+          - generic [ref=e327]: 转折场景诊断
+          - generic [ref=e328]: 《对白》+《拉片子 1》
+        - generic [ref=e329]:
+          - checkbox "高潮场景诊断 《拉片子 1》+《对白》" [ref=e330]
+          - generic [ref=e331]: 高潮场景诊断
+          - generic [ref=e332]: 《拉片子 1》+《对白》
+        - generic [ref=e333]:
+          - checkbox "结尾场景诊断 《拉片子 1》+《拉片子 2》+《对白》" [ref=e334]
+          - generic [ref=e335]: 结尾场景诊断
+          - generic [ref=e336]: 《拉片子 1》+《拉片子 2》+《对白》
+      - generic [ref=e337]: 主线动作
+      - generic [ref=e338]:
+        - button "生成总控" [ref=e339] [cursor=pointer]
+        - button "复制总控" [disabled] [ref=e340]
+        - button "一键生成诊断" [ref=e341] [cursor=pointer]
+        - button "复制诊断" [disabled] [ref=e342]
+        - button "生成质检" [ref=e343] [cursor=pointer]
+        - button "复制质检" [disabled] [ref=e344]
+        - button "复制交付包" [ref=e345] [cursor=pointer]
+        - button "下载交付包" [ref=e346] [cursor=pointer]
+      - paragraph [ref=e348]: 点击“一键生成诊断”，基于当前剧本、人物、地点和对白生成可执行改写清单。
+      - generic [ref=e349]: 可复制任务包
+      - textbox [ref=e350]: "你是一个资深编剧顾问、剧本医生和故事结构编辑。 请基于以下剧本、人物、场景和本地资料线索工作。 输出必须具体、可执行，优先指出结构问题、人物动机、场景功能、连续性风险和下一步改写建议。 任务：做一次剧本医生诊断：结构、人物动机、场景功能、对白问题和下一步改写清单。 【可用编剧方法模板】 ### 单场戏功能 来源：WorkBuddy 北电编剧笔记 / 单场戏设计 1. 每场戏必须改变人物关系、信息状态或行动方向。 2. 入场前明确人物目标，离场后明确局势变化。 3. 删掉只解释背景、不产生行动后果的场次。 ### 人物弧光 来源：星轨人生 / 人物小传 / 角色 20 问 1. 人物的欲望、恐惧、误信念和代价要能驱动选择。 2. 小传不是履历，要服务于当前故事中的行动压力。 3. 每个重要人物都应有可观察的关系变化。 ### 对白行动 来源：对白写作书目 / WorkBuddy 对白与场景笔记 1. 对白不是信息搬运，而是人物用语言争取、躲避、试探或攻击。 2. 同一段对白里，角色表面说的和真正想要的应有张力。 3. 删掉能用动作、选择或沉默表达的说明性台词。 【剧本】 Title: 星轨试写 Author: Personal Screenwriter INT. 作家房间 - NIGHT 编剧 我们不再从空白页开始。 EXT. 天台 - DAWN 导演 让剧本自己长出场景、人物和镜头。 【Story Bible】 { \"characters\": [ { \"name\": \"编剧\", \"role\": \"主创\", \"goal\": \"把散落资料变成可执行剧本\" }, { \"name\": \"导演\", \"role\": \"视觉判断\", \"goal\": \"把场景转成镜头和调度\" } ], \"scenes\": [], \"locations\": [ { \"name\": \"作家房间\", \"notes\": \"独立产品的起点，写作资料在这里汇合\" } ], \"props\": [ { \"name\": \"资料卡片\", \"notes\": \"模板、工作流、场次规则和导出文件都可在这里汇合\" } ], \"rules\": [ { \"name\": \"轻量工作台\", \"notes\": \"浏览器本地保存，导出由用户主动触发\" } ] } 【本地资产线索】 [ { \"label\": \"单场戏功能\", \"path\": \"knowledge://screenplay/scene-function\", \"category\": \"story\", \"score\": 100, \"family\": \"剧本资料\" }, { \"label\": \"对白行动\", \"path\": \"knowledge://screenplay/dialogue-action\", \"category\": \"story\", \"score\": 99, \"family\": \"剧本资料\" }, { \"label\": \"人物弧光\", \"path\": \"knowledge://screenplay/character-arc\", \"category\": \"character\", \"score\": 98, \"family\": \"星轨人生\" }, { \"label\": \"结构主义编剧法\", \"path\": \"knowledge://adaptation/structuralist-screenwriting\", \"category\": \"book\", \"score\": 97, \"family\": \"剧本资料\" }, { \"label\": \"拉片方法\", \"path\": \"knowledge://adaptation/film-perusal-method\", \"category\": \"book\", \"score\": 96, \"family\": \"剧本资料\" }, { \"label\": \"对白行动进攻\", \"path\": \"knowledge://adaptation/verbal-action-dialogue\", \"category\": \"book\", \"score\": 95, \"family\": \"剧本资料\" }, { \"label\": \"短剧悬疑工作流\", \"path\": \"workflow://short-drama-mystery\", \"category\": \"story\", \"score\": 94, \"family\": \"星轨故事\" }, { \"label\": \"都市情感工作流\", \"path\": \"workflow://urban-romance\", \"category\": \"story\", \"score\": 93, \"family\": \"星轨人生\" }, { \"label\": \"小说改编电影工作流\", \"path\": \"workflow://novel-adaptation-film\", \"category\": \"story\", \"score\": 92, \"family\": \"小说/长文\" }, { \"label\": \"角色库\", \"path\": \"workspace://story-bible/characters\", \"category\": \"character\", \"score\": 91, \"family\": \"星轨人生\" }, { \"label\": \"世界观与场景库\", \"path\": \"workspace://story-bible/locations\", \"category\": \"worldbuilding\", \"score\": 90, \"family\": \"星轨故事\" }, { \"label\": \"分镜生产 Brief\", \"path\": \"workspace://shot-plan\", \"category\": \"storyboard\", \"score\": 89, \"family\": \"StarCanvas\" } ]"
