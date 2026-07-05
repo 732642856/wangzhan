@@ -31,10 +31,15 @@ git push -u origin main
 4. Keep default settings
 5. Deploy
 
+## 3a. Deploy on GitHub Pages
+
+Push the `personal-screenwriter` branch. The included `pages` workflow builds `dist/` and deploys it through GitHub Pages.
+
 This repo already includes:
 
 - `vercel.json`
 - `.github/workflows/ci.yml`
+- `.github/workflows/pages.yml`
 
 ## 4. Verify hosted app
 

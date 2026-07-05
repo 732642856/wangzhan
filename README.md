@@ -26,6 +26,10 @@ Hosted mode does **not** require:
 
 ## One-Click Deploy
 
+### GitHub Pages
+
+Push the `personal-screenwriter` branch. The `pages` workflow builds `dist/` and deploys it with GitHub Pages.
+
 ### Vercel
 
 1. Push this folder to a git host as its own repo
