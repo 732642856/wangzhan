@@ -39,6 +39,7 @@ import {
   updateShotPlanShot,
 } from "../src/core.js";
 import { runCompiledInkStory } from "../src/inkRuntime.js";
+import { publicAssetSeedRecords } from "../src/public-asset-seeds.js";
 import { buildRelationshipFlow } from "../src/relationFlow.js";
 import { createPersonalScreenwriter } from "../src/sdk.js";
 
@@ -99,6 +100,20 @@ test("extractAssetSeeds keeps hosted defaults free of private local paths", () =
   assert.equal(seeds.length, 2);
   assert.equal(seeds.some((seed) => seed.path.includes("/Users/")), false);
   assert.equal(seeds[0].label, "scene-function");
+});
+
+test("public hosted seeds expose StarTrack story and life adapters", () => {
+  const seeds = extractAssetSeeds(publicAssetSeedRecords);
+  const characterArc = seeds.find((seed) => seed.path === "knowledge://screenplay/character-arc");
+  const mysteryWorkflow = seeds.find((seed) => seed.path === "workflow://short-drama-mystery");
+  const storyBible = seeds.find((seed) => seed.path === "workspace://story-bible/characters");
+
+  assert.equal(seeds.some((seed) => seed.path.includes("/Users/")), false);
+  assert.equal(characterArc.label, "人物弧光");
+  assert.equal(characterArc.family, "星轨人生");
+  assert.equal(mysteryWorkflow.label, "短剧悬疑工作流");
+  assert.equal(mysteryWorkflow.family, "星轨故事");
+  assert.equal(storyBible.family, "星轨人生");
 });
 
 test("builds a playable story explorer from scenes, choices, clues and relationships", () => {

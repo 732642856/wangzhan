@@ -1373,13 +1373,13 @@ export function extractAssetSeeds(records = []) {
     .filter((record) => record && record.path)
     .slice(0, 200)
     .map((record) => {
-      const label = record.path.split("/").filter(Boolean).at(-1) || record.path;
+      const label = record.label || record.path.split("/").filter(Boolean).at(-1) || record.path;
       return {
         label,
         path: record.path,
         category: record.category || "asset",
         score: Number(record.score || 0),
-        family: inferFamily(record.path),
+        family: record.family || inferFamily(record.path),
       };
     });
 }
