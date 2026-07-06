@@ -20,6 +20,7 @@ test("acceptance error log records recurring UI and deployment failures", () => 
     "Visual screenshot/DOM mismatch",
     "GitHub Pages deploy step can fail after upload succeeds",
     "Token-only tests missed UX regressions",
+    "Temp cloud worktree may disappear between sessions",
     "Fresh cloud clone needs dependencies before tests",
   ]) {
     assert.match(errorLog, new RegExp(incident));
@@ -41,4 +42,33 @@ test("right Copilot panel is a usable chat workflow, not static chrome", () => {
   ]) {
     assert.match(`${appSource}\n${stylesSource}`, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
+});
+
+test("right Copilot chat stays above secondary tool cards", () => {
+  const chatIndex = appSource.indexOf("laper-chat-card");
+  const aiUsageIndex = appSource.indexOf("AI usage");
+  const toolsIndex = appSource.indexOf("AI tools");
+  assert.ok(chatIndex > 0);
+  assert.ok(aiUsageIndex > chatIndex);
+  assert.ok(toolsIndex > chatIndex);
+});
+
+test("right Copilot Run and Copy handlers read user input before acting", () => {
+  const runHandler = appSource.slice(
+    appSource.indexOf('document.querySelector("#laperChatRun")'),
+    appSource.indexOf('document.querySelector("#laperChatCopy")'),
+  );
+  assert.match(runHandler, /#laperChatInput/);
+  assert.match(runHandler, /state\.aiTask =/);
+  assert.match(runHandler, /studio\.generateScriptDoctorReport\(\)/);
+  assert.match(runHandler, /render\(\)/);
+
+  const copyHandler = appSource.slice(appSource.indexOf('document.querySelector("#laperChatCopy")'));
+  assert.match(copyHandler, /#laperChatInput/);
+  assert.match(copyHandler, /await copyAiPacket\(\)/);
+});
+
+test("acceptance error log gives executable cloud verification order", () => {
+  assert.match(errorLog, /verify both `\.git` and `package\.json`/);
+  assert.match(errorLog, /run `npm ci` before `npm test` and `npm run build`/);
 });
