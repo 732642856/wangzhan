@@ -6,6 +6,7 @@ const appSource = readFileSync(new URL("../src/app.js", import.meta.url), "utf8"
 const stylesSource = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
 const agentsSource = readFileSync(new URL("../AGENTS.md", import.meta.url), "utf8");
 const errorLog = readFileSync(new URL("../docs/acceptance-error-log.md", import.meta.url), "utf8");
+const ebookPlan = readFileSync(new URL("../docs/ebook-library-ingest.md", import.meta.url), "utf8");
 
 test("work starts by reading the acceptance error log", () => {
   assert.match(agentsSource, /docs\/acceptance-error-log\.md/);
@@ -22,6 +23,7 @@ test("acceptance error log records recurring UI and deployment failures", () => 
     "Token-only tests missed UX regressions",
     "Temp cloud worktree may disappear between sessions",
     "Fresh cloud clone needs dependencies before tests",
+    "Partial cloud sync left related source files stale",
   ]) {
     assert.match(errorLog, new RegExp(incident));
   }
@@ -53,6 +55,19 @@ test("right Copilot chat stays above secondary tool cards", () => {
   assert.ok(toolsIndex > chatIndex);
 });
 
+test("ebook knowledge modes are inside the right Copilot chat, not buried in secondary tools", () => {
+  const chatIndex = appSource.indexOf("laper-chat-card");
+  const modesIndex = appSource.indexOf("laper-chat-mode-strip");
+  const inputIndex = appSource.indexOf("laperChatInput");
+  const aiUsageIndex = appSource.indexOf("AI usage");
+  const toolsIndex = appSource.indexOf("AI tools");
+  assert.ok(modesIndex > chatIndex);
+  assert.ok(inputIndex > modesIndex);
+  assert.ok(aiUsageIndex > modesIndex);
+  assert.ok(toolsIndex > modesIndex);
+  assert.match(stylesSource, /\.laper-chat-mode-strip/);
+});
+
 test("right Copilot Run and Copy handlers read user input before acting", () => {
   const runHandler = appSource.slice(
     appSource.indexOf('document.querySelector("#laperChatRun")'),
@@ -71,4 +86,18 @@ test("right Copilot Run and Copy handlers read user input before acting", () => 
 test("acceptance error log gives executable cloud verification order", () => {
   assert.match(errorLog, /verify both `\.git` and `package\.json`/);
   assert.match(errorLog, /run `npm ci` before `npm test` and `npm run build`/);
+});
+
+test("ebook library is landed as an index, not full-text ingestion", () => {
+  for (const token of [
+    "8746",
+    "4189",
+    "A类：立即进入编剧助手知识库",
+    "B类：素材库",
+    "C类：只保留索引",
+    "不要把 8746 个文件全文导入项目",
+    "电子书完整清单.csv",
+  ]) {
+    assert.match(ebookPlan, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
 });

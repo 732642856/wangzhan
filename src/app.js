@@ -247,6 +247,17 @@ function render() {
               </article>
             `).join("")}
           </div>
+          <div class="laper-chat-mode-strip">
+            <span>Knowledge modes</span>
+            <div class="laper-knowledge-mode-stack">
+              <button type="button">结构诊断</button>
+              <button type="button">韩式短剧</button>
+              <button type="button">小说改编</button>
+              <button type="button">对白润色</button>
+              <button type="button">人物关系</button>
+              <button type="button">题材素材</button>
+            </div>
+          </div>
           <textarea id="laperChatInput" class="laper-chat-input" rows="3" placeholder="Ask Laper to check structure or character pressure...">${escapeHtml(state.aiTask)}</textarea>
           <div class="laper-chat-composer">
             <button type="button">＋</button>

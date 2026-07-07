@@ -299,6 +299,36 @@ const KNOWLEDGE_TEMPLATES = [
       "若是情感或改编题材，结尾必须明确人物关系和主题立场有没有真正变化。",
     ],
   },
+  {
+    id: "ebook-screenwriting-index",
+    title: "电子书清单：编剧/短剧索引",
+    source: "电子书完整清单.csv / 电子书清单与中文简介汇总.docx",
+    rules: [
+      "优先调用 A 类资料：韩式编剧、短剧、人设、反转、节奏、三句话梗概和一分钟钩子。",
+      "把电子书清单当索引和方法提醒，不把整本书内容复制进 AI 包。",
+      "诊断短剧时优先检查开场钩子、情绪密度、人物关系压力、每集结尾反转。",
+    ],
+  },
+  {
+    id: "ebook-adaptation-index",
+    title: "电子书清单：小说改编索引",
+    source: "电子书完整清单.csv / 小说、电视剧、电影三媒介资料",
+    rules: [
+      "小说改编先判断母本冲突、人物欲望和可拍场面，不机械保留章节顺序。",
+      "把原作长叙述改成场景目标、阻碍、选择和可见后果。",
+      "每次改编诊断都输出保留、合并、删减、视觉化四类建议。",
+    ],
+  },
+  {
+    id: "ebook-material-index",
+    title: "电子书清单：题材素材索引",
+    source: "电子书完整清单.csv / 历史、神话、民间故事、社会素材",
+    rules: [
+      "素材库只提供题材方向、人物原型和世界观线索，不直接复述受版权保护正文。",
+      "历史、战争、民间故事和神话条目适合作为案件、传说、家族秘密和世界观来源。",
+      "使用素材时要转化成原创冲突、人物选择和场景证据。",
+    ],
+  },
 ];
 
 const AI_TASK_PRESETS = [
@@ -445,6 +475,24 @@ const AI_TASK_PRESETS = [
     title: "改编场景包",
     task: "按改编场景工作流会诊当前项目：检查开场立场、主题分形、情境分形、关键场面推演和结尾落点，判断原作精神是否真正转成可拍戏剧。",
     templateIds: ["structuralist-screenwriting", "opening-scene-diagnosis", "film-perusal-method", "ending-scene-diagnosis"],
+  },
+  {
+    id: "ebook-korean-shortdrama",
+    title: "电子书库：韩式短剧会诊",
+    task: "调用电子书清单里的韩式编剧/短剧索引，检查开场钩子、人设关系、反转密度、每集收口和可复制桥段。",
+    templateIds: ["ebook-screenwriting-index", "scene-function", "turning-scene-diagnosis", "verbal-action-dialogue"],
+  },
+  {
+    id: "ebook-novel-adaptation",
+    title: "电子书库：小说改编会诊",
+    task: "调用电子书清单里的小说改编索引，把母本内容拆成可拍场景、人物压力、删改保留清单和第一版剧本结构。",
+    templateIds: ["ebook-adaptation-index", "structuralist-screenwriting", "film-perusal-method", "opening-scene-diagnosis"],
+  },
+  {
+    id: "ebook-material-mining",
+    title: "电子书库：题材素材挖掘",
+    task: "调用电子书清单里的历史、神话、民间故事、社会素材索引，为当前项目生成题材线索、人物原型、世界观压力和原创化注意事项。",
+    templateIds: ["ebook-material-index", "worldview-pressure", "mystery-info-control", "folk-visual-redlines"],
   },
 ];
 
@@ -1373,13 +1421,13 @@ export function extractAssetSeeds(records = []) {
     .filter((record) => record && record.path)
     .slice(0, 200)
     .map((record) => {
-      const label = record.path.split("/").filter(Boolean).at(-1) || record.path;
+      const label = record.label || record.path.split("/").filter(Boolean).at(-1) || record.path;
       return {
         label,
         path: record.path,
         category: record.category || "asset",
         score: Number(record.score || 0),
-        family: inferFamily(record.path),
+        family: record.family || inferFamily(record.path),
       };
     });
 }

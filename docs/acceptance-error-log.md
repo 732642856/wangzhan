@@ -43,3 +43,9 @@ Read this file before changing UI or acceptance tests. If a user-visible miss re
 - Symptom: `npm test` in a fresh clone failed with `ERR_MODULE_NOT_FOUND` for `inkjs` and `@tiptap/core`.
 - Missed by: running tests before `npm ci`.
 - Guard: after recloning cloud worktree, run `npm ci` before `npm test` and `npm run build`.
+
+### Partial cloud sync left related source files stale
+
+- Symptom: local tests passed, but `/tmp/wangzhan-m25` failed because `tests/core.test.js` expected updated public seed labels while `src/public-asset-seeds.js` was still old.
+- Missed by: syncing only the files remembered from the current patch instead of the whole app source/test/docs surface.
+- Guard: when syncing to plugin cache or cloud worktree, sync `src/`, `tests/`, and `docs/` together, then run tests in the target worktree.
