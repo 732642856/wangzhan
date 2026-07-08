@@ -74,6 +74,16 @@ const knowledgeModes = [
   },
 ];
 
+function formatSourcePointer(template) {
+  return [
+    `资料来源：${template.title}`,
+    `Source pointer：${template.source}`,
+    "追踪入口：docs/book-learning-notes.md",
+    template.source.includes("电子书") ? "电子书索引：docs/ebook-library-ingest.md" : "",
+    "使用规则：只引用摘要、规则和位置，不要全文导入。",
+  ].filter(Boolean).join("\n");
+}
+
 const saved = loadProject();
 const savedLibrary = loadLibrary();
 let projectLibrary = savedLibrary.projects.length ? savedLibrary : savedLibrary.save(saved || defaultProject);
@@ -305,7 +315,7 @@ function render() {
             ${
               activeTemplateSources.length
                 ? activeTemplateSources.map((template) => `
-                    <button type="button" class="laper-template-source-item" data-source-pointer="${escapeHtml(`${template.title}\n${template.source}`)}"><b>${escapeHtml(template.title)}</b><small>${escapeHtml(template.source)}</small></button>
+                    <button type="button" class="laper-template-source-item" data-source-pointer="${escapeHtml(formatSourcePointer(template))}"><b>${escapeHtml(template.title)}</b><small>${escapeHtml(template.source)}</small></button>
                   `).join("")
                 : `<small>No template selected</small>`
             }

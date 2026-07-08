@@ -118,6 +118,9 @@ test("right Copilot source pointers are clickable copy targets", () => {
   assert.match(handler, /navigator\.clipboard/);
   assert.match(handler, /sourcePointer/);
   assert.match(handler, /资料来源已复制/);
+  assert.match(appSource, /formatSourcePointer/);
+  assert.match(appSource, /docs\/ebook-library-ingest\.md/);
+  assert.match(appSource, /不要全文导入/);
 });
 
 test("right Copilot Run and Copy handlers read user input before acting", () => {
