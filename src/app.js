@@ -10,7 +10,7 @@ const COPILOT_KEY = "personal-screenwriter.copilot.v1";
 const COPILOT_CONFIG_KEY = "personal-screenwriter.copilot.config.v1";
 const DEFAULT_COPILOT_CONFIG = {
   baseUrl: "https://copse.top/v1",
-  model: "fable5",
+  model: "claude-fable-5",
   apiKey: "",
 };
 
@@ -733,18 +733,18 @@ function renderCopilotPanel() {
       </div>
       <div class="copilot-config-row">
         <input class="input" data-copilot-config="baseUrl" value="${escapeHtml(config.baseUrl)}" placeholder="https://copse.top/v1" autocomplete="off">
-        <input class="input" data-copilot-config="model" value="${escapeHtml(config.model)}" placeholder="fable5" autocomplete="off">
+        <input class="input" data-copilot-config="model" value="${escapeHtml(config.model)}" placeholder="claude-fable-5" autocomplete="off">
         <input class="input" data-copilot-config="apiKey" value="${escapeHtml(config.apiKey)}" placeholder="sk-..." type="password" autocomplete="off">
       </div>
       <div class="copilot-command-row">
         <button id="generateCopilotTask" class="button primary">运行诊断</button>
-        <button id="runCopilotModel" class="button primary" ${activeJob || state.aiTask ? "" : "disabled"}>发送 fable5</button>
+        <button id="runCopilotModel" class="button primary" ${activeJob || state.aiTask ? "" : "disabled"}>发送 Fable 5</button>
         <button id="copyCopilotTask" class="button" ${activeJob ? "" : "disabled"}>复制给 Codex</button>
       </div>
       <div class="copilot-steps">
         ${renderCopilotStep("收集剧本上下文", true)}
         ${renderCopilotStep("生成任务包", Boolean(activeJob))}
-        ${renderCopilotStep("发送 fable5/Codex", Boolean(activeJob), activeJob && !activeJob.answer)}
+        ${renderCopilotStep("发送 Fable 5/Codex", Boolean(activeJob), activeJob && !activeJob.answer)}
         ${renderCopilotStep("粘贴/导入 AI 回答", Boolean(activeJob?.answer))}
         ${renderCopilotStep("保存为版本", activeJob?.status === "applied")}
       </div>
@@ -756,17 +756,17 @@ function renderCopilotPanel() {
                   (job) => `
                     <button class="copilot-task-card ${job.id === state.activeCopilotJobId ? "active" : ""}" data-copilot-id="${escapeHtml(job.id)}">
                       <strong>${escapeHtml(job.title)}</strong>
-                      <span>${escapeHtml(job.status === "applied" ? "已应用" : job.status === "running" ? "fable5 处理中" : job.answer ? "已导入回答" : "等待执行")}</span>
+                      <span>${escapeHtml(job.status === "applied" ? "已应用" : job.status === "running" ? "Fable 5 处理中" : job.answer ? "已导入回答" : "等待执行")}</span>
                       <small>${escapeHtml(job.createdAt)}</small>
                     </button>
                   `,
                 )
                 .join("")
-            : `<p class="empty">点击“运行诊断”生成任务，或直接发送 fable5。</p>`
+            : `<p class="empty">点击“运行诊断”生成任务，或直接发送 Fable 5。</p>`
         }
       </div>
       <label class="field-label" for="copilotAnswer">AI 回答</label>
-      <textarea id="copilotAnswer" class="mini-editor" placeholder="fable5/Codex 结果会写到这里，也可手动粘贴">${escapeHtml(activeJob?.answer || "")}</textarea>
+      <textarea id="copilotAnswer" class="mini-editor" placeholder="Fable 5/Codex 结果会写到这里，也可手动粘贴">${escapeHtml(activeJob?.answer || "")}</textarea>
       <div class="copilot-command-row">
         <button id="saveCopilotAnswer" class="button" ${activeJob ? "" : "disabled"}>导入 AI 回答</button>
         <button id="applyCopilotAnswer" class="button" ${activeJob?.answer ? "" : "disabled"}>保存为版本</button>
@@ -836,11 +836,11 @@ async function callCopilotModel(job) {
     job.answer = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
     job.status = job.answer ? "answered" : "waiting";
     persistCopilotJobs();
-    flash(job.answer ? "fable5 回答已导入" : "fable5 无返回内容");
+    flash(job.answer ? "Fable 5 回答已导入" : "Fable 5 无返回内容");
   } catch (error) {
     job.status = "waiting";
     persistCopilotJobs();
-    flash(error.message || "fable5 调用失败");
+    flash(error.message || "Fable 5 调用失败");
   }
   render();
 }

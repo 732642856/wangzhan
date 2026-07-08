@@ -44,7 +44,7 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "ai-copilot-panel",
     "copilot-task-card",
     "https://copse.top/v1",
-    "fable5",
+    "claude-fable-5",
     "runCopilotModel",
     "data-copilot-config",
     "复制给 Codex",
