@@ -86,6 +86,20 @@ test("ebook knowledge mode buttons drive the AI packet templates", () => {
   assert.match(handler, /render\(\)/);
 });
 
+test("right Copilot exposes active template sources before copying the packet", () => {
+  const packetPreview = appSource.slice(appSource.indexOf("laperChatInput"), appSource.indexOf("laper-chat-composer"));
+  for (const token of [
+    "laper-template-source-list",
+    "activeTemplateSources",
+    "source",
+  ]) {
+    assert.match(packetPreview, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+  assert.match(appSource, /state\.selectedTemplateIds\.map/);
+  assert.match(stylesSource, /\.laper-template-source-list/);
+  assert.match(stylesSource, /max-height:\s*42px/);
+});
+
 test("right Copilot Run and Copy handlers read user input before acting", () => {
   const runHandler = appSource.slice(
     appSource.indexOf('document.querySelector("#laperChatRun")'),

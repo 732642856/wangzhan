@@ -124,6 +124,8 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "题材素材",
     "laper-knowledge-mode-stack",
     "laper-chat-mode-strip",
+    "Packet sources",
+    "laper-template-source-list",
     "Beat Sheet",
     "Dialogue Enhancement",
     "Character Arc",

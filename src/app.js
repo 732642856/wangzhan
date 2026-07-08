@@ -138,6 +138,8 @@ function render() {
       { label: "Organizing script structure", text: "The shape works. Scene two delays pressure." },
       { label: "Locating character goals", text: "Mark the character pressure." },
     ];
+  const templateById = new Map(studio.getKnowledgeTemplates().map((template) => [template.id, template]));
+  const activeTemplateSources = state.selectedTemplateIds.map((id) => templateById.get(id)).filter(Boolean).slice(0, 4);
   app.innerHTML = `
     <main class="shell professional-shell laper-shell m3-laper-workspace laper-reference-workbench ${state.laperObjectView === "Script" ? "" : "object-mode"}">
       <aside class="rail project-database laper-object-nav">
@@ -298,6 +300,16 @@ function render() {
             </div>
           </div>
           <textarea id="laperChatInput" class="laper-chat-input" rows="3" placeholder="Ask Laper to check structure or character pressure...">${escapeHtml(state.aiTask)}</textarea>
+          <div class="laper-template-source-list">
+            <span>Packet sources</span>
+            ${
+              activeTemplateSources.length
+                ? activeTemplateSources.map((template) => `
+                    <small><b>${escapeHtml(template.title)}</b>${escapeHtml(template.source)}</small>
+                  `).join("")
+                : `<small>No template selected</small>`
+            }
+          </div>
           <div class="laper-chat-composer">
             <button type="button">＋</button>
             <button id="laperChatRun" type="button">Run</button>
