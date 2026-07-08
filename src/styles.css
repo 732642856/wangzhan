@@ -1626,7 +1626,13 @@ body {
 
 .copilot-command-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.copilot-config-row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr 1fr;
   gap: 8px;
 }
 
@@ -2683,9 +2689,20 @@ body {
   line-height: 1.32;
 }
 
+.laper-chat-input {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  color: #25312b;
+  font: 700 10px/1.35 inherit;
+  background: #fffefa;
+  border: 1px solid #dfe9e3;
+  border-radius: 8px;
+}
+
 .laper-chat-composer {
   display: grid;
-  grid-template-columns: 24px 1fr 24px;
+  grid-template-columns: 24px 1fr 42px;
   gap: 4px;
 }
 
@@ -3181,6 +3198,7 @@ body {
 }
 
 .laper-private-stack button,
+.laper-knowledge-mode-stack button,
 .laper-pill-row button {
   min-height: 26px;
   color: #24583d;
@@ -3196,6 +3214,41 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
+}
+
+.laper-knowledge-mode-stack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.laper-knowledge-mode-stack button {
+  justify-content: center;
+  min-width: 0;
+  padding: 0 4px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.laper-chat-mode-strip {
+  display: grid;
+  gap: 5px;
+  padding: 6px;
+  background: #fbfdfb;
+  border: 1px solid #e1ebe5;
+  border-radius: 8px;
+}
+
+.laper-chat-card .laper-chat-mode-strip,
+.laper-chat-card .laper-chat-mode-strip .laper-knowledge-mode-stack {
+  display: grid;
+}
+
+.laper-chat-card .laper-chat-mode-strip .laper-knowledge-mode-stack {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .laper-pill-row:last-child {

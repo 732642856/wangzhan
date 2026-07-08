@@ -442,6 +442,23 @@ test("builds AI packets with book-derived template guidance", () => {
   assert.equal(packet.context.templates.length, 3);
 });
 
+test("includes ebook-index knowledge modes for the new local library scan", () => {
+  const templates = getKnowledgeTemplates();
+  const presets = getAiTaskPresets();
+  for (const id of ["ebook-screenwriting-index", "ebook-adaptation-index", "ebook-material-index"]) {
+    assert.equal(templates.some((template) => template.id === id), true, `missing ebook template ${id}`);
+  }
+  for (const id of ["ebook-korean-shortdrama", "ebook-novel-adaptation", "ebook-material-mining"]) {
+    assert.equal(presets.some((preset) => preset.id === id), true, `missing ebook preset ${id}`);
+  }
+  const packet = buildAiPacket(createProject({ title: "电子书索引测试" }), "用新电子书库做短剧诊断", {
+    templateIds: ["ebook-screenwriting-index", "ebook-adaptation-index"],
+  });
+  assert.match(packet.prompt, /电子书清单/);
+  assert.match(packet.prompt, /韩式编剧/);
+  assert.match(packet.prompt, /小说改编/);
+});
+
 test("compareVersions keeps duplicate lines and order-sensitive diff", () => {
   const base = createProject({
     fountain: `INT. 房间 - NIGHT

@@ -4,6 +4,17 @@ Date: 2026-06-30
 
 These notes track book assets for the personal local screenwriting product. The app must use summaries, rules, checklists and prompt templates rather than reproducing book text.
 
+## 2026-07-07 Ebook Library Scan
+
+New local library index:
+
+- `/Users/wuyongnaren/WorkBuddy/2026-07-07-18-13-34/电子书完整清单.csv`
+- `/Users/wuyongnaren/WorkBuddy/2026-07-07-18-13-34/电子书清单与中文简介汇总.docx`
+
+Landing plan: `docs/ebook-library-ingest.md`.
+
+Use as local index and knowledge-mode routing. Do not ingest all full text.
+
 ## PDFs Mentioned By User
 
 | File | Status | Immediate Use |
