@@ -7,6 +7,12 @@ import "./styles.css";
 const STORAGE_KEY = "personal-screenwriter.project.v1";
 const LIBRARY_KEY = "personal-screenwriter.library.v1";
 const COPILOT_KEY = "personal-screenwriter.copilot.v1";
+const COPILOT_CONFIG_KEY = "personal-screenwriter.copilot.config.v1";
+const DEFAULT_COPILOT_CONFIG = {
+  baseUrl: "https://copse.top/v1",
+  model: "claude-fable-5",
+  apiKey: "",
+};
 
 const defaultProject = {
   title: "星轨试写",
@@ -35,6 +41,39 @@ EXT. 天台 - DAWN
   writingType: "screenplay",
 };
 
+const knowledgeModes = [
+  {
+    label: "结构诊断",
+    task: "用结构诊断模式检查当前剧本：开场钩子、场景功能、人物目标、转折和结尾选择。",
+    templateIds: ["scene-function", "turning-scene-diagnosis", "ending-scene-diagnosis"],
+  },
+  {
+    label: "韩式短剧",
+    task: "调用电子书库韩式短剧模式检查当前剧本：开场钩子、人设关系、反转密度、每集收口和可复制桥段。",
+    templateIds: ["ebook-screenwriting-index", "scene-function", "turning-scene-diagnosis", "verbal-action-dialogue"],
+  },
+  {
+    label: "小说改编",
+    task: "调用电子书库小说改编模式检查当前剧本：母本冲突、可拍场面、人物压力、保留合并删减和视觉化。",
+    templateIds: ["ebook-adaptation-index", "structuralist-screenwriting", "film-perusal-method", "opening-scene-diagnosis"],
+  },
+  {
+    label: "对白润色",
+    task: "用对白润色模式检查当前剧本：台词行动、潜台词、信息量、人物声音和可表演性。",
+    templateIds: ["verbal-action-dialogue", "scene-function", "director-model-review"],
+  },
+  {
+    label: "人物关系",
+    task: "用人物关系模式检查当前剧本：人物目标、关系压力、秘密、选择代价和关系变化。",
+    templateIds: ["character-arc", "worldview-pressure", "scene-function"],
+  },
+  {
+    label: "题材素材",
+    task: "调用电子书库题材素材模式检查当前剧本：题材线索、人物原型、世界观压力和原创化注意事项。",
+    templateIds: ["ebook-material-index", "worldview-pressure", "mystery-info-control", "folk-visual-redlines"],
+  },
+];
+
 const saved = loadProject();
 const savedLibrary = loadLibrary();
 let projectLibrary = savedLibrary.projects.length ? savedLibrary : savedLibrary.save(saved || defaultProject);
@@ -43,6 +82,7 @@ projectLibrary = activeLibraryItem.library;
 const studio = createPersonalScreenwriter({ project: activeLibraryItem.project });
 const defaultWorkbench = studio.getWritingWorkbenchDefaults(activeLibraryItem.project.writingType || "screenplay");
 const savedCopilotJobs = loadCopilotJobs();
+const savedCopilotConfig = loadCopilotConfig();
 
 const state = {
   activeTab: "doctor",
@@ -54,12 +94,14 @@ const state = {
   textQualityReport: null,
   writingControlReport: null,
   selectedTemplateIds: defaultWorkbench.selectedTemplateIds,
+  selectedKnowledgeMode: "",
   selectedWorkflowId: defaultWorkbench.selectedWorkflowId,
   selectedVersionId: "",
   compareTargetVersionId: "",
   sceneNavigation: [],
   laperObjectView: "Script",
   copilotJobs: savedCopilotJobs,
+  copilotConfig: savedCopilotConfig,
   activeCopilotJobId: savedCopilotJobs[0]?.id || "",
 };
 
@@ -250,12 +292,9 @@ function render() {
           <div class="laper-chat-mode-strip">
             <span>Knowledge modes</span>
             <div class="laper-knowledge-mode-stack">
-              <button type="button">结构诊断</button>
-              <button type="button">韩式短剧</button>
-              <button type="button">小说改编</button>
-              <button type="button">对白润色</button>
-              <button type="button">人物关系</button>
-              <button type="button">题材素材</button>
+              ${knowledgeModes.map((mode) => `
+                <button type="button" data-knowledge-mode="${escapeHtml(mode.label)}" data-ai-task="${escapeHtml(mode.task)}" data-template-ids="${escapeHtml(mode.templateIds.join(","))}" class="${state.selectedKnowledgeMode === mode.label ? "active" : ""}">${escapeHtml(mode.label)}</button>
+              `).join("")}
             </div>
           </div>
           <textarea id="laperChatInput" class="laper-chat-input" rows="3" placeholder="Ask Laper to check structure or character pressure...">${escapeHtml(state.aiTask)}</textarea>
@@ -473,6 +512,16 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelectorAll("[data-knowledge-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedKnowledgeMode = button.dataset.knowledgeMode || "";
+      state.aiTask = button.dataset.aiTask || state.aiTask;
+      state.selectedTemplateIds = (button.dataset.templateIds || "").split(",").filter(Boolean);
+      state.doctorReport = null;
+      render();
+      flash(`已切换：${state.selectedKnowledgeMode}`);
+    });
+  });
   document.querySelector("#laperChatInput")?.addEventListener("input", (event) => {
     state.aiTask = event.target.value;
   });
@@ -498,6 +547,10 @@ function bindEvents() {
     if (!job) return;
     await navigator.clipboard?.writeText(job.prompt);
     flash("已复制给 Codex");
+  });
+  document.querySelector("#runCopilotModel").addEventListener("click", async () => {
+    const job = getActiveCopilotJob() || createCopilotTask();
+    await callCopilotModel(job);
   });
   document.querySelector("#saveCopilotAnswer").addEventListener("click", () => {
     const job = getActiveCopilotJob();
@@ -526,6 +579,12 @@ function bindEvents() {
     state.activeCopilotJobId = row.dataset.copilotId;
     render();
   });
+  for (const input of document.querySelectorAll("[data-copilot-config]")) {
+    input.addEventListener("input", (event) => {
+      state.copilotConfig = { ...state.copilotConfig, [event.target.dataset.copilotConfig]: event.target.value };
+      persistCopilotConfig();
+    });
+  }
   document.querySelector("#openControl").addEventListener("click", () => {
     state.activeTab = "doctor";
     state.writingControlReport = studio.buildWritingControlReport();
@@ -703,23 +762,30 @@ function renderDoctorReport(report) {
 
 function renderCopilotPanel() {
   const activeJob = getActiveCopilotJob();
+  const config = state.copilotConfig;
   return `
     <section class="panel ai-copilot-panel">
       <div class="panel-heading">
         <div>
           <div class="panel-title">AI Copilot</div>
-          <small>Codex 执行层 · 无 API key</small>
+          <small>Copse · ${escapeHtml(config.model || DEFAULT_COPILOT_CONFIG.model)}</small>
         </div>
         <span class="badge soft">${state.copilotJobs.length}</span>
       </div>
+      <div class="copilot-config-row">
+        <input class="input" data-copilot-config="baseUrl" value="${escapeHtml(config.baseUrl)}" placeholder="https://copse.top/v1" autocomplete="off">
+        <input class="input" data-copilot-config="model" value="${escapeHtml(config.model)}" placeholder="claude-fable-5" autocomplete="off">
+        <input class="input" data-copilot-config="apiKey" value="${escapeHtml(config.apiKey)}" placeholder="sk-..." type="password" autocomplete="off">
+      </div>
       <div class="copilot-command-row">
         <button id="generateCopilotTask" class="button primary">运行诊断</button>
+        <button id="runCopilotModel" class="button primary" ${activeJob || state.aiTask ? "" : "disabled"}>发送 Fable 5</button>
         <button id="copyCopilotTask" class="button" ${activeJob ? "" : "disabled"}>复制给 Codex</button>
       </div>
       <div class="copilot-steps">
         ${renderCopilotStep("收集剧本上下文", true)}
         ${renderCopilotStep("生成任务包", Boolean(activeJob))}
-        ${renderCopilotStep("等待 Codex 执行", Boolean(activeJob), activeJob && !activeJob.answer)}
+        ${renderCopilotStep("发送 Fable 5/Codex", Boolean(activeJob), activeJob && !activeJob.answer)}
         ${renderCopilotStep("粘贴/导入 AI 回答", Boolean(activeJob?.answer))}
         ${renderCopilotStep("保存为版本", activeJob?.status === "applied")}
       </div>
@@ -731,17 +797,17 @@ function renderCopilotPanel() {
                   (job) => `
                     <button class="copilot-task-card ${job.id === state.activeCopilotJobId ? "active" : ""}" data-copilot-id="${escapeHtml(job.id)}">
                       <strong>${escapeHtml(job.title)}</strong>
-                      <span>${escapeHtml(job.status === "applied" ? "已应用" : job.answer ? "已导入回答" : "等待 Codex")}</span>
+                      <span>${escapeHtml(job.status === "applied" ? "已应用" : job.status === "running" ? "Fable 5 处理中" : job.answer ? "已导入回答" : "等待执行")}</span>
                       <small>${escapeHtml(job.createdAt)}</small>
                     </button>
                   `,
                 )
                 .join("")
-            : `<p class="empty">点击“运行诊断”生成可复制给 Codex 的任务卡。</p>`
+            : `<p class="empty">点击“运行诊断”生成任务，或直接发送 Fable 5。</p>`
         }
       </div>
       <label class="field-label" for="copilotAnswer">AI 回答</label>
-      <textarea id="copilotAnswer" class="mini-editor" placeholder="把 Codex 生成的诊断/改写结果粘贴到这里">${escapeHtml(activeJob?.answer || "")}</textarea>
+      <textarea id="copilotAnswer" class="mini-editor" placeholder="Fable 5/Codex 结果会写到这里，也可手动粘贴">${escapeHtml(activeJob?.answer || "")}</textarea>
       <div class="copilot-command-row">
         <button id="saveCopilotAnswer" class="button" ${activeJob ? "" : "disabled"}>导入 AI 回答</button>
         <button id="applyCopilotAnswer" class="button" ${activeJob?.answer ? "" : "disabled"}>保存为版本</button>
@@ -776,6 +842,53 @@ function createCopilotTask() {
 
 function getActiveCopilotJob() {
   return state.copilotJobs.find((job) => job.id === state.activeCopilotJobId) || state.copilotJobs[0] || null;
+}
+
+async function callCopilotModel(job) {
+  const config = {
+    ...state.copilotConfig,
+    baseUrl: document.querySelector('[data-copilot-config="baseUrl"]')?.value.trim() || state.copilotConfig.baseUrl,
+    model: document.querySelector('[data-copilot-config="model"]')?.value.trim() || state.copilotConfig.model,
+    apiKey: document.querySelector('[data-copilot-config="apiKey"]')?.value.trim() || state.copilotConfig.apiKey,
+  };
+  state.copilotConfig = config;
+  persistCopilotConfig();
+  if (!config.apiKey) {
+    flash("先填 API key");
+    return;
+  }
+  job.status = "running";
+  persistCopilotJobs();
+  render();
+  try {
+    const response = await fetch(`${normalizeCopilotBaseUrl(config.baseUrl)}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${config.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model || DEFAULT_COPILOT_CONFIG.model,
+        messages: [{ role: "user", content: job.prompt }],
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error?.message || data.message || `HTTP ${response.status}`);
+    job.answer = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
+    job.status = job.answer ? "answered" : "waiting";
+    persistCopilotJobs();
+    flash(job.answer ? "Fable 5 回答已导入" : "Fable 5 无返回内容");
+  } catch (error) {
+    job.status = "waiting";
+    persistCopilotJobs();
+    flash(error.message || "Fable 5 调用失败");
+  }
+  render();
+}
+
+function normalizeCopilotBaseUrl(baseUrl) {
+  const clean = (baseUrl || DEFAULT_COPILOT_CONFIG.baseUrl).replace(/\/+$/, "");
+  return clean.endsWith("/v1") ? clean : `${clean}/v1`;
 }
 
 function renderTextQualitySummary(report) {
@@ -1527,6 +1640,10 @@ function persistCopilotJobs() {
   localStorage.setItem(COPILOT_KEY, JSON.stringify(state.copilotJobs));
 }
 
+function persistCopilotConfig() {
+  localStorage.setItem(COPILOT_CONFIG_KEY, JSON.stringify(state.copilotConfig));
+}
+
 function loadProject() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -1551,6 +1668,14 @@ function loadCopilotJobs() {
     return Array.isArray(jobs) ? jobs.slice(0, 8) : [];
   } catch {
     return [];
+  }
+}
+
+function loadCopilotConfig() {
+  try {
+    return { ...DEFAULT_COPILOT_CONFIG, ...JSON.parse(localStorage.getItem(COPILOT_CONFIG_KEY) || "{}") };
+  } catch {
+    return DEFAULT_COPILOT_CONFIG;
   }
 }
 

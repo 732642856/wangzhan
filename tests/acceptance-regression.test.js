@@ -68,6 +68,24 @@ test("ebook knowledge modes are inside the right Copilot chat, not buried in sec
   assert.match(stylesSource, /\.laper-chat-mode-strip/);
 });
 
+test("ebook knowledge mode buttons drive the AI packet templates", () => {
+  const modeBlock = appSource.slice(appSource.indexOf("laper-chat-mode-strip"), appSource.indexOf("laperChatInput"));
+  for (const token of ["data-template-ids", "data-ai-task"]) {
+    assert.match(modeBlock, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+  for (const token of ["ebook-screenwriting-index", "ebook-adaptation-index", "ebook-material-index"]) {
+    assert.match(appSource, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  const handler = appSource.slice(
+    appSource.indexOf('document.querySelectorAll("[data-knowledge-mode]")'),
+    appSource.indexOf('document.querySelector("#laperChatInput")'),
+  );
+  assert.match(handler, /state\.selectedTemplateIds =/);
+  assert.match(handler, /state\.aiTask =/);
+  assert.match(handler, /render\(\)/);
+});
+
 test("right Copilot Run and Copy handlers read user input before acting", () => {
   const runHandler = appSource.slice(
     appSource.indexOf('document.querySelector("#laperChatRun")'),
