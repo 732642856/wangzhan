@@ -126,6 +126,7 @@ test("M1 shell exposes a Laper-style professional workbench", () => {
     "laper-chat-mode-strip",
     "Packet sources",
     "laper-template-source-list",
+    "laper-template-source-item",
     "Beat Sheet",
     "Dialogue Enhancement",
     "Character Arc",

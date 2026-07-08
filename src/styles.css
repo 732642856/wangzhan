@@ -3259,7 +3259,8 @@ body {
   border-radius: 8px;
 }
 
-.laper-template-source-list small {
+.laper-template-source-list small,
+.laper-template-source-item {
   display: grid;
   gap: 1px;
   color: #66736c;
@@ -3267,11 +3268,23 @@ body {
   line-height: 1.15;
 }
 
-.laper-template-source-list b {
+.laper-template-source-item {
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+
+.laper-template-source-list b,
+.laper-template-source-item small {
   overflow: hidden;
-  color: #1f4f38;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.laper-template-source-list b {
+  color: #1f4f38;
 }
 
 .laper-chat-card .laper-chat-mode-strip,

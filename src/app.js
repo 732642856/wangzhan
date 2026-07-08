@@ -305,7 +305,7 @@ function render() {
             ${
               activeTemplateSources.length
                 ? activeTemplateSources.map((template) => `
-                    <small><b>${escapeHtml(template.title)}</b>${escapeHtml(template.source)}</small>
+                    <button type="button" class="laper-template-source-item" data-source-pointer="${escapeHtml(`${template.title}\n${template.source}`)}"><b>${escapeHtml(template.title)}</b><small>${escapeHtml(template.source)}</small></button>
                   `).join("")
                 : `<small>No template selected</small>`
             }
@@ -524,6 +524,12 @@ function bindEvents() {
   document.querySelector("#exportFountain").addEventListener("click", () => download("screenplay.fountain", studio.exportFountain(), "text/plain"));
   document.querySelector("#exportFdx").addEventListener("click", () => download("screenplay.fdx", studio.exportFdx(), "application/xml"));
   document.querySelector("#copyPrompt").addEventListener("click", copyAiPacket);
+  document.querySelectorAll("[data-source-pointer]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await navigator.clipboard?.writeText(button.dataset.sourcePointer || "");
+      flash("资料来源已复制");
+    });
+  });
   document.querySelectorAll("[data-knowledge-mode]").forEach((button) => {
     button.addEventListener("click", () => {
       state.selectedKnowledgeMode = button.dataset.knowledgeMode || "";

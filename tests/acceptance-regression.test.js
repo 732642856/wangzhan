@@ -100,6 +100,26 @@ test("right Copilot exposes active template sources before copying the packet", 
   assert.match(stylesSource, /max-height:\s*42px/);
 });
 
+test("right Copilot source pointers are clickable copy targets", () => {
+  const packetPreview = appSource.slice(appSource.indexOf("laperChatInput"), appSource.indexOf("laper-chat-composer"));
+  for (const token of [
+    "laper-template-source-item",
+    "data-source-pointer",
+    "title",
+    "source",
+  ]) {
+    assert.match(packetPreview, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  const handler = appSource.slice(
+    appSource.indexOf('document.querySelectorAll("[data-source-pointer]")'),
+    appSource.indexOf('document.querySelector("#laperChatInput")'),
+  );
+  assert.match(handler, /navigator\.clipboard/);
+  assert.match(handler, /sourcePointer/);
+  assert.match(handler, /资料来源已复制/);
+});
+
 test("right Copilot Run and Copy handlers read user input before acting", () => {
   const runHandler = appSource.slice(
     appSource.indexOf('document.querySelector("#laperChatRun")'),
