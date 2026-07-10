@@ -1,0 +1,6 @@
+interface:
+  display_name: "Personal Screenwriter"
+  short_description: "Open, inspect, and ship the local 编剧助手 app"
+  default_prompt: "Use $personal-screenwriter-codex to inspect the 编剧助手 project and report the next useful action."
+policy:
+  allow_implicit_invocation: true
