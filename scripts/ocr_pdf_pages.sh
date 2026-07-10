@@ -14,9 +14,8 @@ END_PAGE="${4:-}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OCR_SWIFT="$ROOT_DIR/scripts/ocr_vision.swift"
 OCR_BIN="$ROOT_DIR/scripts/ocr_vision_bin"
-RUNTIME_BIN="/Users/wuyongnaren/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
-PDFINFO_BIN="${PDFINFO_BIN:-$RUNTIME_BIN/pdfinfo}"
-PDFTOPPM_BIN="${PDFTOPPM_BIN:-$RUNTIME_BIN/pdftoppm}"
+PDFINFO_BIN="${PDFINFO_BIN:-$(command -v pdfinfo || true)}"
+PDFTOPPM_BIN="${PDFTOPPM_BIN:-$(command -v pdftoppm || true)}"
 OCR_DPI="${OCR_DPI:-180}"
 
 OUT_DIR="$ROOT_DIR/knowledge/ocr/$SLUG"
@@ -27,6 +26,11 @@ FULL_FILE="$OUT_DIR/full_ocr.txt"
 META_FILE="$OUT_DIR/metadata.txt"
 
 mkdir -p "$PAGES_DIR" "$TMP_DIR"
+
+if [ -z "$PDFINFO_BIN" ] || [ -z "$PDFTOPPM_BIN" ]; then
+  echo "Missing pdfinfo or pdftoppm. Install poppler or set PDFINFO_BIN/PDFTOPPM_BIN." >&2
+  exit 1
+fi
 
 if [ -z "$END_PAGE" ]; then
   END_PAGE="$("$PDFINFO_BIN" "$PDF_PATH" | awk '/^Pages:/ {print $2; exit}')"

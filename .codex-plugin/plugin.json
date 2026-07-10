@@ -6,8 +6,8 @@
     "name": "Wuyongnaren"
   },
   "homepage": "http://127.0.0.1:5174/",
-  "repository": "local",
-  "license": "Proprietary",
+  "repository": "https://github.com/732642856/wangzhan",
+  "license": "MIT",
   "keywords": [
     "screenwriting",
     "novel-adaptation",

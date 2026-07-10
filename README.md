@@ -1,81 +1,67 @@
-# Personal Screenwriter
+# Personal Screenwriter / 编剧助手
 
-Cloud-ready writing workspace for screenplay and literary-screenplay work.
+Local-first screenwriting workspace for screenplay, literary-screenplay, adaptation notes, relationship walls, and Codex-assisted Script Doctor workflows.
 
-This repo now supports two modes:
+Hosted app: https://732642856.github.io/wangzhan/
 
-- hosted web app
-- local advanced mode with Codex plugin and MCP bridge
-
-## Hosted Web
-
-The hosted app is a static Vite site. Users can open a URL and use:
+## Features
 
 - 剧本 / 文学剧本双模式
-- 写作台与改编分场台
-- AI 模板、规则卡、工作流预设
-- 标题页、场景导航、Note / Tag、Shot Plan
-- 本地浏览器存储
-- `.json` / `.fountain` / `.fdx` 导入导出
+- Script Doctor diagnosis packets for Codex
+- AI Copilot task cards with copy/paste workflow
+- Scene navigation, notes, tags, shot plan, and relationship wall
+- Local browser storage; no server account required
+- `.json`, `.fountain`, and `.fdx` import/export
+- Optional Codex skill and MCP bridge for local advanced use
 
-Hosted mode does **not** require:
-
-- Codex plugin
-- MCP bridge
-- local filesystem access
-
-## One-Click Deploy
-
-### Vercel
-
-1. Push this folder to a git host as its own repo
-2. In Vercel, click **Add New → Project**
-3. Import the repo
-4. Deploy with defaults
-
-This repo already includes `vercel.json`, so Vercel can build it as a static Vite app.
-
-See [DEPLOY.md](/Users/wuyongnaren/Documents/编剧助手/personal-screenwriter/DEPLOY.md) for the standalone repo and publish checklist.
-
-Quick local export:
+## Quick Start
 
 ```bash
-npm run export:cloud
-```
-
-## Local Development
-
-```bash
-npm install
+git clone https://github.com/732642856/wangzhan.git
+cd wangzhan
+npm ci
 npm run dev
 ```
 
 Open the URL printed by Vite.
 
-## Verification
+## Verify
 
 ```bash
-npm test -- --runInBand
+npm test
 npm run build
 ```
 
-## Local Advanced Mode
+## Use With Codex
 
-These features are local-only. They are not part of the hosted web deployment.
+Install the skill from this repo:
 
-### One-Click Local App Start
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/personal-screenwriter-codex ~/.codex/skills/
+```
+
+Open a new Codex task and say:
+
+```text
+使用 $personal-screenwriter-codex 打开编剧助手
+使用 $personal-screenwriter-codex 检查项目进度
+使用 $personal-screenwriter-codex 运行 Script Doctor 诊断
+```
+
+Local app helper:
 
 ```bash
 npm run codex:ensure-server
 ```
 
-### Local MCP Bridge
+Local MCP bridge:
 
 ```bash
 npm run codex:mcp
 ```
 
-Tools:
+MCP tools:
 
 - `ensure_server`
 - `open_app`
@@ -84,55 +70,16 @@ Tools:
 - `build_ai_packet`
 - `export_project`
 
-Codex-only commands:
+## Privacy
 
-- `打开编剧助手`: opens the local workbench URL inside Codex.
-- `运行诊断`: builds a Script Doctor packet from the bridge project and answers in chat.
-- `执行这个任务: ...`: runs a pasted Copilot task card and returns text to paste back into the app.
-- `保存这个项目更新: ...`: reads the bridge project first, then writes the smallest project update.
+The hosted app is static and stores project data in the browser. The default Codex workflow does not require an API key.
 
-### Local Codex Plugin
+If you connect a model provider, keep keys local and do not commit them. Private ebook/OCR outputs are ignored by git; keep copyrighted source text out of the repo.
 
-```bash
-mkdir -p ~/plugins
-ln -sfn "$PWD" ~/plugins/personal-screenwriter
-python3 "$HOME/.codex/skills/.system/plugin-creator/scripts/update_plugin_cachebuster.py" "$PWD"
-python3 - <<'PY'
-import json
-from pathlib import Path
+## Deploy
 
-marketplace_path = Path.home() / ".agents" / "plugins" / "marketplace.json"
-marketplace_path.parent.mkdir(parents=True, exist_ok=True)
-if marketplace_path.exists():
-    payload = json.loads(marketplace_path.read_text(encoding="utf-8"))
-else:
-    payload = {"name": "personal", "interface": {"displayName": "Personal"}, "plugins": []}
-plugins = payload.setdefault("plugins", [])
-entry = {
-    "name": "personal-screenwriter",
-    "source": {"source": "local", "path": "./plugins/personal-screenwriter"},
-    "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
-    "category": "Writing",
-}
-for index, current in enumerate(plugins):
-    if isinstance(current, dict) and current.get("name") == "personal-screenwriter":
-        plugins[index] = entry
-        break
-else:
-    plugins.append(entry)
-marketplace_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-PY
-codex plugin add personal-screenwriter@personal
-```
+GitHub Pages deploys from this repo. See [DEPLOY.md](DEPLOY.md) for a generic deploy checklist.
 
-After install, open a new Codex thread so new skills/tools are visible there.
+## License
 
-## Privacy Boundary
-
-Cloud-ready default assets are now public-safe knowledge/workflow identifiers.
-
-Private local machine paths are not required for hosted mode.
-
-## SDK Embedding
-
-Other apps can embed the writing core through `src/sdk.js`.
+MIT. See [LICENSE](LICENSE).

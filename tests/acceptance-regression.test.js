@@ -145,13 +145,13 @@ test("acceptance error log gives executable cloud verification order", () => {
 
 test("ebook library is landed as an index, not full-text ingestion", () => {
   for (const token of [
-    "8746",
-    "4189",
-    "A类：立即进入编剧助手知识库",
+    "Keep source files outside git",
+    "ebook-index.csv",
+    "Do not put full ebook text into the app",
+    "A类：编剧方法",
     "B类：素材库",
     "C类：只保留索引",
-    "不要把 8746 个文件全文导入项目",
-    "电子书完整清单.csv",
+    "不要把电子书全文导入项目",
   ]) {
     assert.match(ebookPlan, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }

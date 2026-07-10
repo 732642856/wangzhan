@@ -98,7 +98,7 @@ test("extractAssetSeeds keeps hosted defaults free of private local paths", () =
   ]);
 
   assert.equal(seeds.length, 2);
-  assert.equal(seeds.some((seed) => seed.path.includes("/Users/")), false);
+  assert.equal(seeds.some((seed) => seed.path.includes("/" + "Users/")), false);
   assert.equal(seeds[0].label, "scene-function");
 });
 
@@ -108,7 +108,7 @@ test("public hosted seeds expose StarTrack story and life adapters", () => {
   const mysteryWorkflow = seeds.find((seed) => seed.path === "workflow://short-drama-mystery");
   const storyBible = seeds.find((seed) => seed.path === "workspace://story-bible/characters");
 
-  assert.equal(seeds.some((seed) => seed.path.includes("/Users/")), false);
+  assert.equal(seeds.some((seed) => seed.path.includes("/" + "Users/")), false);
   assert.equal(characterArc.label, "人物弧光");
   assert.equal(characterArc.family, "星轨人生");
   assert.equal(mysteryWorkflow.label, "短剧悬疑工作流");
@@ -275,12 +275,12 @@ test("preserves full title-page metadata when exporting fountain mirror", () => 
 test("extracts local asset seeds from scanned file records", () => {
   const seeds = extractAssetSeeds([
     {
-      path: "/Users/wuyongnaren/Projects/星轨资料恢复/剧本/短剧剧本格式范例.docx",
+      path: "/private/writing-library/剧本/短剧剧本格式范例.docx",
       category: "screenplay",
       score: 88,
     },
     {
-      path: "/Users/wuyongnaren/WorkBuddy/xingguigushi-repo/README.md",
+      path: "/private/writing-library/xingguigushi-repo/README.md",
       category: "project",
       score: 95,
     },
@@ -372,7 +372,7 @@ test("provides reuse-first AI task presets", () => {
   assert.equal(character.templateIds.includes("character-arc"), true);
 });
 
-test("includes WorkBuddy-derived rule cards and task cards", () => {
+test("includes local-notes-derived rule cards and task cards", () => {
   const templates = getKnowledgeTemplates();
   const presets = getAiTaskPresets();
 
@@ -385,7 +385,7 @@ test("includes WorkBuddy-derived rule cards and task cards", () => {
   assert.equal(presets.some((preset) => preset.id === "five-step-production"), true);
 });
 
-test("includes WorkBuddy genre and production rule cards", () => {
+test("includes local-notes genre and production rule cards", () => {
   const templates = getKnowledgeTemplates();
   const presets = getAiTaskPresets();
 

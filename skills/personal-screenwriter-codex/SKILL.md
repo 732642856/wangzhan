@@ -9,12 +9,12 @@ Use this skill as the Codex entry point for the local 编剧助手 project.
 
 ## Project Locations
 
-- Local app: `/Users/wuyongnaren/Documents/编剧助手/personal-screenwriter`
-- Cloud worktree: `/tmp/wangzhan-m25`
 - GitHub repo: `https://github.com/732642856/wangzhan`
 - Public app: `https://732642856.github.io/wangzhan/`
+- Local app: current repo clone, `$PERSONAL_SCREENWRITER_HOME`, or a nearby `wangzhan` / `personal-screenwriter` directory
+- Maintainer cloud worktree, when present: `/tmp/wangzhan-m25`
 
-Prefer the current directory when its `package.json` name is `personal-screenwriter`; otherwise use the local app path above.
+Prefer the current directory when its `package.json` name is `personal-screenwriter`.
 
 ## First Checks
 
@@ -62,10 +62,8 @@ Use local knowledge as index/rules/source pointers, not as published full text.
 
 - Read `docs/book-learning-notes.md` for available assets.
 - Read `docs/ebook-library-ingest.md` for ebook tiers and mode routing.
-- Main ebook index files:
-  - `/Users/wuyongnaren/WorkBuddy/2026-07-07-18-13-34/电子书完整清单.csv`
-  - `/Users/wuyongnaren/WorkBuddy/2026-07-07-18-13-34/电子书清单与中文简介汇总.docx`
-- Never import all 8746 ebooks into the app.
+- Main ebook index files are user-local and should stay outside git.
+- Never import full ebook libraries into the app.
 - When copying a source pointer, include the source file, tracking doc, and rule: use summaries/rules/locations only.
 
 ## UI Acceptance
@@ -106,6 +104,6 @@ For a fresh clone, run `npm ci` before tests. After push, check both `ci` and `d
 When this skill changes:
 
 1. Update this repo copy: `skills/personal-screenwriter-codex/SKILL.md`.
-2. Update local install: `/Users/wuyongnaren/.codex/skills/personal-screenwriter-codex/SKILL.md`.
+2. Update local install: `~/.codex/skills/personal-screenwriter-codex/SKILL.md`.
 3. If the personal plugin cache exists, update its copy too.
 4. Verify frontmatter has `name` and `description`.

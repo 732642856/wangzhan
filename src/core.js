@@ -62,7 +62,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "scene-function",
     title: "单场戏功能",
-    source: "WorkBuddy 北电编剧笔记 / 单场戏设计",
+    source: "Local writing notes / 单场戏设计",
     rules: [
       "每场戏必须改变人物关系、信息状态或行动方向。",
       "入场前明确人物目标，离场后明确局势变化。",
@@ -82,7 +82,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "dialogue-action",
     title: "对白行动",
-    source: "对白写作书目 / WorkBuddy 对白与场景笔记",
+    source: "Open writing references / 对白与场景笔记",
     rules: [
       "对白不是信息搬运，而是人物用语言争取、躲避、试探或攻击。",
       "同一段对白里，角色表面说的和真正想要的应有张力。",
@@ -102,7 +102,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "collaboration-review",
     title: "协作审稿",
-    source: "Laper 对标 / WorkBuddy 协作碎片",
+    source: "Workflow benchmark notes / 协作审稿",
     rules: [
       "反馈必须指向具体场次、人物或对白，不写泛泛评价。",
       "区分问题、证据、修改建议，避免把偏好伪装成规则。",
@@ -112,7 +112,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "beat-loop",
     title: "节拍循环",
-    source: "WorkBuddy 北电编剧笔记 / 单场戏设计原理",
+    source: "Local writing notes / 单场戏设计原理",
     rules: [
       "把场戏拆成动作-反应-再行动的连续节拍，检查每次反应是否制造新的小偏差。",
       "每场戏至少要有明确目标、阻碍、价值变化和一个小转折。",
@@ -122,7 +122,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "multi-line",
     title: "多线叙事",
-    source: "WorkBuddy 北电编剧笔记 / 多主角与多线叙事",
+    source: "Local writing notes / 多主角与多线叙事",
     rules: [
       "先让每条单线都成立，再追求复杂交叉；薄弱单线不会因为结构复杂而变强。",
       "判断主角不是看戏份，而是看观众是否关心他能不能达成目标。",
@@ -142,7 +142,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "worldview-pressure",
     title: "世界观压力",
-    source: "WorkBuddy worldview-integrator / 25 维世界观",
+    source: "Local worldbuilding notes / 25 维世界观",
     rules: [
       "世界观不是背景介绍，而是政治、经济、家庭、法律、媒体、犯罪等维度对人物选择施压。",
       "每个核心设定都要能改变角色可选行动、风险代价或关系边界。",
@@ -152,7 +152,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "character-20-questions",
     title: "角色 20 问",
-    source: "WorkBuddy character-20-questions.js / 星轨人生",
+    source: "Local character notes / 星轨人生",
     rules: [
       "人物小传要覆盖家庭、童年、职业、信念、恐惧、关系、目标和死亡观。",
       "只保留会影响当前故事选择的问题，避免写成无用档案。",
@@ -162,7 +162,7 @@ const KNOWLEDGE_TEMPLATES = [
   {
     id: "storyboard-continuity",
     title: "分镜连续性",
-    source: "WorkBuddy StarCanvas 分镜代码 / 星轨分镜撰写技法",
+    source: "Local storyboard notes / 星轨分镜撰写技法",
     rules: [
       "每个镜头 brief 要同时包含画面、景别/运动、对白/声音、字幕意图和交接备注。",
       "重复出现的人物必须保留稳定的脸、服装、道具、色彩和身份线索。",
